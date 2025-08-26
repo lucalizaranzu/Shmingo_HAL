@@ -8,6 +8,8 @@
 #ifndef SHAL_H
 #define SHAL_H
 
+#define STM32F072xB
+
 
 
 

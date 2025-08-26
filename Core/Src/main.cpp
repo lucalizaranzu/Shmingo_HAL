@@ -1,3 +1,4 @@
+#include "SHAL.h"
 #include "stm32f0xx.h"  // Or your device header
 
 volatile int prev_button = false;
