@@ -37,6 +37,8 @@ constexpr RCC_Peripheral getTimerRCC(Timer_Key t) {
         case Timer_Key::S_TIM16: return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM16EN};
         case Timer_Key::S_TIM17: return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM17EN};
     }
+
+    return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM1EN};
 }
 
 //Get actual register value based on enum
@@ -50,6 +52,7 @@ constexpr volatile TIM_TypeDef* getTimerRegister(Timer_Key t) {
         case Timer_Key::S_TIM16:  return TIM16;
         case Timer_Key::S_TIM17:  return TIM17;
     }
+    return TIM1;
 }
 
 constexpr IRQn_Type getIRQn(Timer_Key t) {
@@ -62,6 +65,7 @@ constexpr IRQn_Type getIRQn(Timer_Key t) {
         case Timer_Key::S_TIM16: return TIM16_IRQn;
         case Timer_Key::S_TIM17: return TIM17_IRQn;
     }
+    return TIM1_BRK_UP_TRG_COM_IRQn;
 }
 
 

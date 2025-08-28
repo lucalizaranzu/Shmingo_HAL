@@ -29,11 +29,4 @@ private:
 
 };
 
-extern "C" void TIM2_IRQHandler(void){
-    if(TIM2->SR & TIM_SR_UIF) {
-
-    }
-}
-
-
 #endif
