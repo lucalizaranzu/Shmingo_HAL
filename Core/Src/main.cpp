@@ -21,7 +21,9 @@ extern "C" void EXTI0_1_IRQHandler(void) {
 int main() {
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN; // Enable SYSCFG clock (needed for EXTI)
 
     TIM2->EGR |= TIM_EGR_UG;   //Force update to load PSC/ARR
