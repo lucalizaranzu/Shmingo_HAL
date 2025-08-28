@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.19)
 project(shmingo-HAL)
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(MCU_FAMILY STM32F0xx)
-set(MCU_MODEL STM32F072xx)
+set(MCU_FAMILY "STM32F0xx" CACHE STRING "MCU family")
+set(MCU_MODEL "" CACHE STRING "MCU model")
+
 set(CPU_PARAMETERS 
     -mcpu=cortex-m0
     -mthumb)
@@ -59,7 +60,6 @@ target_compile_options(${EXECUTABLE} PRIVATE
     -Wno-unused-parameter
     $<$<COMPILE_LANGUAGE:CXX>:
         -Wno-volatile
-        -Wuseless-cast
         -Wsuggest-override>
     
         $<$<CONFIG:Debug>:-Og -g3 -ggdb>
