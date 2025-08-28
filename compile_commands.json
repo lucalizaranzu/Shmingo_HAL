@@ -1,0 +1,32 @@
+[
+{
+  "directory": "E:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL",
+  "command": "C:\\PROGRA~2\\ARMGNU~1\\142BCE~1.3RE\\bin\\AR19DD~1.EXE -DSTM32F072xx -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include/* -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Device/ST/STM32F0xx/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL -mcpu=cortex-m0 -mthumb -fdata-sections -ffunction-sections --specs=nano.specs -g -std=gnu11 -fdiagnostics-color=always -mcpu=cortex-m0 -mthumb -Wall -Wextra -Wpedantic -Wno-unused-parameter -Og -g3 -ggdb -o CMakeFiles\\shmingo-HAL.dir\\Core\\Src\\System\\syscalls.c.obj -c E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\Core\\Src\\System\\syscalls.c",
+  "file": "E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\Core\\Src\\System\\syscalls.c",
+  "output": "CMakeFiles\\shmingo-HAL.dir\\Core\\Src\\System\\syscalls.c.obj"
+},
+{
+  "directory": "E:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL",
+  "command": "C:\\PROGRA~2\\ARMGNU~1\\142BCE~1.3RE\\bin\\AR19DD~1.EXE -DSTM32F072xx -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include/* -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Device/ST/STM32F0xx/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL -mcpu=cortex-m0 -mthumb -fdata-sections -ffunction-sections --specs=nano.specs -g -std=gnu11 -fdiagnostics-color=always -mcpu=cortex-m0 -mthumb -Wall -Wextra -Wpedantic -Wno-unused-parameter -Og -g3 -ggdb -o CMakeFiles\\shmingo-HAL.dir\\Core\\Src\\System\\sysmem.c.obj -c E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\Core\\Src\\System\\sysmem.c",
+  "file": "E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\Core\\Src\\System\\sysmem.c",
+  "output": "CMakeFiles\\shmingo-HAL.dir\\Core\\Src\\System\\sysmem.c.obj"
+},
+{
+  "directory": "E:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL",
+  "command": "C:\\PROGRA~2\\ARMGNU~1\\142BCE~1.3RE\\bin\\AR19DD~1.EXE -DSTM32F072xx -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include/* -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Device/ST/STM32F0xx/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL -mcpu=cortex-m0 -mthumb -fdata-sections -ffunction-sections --specs=nano.specs -g -std=gnu11 -fdiagnostics-color=always -mcpu=cortex-m0 -mthumb -Wall -Wextra -Wpedantic -Wno-unused-parameter -Og -g3 -ggdb -o CMakeFiles\\shmingo-HAL.dir\\Core\\Src\\System\\system_stm32f0xx.c.obj -c E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\Core\\Src\\System\\system_stm32f0xx.c",
+  "file": "E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\Core\\Src\\System\\system_stm32f0xx.c",
+  "output": "CMakeFiles\\shmingo-HAL.dir\\Core\\Src\\System\\system_stm32f0xx.c.obj"
+},
+{
+  "directory": "E:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL",
+  "command": "C:\\PROGRA~2\\ARMGNU~1\\142BCE~1.3RE\\bin\\AR10B2~1.EXE -DSTM32F072xx -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include/* -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Device/ST/STM32F0xx/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL -mcpu=cortex-m0 -mthumb -fdata-sections -ffunction-sections -fno-rtti -fno-exceptions -fno-threadsafe-statics --specs=nano.specs -g -std=gnu++20 -fdiagnostics-color=always -mcpu=cortex-m0 -mthumb -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-volatile -Wuseless-cast -Wsuggest-override -Og -g3 -ggdb -o CMakeFiles\\shmingo-HAL.dir\\Core\\Src\\main.cpp.obj -c E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\Core\\Src\\main.cpp",
+  "file": "E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\Core\\Src\\main.cpp",
+  "output": "CMakeFiles\\shmingo-HAL.dir\\Core\\Src\\main.cpp.obj"
+},
+{
+  "directory": "E:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL",
+  "command": "C:\\PROGRA~2\\ARMGNU~1\\142BCE~1.3RE\\bin\\AR19DD~1.EXE -DSTM32F072xx -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Core/Include/* -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Device/ST/STM32F0xx/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL/Drivers/CMSIS/Include -IE:/Projects/Embedded/Shmingo-HAL/Shmingo-HAL -g -mcpu=cortex-m0 -mthumb -Wall -Wextra -Wpedantic -Wno-unused-parameter -Og -g3 -ggdb -o CMakeFiles\\shmingo-HAL.dir\\MX\\startup_stm32f072rbtx.s.obj -c E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\MX\\startup_stm32f072rbtx.s",
+  "file": "E:\\Projects\\Embedded\\Shmingo-HAL\\Shmingo-HAL\\MX\\startup_stm32f072rbtx.s",
+  "output": "CMakeFiles\\shmingo-HAL.dir\\MX\\startup_stm32f072rbtx.s.obj"
+}
+]
