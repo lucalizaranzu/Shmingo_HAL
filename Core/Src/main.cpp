@@ -1,4 +1,5 @@
-#include "stm32f0xx.h"  // Or your device header
+#include "SHAL.h"
+#include "stm32f0xx.h"
 
 volatile int prev_button = false;
 volatile int curr_button = false;
@@ -6,14 +7,14 @@ volatile int curr_button = false;
 extern "C" void TIM2_IRQHandler(void){
 	if(TIM2->SR & TIM_SR_UIF){
 		TIM2->SR &= ~TIM_SR_UIF;
-		GPIOA->ODR ^= (1 << 5);
+		GPIOA->ODR ^= (1 << 4);
 	}
 }
 
 extern "C" void EXTI0_1_IRQHandler(void) {
     if (EXTI->PR & (1 << 0)) {   //Check pending flag
         EXTI->PR |= (1 << 0);    //Clear it by writing 1
-        GPIOA->ODR ^= (1 << 4);
+        GPIOA->ODR ^= (1 << 5);
     }
 }
 
@@ -53,7 +54,7 @@ int main() {
 
     __enable_irq();
 
-    while (1) {
+    while (true) {
     	__WFI();
     }
 }

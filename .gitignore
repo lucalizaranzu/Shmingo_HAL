@@ -9,7 +9,10 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+build/
+
 # AWS User-specific
+.idea/
 .idea/**/aws.xml
 
 # Generated files
