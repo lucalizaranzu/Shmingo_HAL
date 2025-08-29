@@ -11,6 +11,8 @@ Timer::Timer(Timer_Key t) : timer(t), timer_reg(getTimerRegister(t)){
 
 void Timer::start() {
     timer_reg->CR1 |= TIM_CR1_CEN;
+    timer_reg->EGR |= TIM_EGR_UG; //load prescaler reg and ARR
+    enableInterrupt();
 }
 
 void Timer::stop() {
