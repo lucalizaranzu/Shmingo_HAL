@@ -4,10 +4,11 @@
 #include "SHAL_TIM_REG.h"
 #include "SHAL_TIM_CALLBACK.h"
 
-class Timer {
-public:
+#include <array>
 
-    explicit Timer(Timer_Key t);
+class Timer {
+    friend class TimerManager;
+public:
 
     //Starts the counter
     void start();
@@ -31,9 +32,25 @@ public:
 
 private:
 
+    explicit Timer(Timer_Key t);
+    Timer();
+
     Timer_Key timer;
     volatile TIM_TypeDef* timer_reg;
 
+};
+
+#define getTimer(timer_key) TimerManager::get(timer_key);
+
+//Manages all timers so user does not have to personally initialize
+class TimerManager{
+public:
+
+    static Timer& get(Timer_Key);
+    TimerManager() = delete;
+
+private:
+    inline static Timer timers[static_cast<int>(Timer_Key::NUM_TIMERS)] = {};
 };
 
 #endif

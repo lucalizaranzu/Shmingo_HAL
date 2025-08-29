@@ -3,10 +3,15 @@
 //
 
 #include "SHAL_TIM.h"
+#include <cassert>
 
 Timer::Timer(Timer_Key t) : timer(t), timer_reg(getTimerRegister(t)){
     RCC_Peripheral rcc = getTimerRCC(timer);
     *rcc.reg |= rcc.bitmask;
+}
+
+Timer::Timer() : timer(Timer_Key::S_TIM_INVALID), timer_reg(nullptr){
+
 }
 
 void Timer::start() {
@@ -33,3 +38,17 @@ void Timer::enableInterrupt() {
 }
 
 
+Timer &TimerManager::get(Timer_Key timer_key) {
+
+    //Ensure that we don't try to get invalid timers
+    assert(timer_key != Timer_Key::S_TIM_INVALID && timer_key != Timer_Key::NUM_TIMERS);
+
+    Timer& selected = timers[static_cast<int>(timer_key)];
+
+    //Timer queried is not initialized yet (defaults to invalid)
+    if(selected.timer == Timer_Key::S_TIM_INVALID){
+        timers[static_cast<int>(timer_key)] = Timer(timer_key); //Initialize timer
+    }
+
+    return timers[static_cast<int>(timer_key)];
+}

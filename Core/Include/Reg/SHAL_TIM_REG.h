@@ -2,7 +2,9 @@
 #define SHAL_TIM_REG_H
 
 #include <cstdint>
+#include <cassert>
 #include <stm32f072xb.h>
+
 
 enum class Bus {
     AHB,
@@ -25,7 +27,8 @@ enum class Timer_Key { //For STM32F072
     S_TIM15,
     S_TIM16,
     S_TIM17,
-    NUM_TIMERS
+    NUM_TIMERS,
+    S_TIM_INVALID
 };
 
 
@@ -39,10 +42,13 @@ constexpr RCC_Peripheral getTimerRCC(Timer_Key t) {
         case Timer_Key::S_TIM15: return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM15EN};
         case Timer_Key::S_TIM16: return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM16EN};
         case Timer_Key::S_TIM17: return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM17EN};
-        case Timer_Key::NUM_TIMERS: return {Bus::INVALID, nullptr, 0};;
+        case Timer_Key::NUM_TIMERS:
+        case Timer_Key::S_TIM_INVALID:
+            assert(false);
+            return {Bus::INVALID, nullptr, 0};; //Unreachable
     }
 
-    return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM1EN};
+    __builtin_unreachable();
 }
 
 //Get actual register value based on enum
@@ -55,9 +61,12 @@ constexpr volatile TIM_TypeDef* getTimerRegister(Timer_Key t) {
         case Timer_Key::S_TIM15:  return TIM15;
         case Timer_Key::S_TIM16:  return TIM16;
         case Timer_Key::S_TIM17:  return TIM17;
-        case Timer_Key::NUM_TIMERS: return nullptr;
+        case Timer_Key::NUM_TIMERS:
+        case Timer_Key::S_TIM_INVALID:
+            assert(false);
+            return nullptr; //Unreachable
     }
-    return TIM1;
+    __builtin_unreachable();
 }
 
 constexpr IRQn_Type getIRQn(Timer_Key t) {
@@ -69,9 +78,12 @@ constexpr IRQn_Type getIRQn(Timer_Key t) {
         case Timer_Key::S_TIM15: return TIM15_IRQn;
         case Timer_Key::S_TIM16: return TIM16_IRQn;
         case Timer_Key::S_TIM17: return TIM17_IRQn;
-        case Timer_Key::NUM_TIMERS: return TIM1_BRK_UP_TRG_COM_IRQn;
+        case Timer_Key::NUM_TIMERS:
+        case Timer_Key::S_TIM_INVALID:
+            assert(false);
+            return TIM1_BRK_UP_TRG_COM_IRQn; //Unreachable
     }
-    return TIM1_BRK_UP_TRG_COM_IRQn;
+    __builtin_unreachable();
 }
 
 
