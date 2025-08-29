@@ -24,7 +24,7 @@ int main() {
     timer2.start();
 
 
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN; // Enable SYSCFG clock (needed for EXTI)
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN; //Enable SYSCFG clock (needed for EXTI)
 
     GPIOA->MODER &= ~(0b11 << (4 * 2));
     GPIOA->MODER |= (0b1 << (4 * 2));

@@ -14,7 +14,7 @@ extern "C" void irq_handler(void) {                       \
         tim_reg->SR &= ~TIM_SR_UIF; /* clear flag */      \
         auto cb = timer_callbacks[static_cast<int>(key)]; \
         if (cb) cb();                                     \
-    };                                               \
+    };                                                    \
 };
 
 typedef void (*TimerCallback)(); //Typedef for callback function
