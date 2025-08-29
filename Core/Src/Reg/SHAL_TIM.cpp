@@ -2,7 +2,7 @@
 // Created by Luca on 8/28/2025.
 //
 
-#include "SHAL_TIM.h"
+#include "Core/Include/Timer/SHAL_TIM.h"
 #include <cassert>
 
 Timer::Timer(Timer_Key t) : timer(t), timer_reg(getTimerRegister(t)){
