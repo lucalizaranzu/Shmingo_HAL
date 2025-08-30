@@ -5,16 +5,7 @@
 #include <cassert>
 #include <stm32f072xb.h>
 
-
-enum class Bus {
-    AHB,
-    APB1,
-    APB2,
-    INVALID
-};
-
 struct RCC_Peripheral {
-    Bus bus;
     volatile uint32_t* reg;
     uint32_t bitmask;
 };
@@ -35,17 +26,17 @@ enum class Timer_Key { //For STM32F072
 //Get timer peripheral struct including bus register, enable mask, timer mask
 constexpr RCC_Peripheral getTimerRCC(Timer_Key t) {
     switch(t) {
-        case Timer_Key::S_TIM1:  return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM1EN};
-        case Timer_Key::S_TIM2:  return {Bus::APB1, &RCC->APB1ENR, RCC_APB1ENR_TIM2EN};
-        case Timer_Key::S_TIM3:  return {Bus::APB1, &RCC->APB1ENR, RCC_APB1ENR_TIM3EN};
-        case Timer_Key::S_TIM14: return {Bus::APB1, &RCC->APB1ENR, RCC_APB1ENR_TIM14EN};
-        case Timer_Key::S_TIM15: return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM15EN};
-        case Timer_Key::S_TIM16: return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM16EN};
-        case Timer_Key::S_TIM17: return {Bus::APB2, &RCC->APB2ENR, RCC_APB2ENR_TIM17EN};
+        case Timer_Key::S_TIM1:  return {&RCC->APB2ENR, RCC_APB2ENR_TIM1EN};
+        case Timer_Key::S_TIM2:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM2EN};
+        case Timer_Key::S_TIM3:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM3EN};
+        case Timer_Key::S_TIM14: return {&RCC->APB1ENR, RCC_APB1ENR_TIM14EN};
+        case Timer_Key::S_TIM15: return {&RCC->APB2ENR, RCC_APB2ENR_TIM15EN};
+        case Timer_Key::S_TIM16: return {&RCC->APB2ENR, RCC_APB2ENR_TIM16EN};
+        case Timer_Key::S_TIM17: return {&RCC->APB2ENR, RCC_APB2ENR_TIM17EN};
         case Timer_Key::NUM_TIMERS:
         case Timer_Key::S_TIM_INVALID:
             assert(false);
-            return {Bus::INVALID, nullptr, 0};; //Unreachable
+            return {nullptr, 0};; //Unreachable
     }
 
     __builtin_unreachable();

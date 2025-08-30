@@ -8,7 +8,7 @@
 #ifndef SHAL_H
 #define SHAL_H
 
-#include "Core/Include/Timer/SHAL_TIM.h"
+#include "SHAL_TIM.h"
 
 
 #endif
