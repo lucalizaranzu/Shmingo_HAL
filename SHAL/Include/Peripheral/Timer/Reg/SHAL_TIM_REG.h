@@ -4,6 +4,8 @@
 #include <cassert>
 #include <stm32f072xb.h>
 
+#include "SHAL_CORE.h"
+
 enum class Timer_Key { //For STM32F072
     S_TIM1,
     S_TIM2,
@@ -18,7 +20,7 @@ enum class Timer_Key { //For STM32F072
 
 
 //Get timer peripheral struct including bus register, enable mask, timer mask
-constexpr RCC_Peripheral getTimerRCC(Timer_Key t) {
+constexpr SHAL_Peripheral getTimerRCC(Timer_Key t) {
     switch(t) {
         case Timer_Key::S_TIM1:  return {&RCC->APB2ENR, RCC_APB2ENR_TIM1EN};
         case Timer_Key::S_TIM2:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM2EN};

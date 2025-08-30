@@ -29,14 +29,17 @@ set(MX_INCLUDE_DIRECTORIES
 
 set(PROJECT_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/Core/Include/Timer
-    ${CMAKE_CURRENT_SOURCE_DIR}/Core/Include/Timer/Reg
-    ${CMAKE_CURRENT_SOURCE_DIR}/Core/Include
+        SHAL/Include/Core/
+        SHAL/Include/Peripheral/Timer
+        SHAL/Include/Peripheral/Timer/Reg
+        SHAL/Include/Peripheral/GPIO
+        SHAL/Include/Peripheral/GPIO/Reg
+        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Include
 )
 
 file(GLOB_RECURSE PROJECT_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Core/*.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Core/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/*.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/*.cpp
 )
 
 add_executable(${EXECUTABLE}

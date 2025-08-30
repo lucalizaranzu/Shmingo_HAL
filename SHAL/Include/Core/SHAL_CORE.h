@@ -8,7 +8,7 @@
 #include <cstdint>
 
 
-struct RCC_Peripheral {
+struct SHAL_Peripheral {
     volatile uint32_t* reg;
     uint32_t bitmask;
 };
