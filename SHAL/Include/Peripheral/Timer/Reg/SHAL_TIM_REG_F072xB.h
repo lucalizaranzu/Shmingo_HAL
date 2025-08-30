@@ -1,3 +1,11 @@
+/**
+  ******************************************************************************
+  * @file    SHAL_TIM_REG.h
+  * @author  Luca Lizaranzu
+  * @brief   Defines universal macros and objects used across all STM32 families
+  ******************************************************************************
+  */
+
 #ifndef SHAL_TIM_REG_H
 #define SHAL_TIM_REG_H
 

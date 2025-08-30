@@ -1,7 +1,15 @@
+/**
+  ******************************************************************************
+  * @file    SHAL_TIM.h
+  * @author  Luca Lizaranzu
+  * @brief   Declarations of timer related objects
+  ******************************************************************************
+  */
+
 #ifndef SHAL_TIM_H
 #define SHAL_TIM_H
 
-#include "SHAL_TIM_REG.h"
+#include "SHAL_TIM_REG_F072xB.h"
 #include "SHAL_TIM_CALLBACK.h"
 
 #include <array>

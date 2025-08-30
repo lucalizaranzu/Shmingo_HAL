@@ -1,11 +1,16 @@
-//
-// Created by Luca on 8/28/2025.
-//
+/**
+  ******************************************************************************
+  * @file    SHAL.h
+  * @author  Luca Lizaranzu
+  * @brief   Utilities for creating and populating the timer IRQ callback table
+  * globally, see usage in SHAL_TIM.h. Created in use for singleton timer abstractions
+  ******************************************************************************
+  */
 
 #ifndef SHMINGO_HAL_SHAL_TIM_CALLBACK_H
 #define SHMINGO_HAL_SHAL_TIM_CALLBACK_H
 
-#include "SHAL_TIM_REG.h"
+#include "SHAL/Include/Core/SHAL_CORE.h"
 
 #define DEFINE_TIMER_IRQ(key, irq_handler)                \
 extern "C" void irq_handler(void) {                       \
