@@ -5,36 +5,36 @@
 #include "SHAL_TIM.h"
 #include <cassert>
 
-Timer::Timer(Timer_Key t) : timer(t), timer_reg(getTimerRegister(t)){
-    SHAL_Peripheral rcc = getTimerRCC(timer);
+Timer::Timer(Timer_Key t) : TIMER_KEY(t){
+    SHAL_Peripheral_Register rcc = getTimerRCC(TIMER_KEY);
     *rcc.reg |= (1 << rcc.offset);
 }
 
-Timer::Timer() : timer(Timer_Key::S_TIM_INVALID), timer_reg(nullptr){
+Timer::Timer() : TIMER_KEY(Timer_Key::S_TIM_INVALID){
 
 }
 
 void Timer::start() {
-    timer_reg->CR1 |= TIM_CR1_CEN;
-    timer_reg->EGR |= TIM_EGR_UG; //load prescaler reg and ARR
+    getTimerRegister(TIMER_KEY)->CR1 |= TIM_CR1_CEN;
+    getTimerRegister(TIMER_KEY)->EGR |= TIM_EGR_UG; //load prescaler reg and ARR
     enableInterrupt();
 }
 
 void Timer::stop() {
-    timer_reg->CR1 &= ~TIM_CR1_CEN;
+    getTimerRegister(TIMER_KEY)->CR1 &= ~TIM_CR1_CEN;
 }
 
 void Timer::setPrescaler(uint16_t presc) {
-    timer_reg->PSC = presc;
+    getTimerRegister(TIMER_KEY)->PSC = presc;
 }
 
 void Timer::setARR(uint16_t arr) {
-    timer_reg->ARR = arr;
+    getTimerRegister(TIMER_KEY)->ARR = arr;
 }
 
 void Timer::enableInterrupt() {
-    timer_reg->DIER |= TIM_DIER_UIE;
-    NVIC_EnableIRQ(getIRQn(timer));
+    getTimerRegister(TIMER_KEY)->DIER |= TIM_DIER_UIE;
+    NVIC_EnableIRQ(getIRQn(TIMER_KEY));
 }
 
 
@@ -46,8 +46,8 @@ Timer &TimerManager::get(Timer_Key timer_key) {
     Timer& selected = timers[static_cast<int>(timer_key)];
 
     //Timer queried is not initialized yet (defaults to invalid)
-    if(selected.timer == Timer_Key::S_TIM_INVALID){
-        timers[static_cast<int>(timer_key)] = Timer(timer_key); //Initialize timer
+    if(selected.TIMER_KEY == Timer_Key::S_TIM_INVALID){
+        timers[static_cast<int>(timer_key)] = Timer(timer_key); //Initialize TIMER_KEY
     }
 
     return timers[static_cast<int>(timer_key)];

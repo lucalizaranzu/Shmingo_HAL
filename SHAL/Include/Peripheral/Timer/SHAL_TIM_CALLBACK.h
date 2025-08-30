@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    SHAL.h
   * @author  Luca Lizaranzu
-  * @brief   Utilities for creating and populating the timer IRQ callback table
-  * globally, see usage in SHAL_TIM.h. Created in use for singleton timer abstractions
+  * @brief   Utilities for creating and populating the TIMER_KEY IRQ callback table
+  * globally, see usage in SHAL_TIM.h. Created in use for singleton TIMER_KEY abstractions
   ******************************************************************************
   */
 

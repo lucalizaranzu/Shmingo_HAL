@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    SHAL_TIM.h
   * @author  Luca Lizaranzu
-  * @brief   Declarations of timer related objects
+  * @brief   Declarations of TIMER_KEY related objects
   ******************************************************************************
   */
 
@@ -33,9 +33,9 @@ public:
     //Enable interrupts
     void enableInterrupt();
 
-    //Set timer IRQ callback function
+    //Set TIMER_KEY IRQ callback function
     void setCallbackFunc(TimerCallback callback){
-        registerTimerCallback(timer, callback);
+        registerTimerCallback(TIMER_KEY, callback);
     }
 
 private:
@@ -43,8 +43,7 @@ private:
     explicit Timer(Timer_Key t);
     Timer();
 
-    Timer_Key timer;
-    volatile TIM_TypeDef* timer_reg;
+    Timer_Key TIMER_KEY;
 
 };
 

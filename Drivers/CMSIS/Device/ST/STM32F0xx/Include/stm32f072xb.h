@@ -467,7 +467,7 @@ typedef struct
   __IO uint32_t CR;         /*!< RTC control register,                                      Address offset: 0x08 */
   __IO uint32_t ISR;        /*!< RTC initialization and status register,                    Address offset: 0x0C */
   __IO uint32_t PRER;       /*!< RTC prescaler register,                                    Address offset: 0x10 */
-  __IO uint32_t WUTR;       /*!< RTC wakeup timer register,                                 Address offset: 0x14 */
+  __IO uint32_t WUTR;       /*!< RTC wakeup TIMER_KEY register,                                 Address offset: 0x14 */
        uint32_t RESERVED1;  /*!< Reserved,                                                  Address offset: 0x18 */
   __IO uint32_t ALRMAR;     /*!< RTC alarm A register,                                      Address offset: 0x1C */
        uint32_t RESERVED2;  /*!< Reserved,                                                  Address offset: 0x20 */

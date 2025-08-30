@@ -29,8 +29,8 @@ enum class Timer_Key { //For STM32F072
 };
 
 
-//Get timer peripheral struct including bus register, enable mask, timer mask
-constexpr SHAL_Peripheral getTimerRCC(Timer_Key t) {
+//Get TIMER_KEY peripheral struct including bus register, enable mask, TIMER_KEY mask
+constexpr SHAL_Peripheral_Register getTimerRCC(Timer_Key t) {
     switch(t) {
         case Timer_Key::S_TIM1:  return {&RCC->APB2ENR, RCC_APB2ENR_TIM1EN_Pos};
         case Timer_Key::S_TIM2:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM2EN_Pos};
