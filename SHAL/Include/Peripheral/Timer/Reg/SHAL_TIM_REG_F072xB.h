@@ -18,6 +18,8 @@ enum class Timer_Key { //For STM32F072
     S_TIM1,
     S_TIM2,
     S_TIM3,
+    S_TIM6,
+    S_TIM7,
     S_TIM14,
     S_TIM15,
     S_TIM16,
@@ -30,13 +32,15 @@ enum class Timer_Key { //For STM32F072
 //Get timer peripheral struct including bus register, enable mask, timer mask
 constexpr SHAL_Peripheral getTimerRCC(Timer_Key t) {
     switch(t) {
-        case Timer_Key::S_TIM1:  return {&RCC->APB2ENR, RCC_APB2ENR_TIM1EN};
-        case Timer_Key::S_TIM2:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM2EN};
-        case Timer_Key::S_TIM3:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM3EN};
-        case Timer_Key::S_TIM14: return {&RCC->APB1ENR, RCC_APB1ENR_TIM14EN};
-        case Timer_Key::S_TIM15: return {&RCC->APB2ENR, RCC_APB2ENR_TIM15EN};
-        case Timer_Key::S_TIM16: return {&RCC->APB2ENR, RCC_APB2ENR_TIM16EN};
-        case Timer_Key::S_TIM17: return {&RCC->APB2ENR, RCC_APB2ENR_TIM17EN};
+        case Timer_Key::S_TIM1:  return {&RCC->APB2ENR, RCC_APB2ENR_TIM1EN_Pos};
+        case Timer_Key::S_TIM2:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM2EN_Pos};
+        case Timer_Key::S_TIM3:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM3EN_Pos};
+        case Timer_Key::S_TIM6:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM6EN_Pos};
+        case Timer_Key::S_TIM7:  return {&RCC->APB1ENR, RCC_APB1ENR_TIM7EN_Pos};
+        case Timer_Key::S_TIM14: return {&RCC->APB1ENR, RCC_APB1ENR_TIM14EN_Pos};
+        case Timer_Key::S_TIM15: return {&RCC->APB2ENR, RCC_APB2ENR_TIM15EN_Pos};
+        case Timer_Key::S_TIM16: return {&RCC->APB2ENR, RCC_APB2ENR_TIM16EN_Pos};
+        case Timer_Key::S_TIM17: return {&RCC->APB2ENR, RCC_APB2ENR_TIM17EN_Pos};
         case Timer_Key::NUM_TIMERS:
         case Timer_Key::S_TIM_INVALID:
             assert(false);
@@ -52,6 +56,8 @@ constexpr volatile TIM_TypeDef* getTimerRegister(Timer_Key t) {
         case Timer_Key::S_TIM1:  return TIM1;
         case Timer_Key::S_TIM2:  return TIM2;
         case Timer_Key::S_TIM3:  return TIM3;
+        case Timer_Key::S_TIM6:  return TIM6;
+        case Timer_Key::S_TIM7:  return TIM7;
         case Timer_Key::S_TIM14:  return TIM14;
         case Timer_Key::S_TIM15:  return TIM15;
         case Timer_Key::S_TIM16:  return TIM16;
@@ -69,6 +75,8 @@ constexpr IRQn_Type getIRQn(Timer_Key t) {
         case Timer_Key::S_TIM1:  return TIM1_BRK_UP_TRG_COM_IRQn;
         case Timer_Key::S_TIM2:  return TIM2_IRQn;
         case Timer_Key::S_TIM3:  return TIM3_IRQn;
+        case Timer_Key::S_TIM6:  return TIM6_DAC_IRQn;
+        case Timer_Key::S_TIM7:  return TIM7_IRQn;
         case Timer_Key::S_TIM14: return TIM14_IRQn;
         case Timer_Key::S_TIM15: return TIM15_IRQn;
         case Timer_Key::S_TIM16: return TIM16_IRQn;

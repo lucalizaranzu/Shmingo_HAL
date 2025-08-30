@@ -15,7 +15,7 @@
 
 struct SHAL_Peripheral {
     volatile uint32_t* reg;
-    uint32_t bitmask;
+    unsigned long offset;
 };
 
 

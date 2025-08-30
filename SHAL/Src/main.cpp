@@ -19,7 +19,7 @@ int main() {
     Timer timer2 = getTimer(Timer_Key::S_TIM2);
 
     timer2.setPrescaler(8000 - 1);
-    timer2.setARR(500 - 1);
+    timer2.setARR(1500 - 1);
     timer2.setCallbackFunc(tim2Handler);
     timer2.start();
 

@@ -7,7 +7,7 @@
 
 Timer::Timer(Timer_Key t) : timer(t), timer_reg(getTimerRegister(t)){
     SHAL_Peripheral rcc = getTimerRCC(timer);
-    *rcc.reg |= rcc.bitmask;
+    *rcc.reg |= (1 << rcc.offset);
 }
 
 Timer::Timer() : timer(Timer_Key::S_TIM_INVALID), timer_reg(nullptr){
