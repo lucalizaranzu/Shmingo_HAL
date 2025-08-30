@@ -1,14 +1,8 @@
 #ifndef SHAL_TIM_REG_H
 #define SHAL_TIM_REG_H
 
-#include <cstdint>
 #include <cassert>
 #include <stm32f072xb.h>
-
-struct RCC_Peripheral {
-    volatile uint32_t* reg;
-    uint32_t bitmask;
-};
 
 enum class Timer_Key { //For STM32F072
     S_TIM1,
