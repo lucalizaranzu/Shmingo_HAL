@@ -18,19 +18,7 @@ enum class PinMode {
     INVALID
 };
 
-unsigned long getPinMode(PinMode mode){
-    switch(mode){
-        case PinMode::INPUT_MODE:
-            return 0b00;
-        case PinMode::OUTPUT_MODE:
-            return 0b01;
-        case PinMode::ALTERNATE_FUNCTION_MODE:
-            return 0b10;
-        case PinMode::ANALOG_MODE:
-            return 0b11;
-    }
-}
-
+unsigned long getPinMode(PinMode mode);
 
 //Abstraction of GPIO registers
 class GPIO{
@@ -65,12 +53,12 @@ class GPIOManager{
 
 public:
 
-    static GPIO& get(GPIO_Key, PinMode pinMode);
+    static GPIO* get(GPIO_Key, PinMode pinMode);
     GPIOManager() = delete;
 
 private:
 
-inline static GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {};
+inline static GPIO* m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{nullptr}};
 
 };
 

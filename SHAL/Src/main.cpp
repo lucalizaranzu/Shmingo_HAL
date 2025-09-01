@@ -1,22 +1,27 @@
 #include "SHAL.h"
 #include "stm32f0xx.h"
 
+GPIO* blueLED;
+GPIO* greenLED;
+
 extern "C" void EXTI0_1_IRQHandler(void) {
     if (EXTI->PR & (1 << 0)) {   //Check pending flag
         EXTI->PR |= (1 << 0);    //Clear it by writing 1
-        GPIOA->ODR ^= (1 << 5);
+        blueLED->toggle();
     }
 }
 
 void tim2Handler(){
-    GPIOA->ODR ^= (1 << 4);
+    greenLED->toggle();
 }
 
 int main() {
-    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
 
     Timer timer2 = getTimer(Timer_Key::S_TIM2);
+
+    blueLED = initGPIO(GPIO_Key::A4, PinMode::OUTPUT_MODE);
+    greenLED = initGPIO(GPIO_Key::A5, PinMode::OUTPUT_MODE);
 
     timer2.setPrescaler(8000 - 1);
     timer2.setARR(1500 - 1);
@@ -25,12 +30,6 @@ int main() {
 
 
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN; //Enable SYSCFG clock (needed for EXTI)
-
-    GPIOA->MODER &= ~(0b11 << (4 * 2));
-    GPIOA->MODER |= (0b1 << (4 * 2));
-
-    GPIOA->MODER &= ~(0x3 << (5 * 2));
-    GPIOA->MODER |=  (0x1 << (5 * 2));
 
     GPIOB->MODER &= ~(0x3 << (0 * 2));
     GPIOB->MODER |=  (0x0 << (0 * 2));
