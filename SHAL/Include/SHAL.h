@@ -9,6 +9,6 @@
 #define SHAL_H
 
 #include "SHAL_TIM.h"
-
+#include "SHAL_GPIO.h"
 
 #endif

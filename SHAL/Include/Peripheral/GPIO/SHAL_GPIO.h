@@ -11,17 +11,28 @@
 #include "SHAL_GPIO_REG_F072xB.h"
 
 enum class PinMode {
-    INPUT_MODE = 0b00,
-    OUTPUT_MODE = 0b01,
-    ALTERNATE_FUNCTION_MODE = 0b10,
-    ANALOG_MODE = 0b11
+    INPUT_MODE,
+    OUTPUT_MODE,
+    ALTERNATE_FUNCTION_MODE,
+    ANALOG_MODE,
+    INVALID
 };
 
-enum class PinValue {
-    HI = 1,
-    LOW = 0,
-};
+unsigned long getPinMode(PinMode mode){
+    switch(mode){
+        case PinMode::INPUT_MODE:
+            return 0b00;
+        case PinMode::OUTPUT_MODE:
+            return 0b01;
+        case PinMode::ALTERNATE_FUNCTION_MODE:
+            return 0b10;
+        case PinMode::ANALOG_MODE:
+            return 0b11;
+    }
+}
 
+
+//Abstraction of GPIO registers
 class GPIO{
 
 public:
@@ -36,10 +47,31 @@ private:
 
     friend class GPIOManager;
 
-    explicit GPIO(GPIO_Key key);
+    explicit GPIO(GPIO_Key key, PinMode pinMode);
     GPIO();
 
-    GPIO_Key GPIO_KEY;
+    GPIO_Key m_GPIO_KEY = GPIO_Key::INVALID;
+    PinMode m_pinMode = PinMode::INVALID;
+
+    GPIO_TypeDef* p_GPIORegister = nullptr;
+    unsigned long m_offset = 0;
+};
+
+
+#define initGPIO(GPIO_KEY, PIN_MODE) GPIOManager::get(GPIO_KEY, PIN_MODE)
+
+//Manages instances of GPIO objects
+class GPIOManager{
+
+public:
+
+    static GPIO& get(GPIO_Key, PinMode pinMode);
+    GPIOManager() = delete;
+
+private:
+
+inline static GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {};
+
 };
 
 #endif //SHMINGO_HAL_SHAL_GPIO_H

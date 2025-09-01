@@ -47,7 +47,8 @@ private:
 
 };
 
-#define getTimer(timer_key) TimerManager::get(timer_key);
+
+#define getTimer(timer_key) TimerManager::get(timer_key)
 
 //Manages all timers so user does not have to personally initialize
 class TimerManager{
