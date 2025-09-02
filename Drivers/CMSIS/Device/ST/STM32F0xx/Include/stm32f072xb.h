@@ -7875,7 +7875,7 @@ typedef struct
 #define RCC_AHBENR_GPIOEEN                       RCC_AHBENR_GPIOEEN_Msk        /*!< GPIOE clock enable */
 #define RCC_AHBENR_GPIOFEN_Pos                   (22U)
 #define RCC_AHBENR_GPIOFEN_Msk                   (0x1UL << RCC_AHBENR_GPIOFEN_Pos) /*!< 0x00400000 */
-#define RCC_AHBENR_GPIOFEN                       RCC_AHBENR_GPIOFEN_Msk        /*!< GPIOF clock enable */RCC_AHBENR_GPIOAEN
+#define RCC_AHBENR_GPIOFEN                       RCC_AHBENR_GPIOFEN_Msk        /*!< GPIOF clock enable */
 #define RCC_AHBENR_TSCEN_Pos                     (24U)
 #define RCC_AHBENR_TSCEN_Msk                     (0x1UL << RCC_AHBENR_TSCEN_Pos) /*!< 0x01000000 */
 #define RCC_AHBENR_TSCEN                         RCC_AHBENR_TSCEN_Msk          /*!< TS controller clock enable */

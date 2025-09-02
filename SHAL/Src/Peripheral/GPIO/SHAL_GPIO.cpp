@@ -25,47 +25,50 @@ unsigned long getPinMode(PinMode mode){
 
 
 
-GPIO::GPIO(){
+GPIO::GPIO() : m_GPIO_KEY(GPIO_Key::INVALID){
     //Do not initialize anything
 }
 
-GPIO::GPIO(GPIO_Key key, PinMode pinMode) : m_GPIO_KEY(key),
-                                            p_GPIORegister(static_cast<GPIO_TypeDef*>(getGPIORegister(key).registers)),
-                                            m_offset(getGPIORegister(key).global_offset){
+GPIO::GPIO(GPIO_Key key, PinMode pinMode) : m_GPIO_KEY(key) {
+
+    SHAL_Peripheral gpioPeripheral = getGPIORegister(key);
+
+    auto gpioRegister = static_cast<GPIO_TypeDef*>(gpioPeripheral.registers);
+    unsigned long registerOffset = gpioPeripheral.global_offset;
 
     volatile unsigned long* gpioEnable = getGPIORCCEnable(key).reg;
     unsigned long gpioOffset = getGPIORCCEnable(key).offset;
 
     *gpioEnable |= (1 << gpioOffset); //Set enable flag
 
-    p_GPIORegister->MODER &= ~(0b11 << (2 * m_offset)); //Clear any previous mode
-    p_GPIORegister->MODER |= (getPinMode(pinMode) << (2 * m_offset)); //Set mode based on pinmode bit structure
+    gpioRegister->MODER &= ~(0b11 << (2 * registerOffset)); //Clear any previous mode
+    gpioRegister->MODER |= (getPinMode(pinMode) << (2 * registerOffset)); //Set mode based on pinmode bit structure
 }
 
 void GPIO::setLow() {
-    p_GPIORegister->ODR &= ~(1 << m_offset);
+    auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    static_cast<GPIO_TypeDef*>(gpioPeripheral.registers)->ODR &= ~(1 << gpioPeripheral.global_offset);
 }
 
 void GPIO::setHigh() {
-    p_GPIORegister->ODR |= (1 << m_offset);
-
+    auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    static_cast<GPIO_TypeDef*>(gpioPeripheral.registers)->ODR |= (1 << gpioPeripheral.global_offset);
 }
 
 void GPIO::toggle() {
-    p_GPIORegister->ODR ^= (1 << m_offset);
+    auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    static_cast<GPIO_TypeDef*>(gpioPeripheral.registers)->ODR ^= (1 << gpioPeripheral.global_offset);
 }
 
 
 
-GPIO* GPIOManager::get(GPIO_Key key, PinMode pinMode) {
+GPIO& GPIOManager::get(GPIO_Key key, PinMode pinMode) {
 
     unsigned int gpioPort = getGPIOPortNumber(key);
     unsigned long gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
 
-    GPIO curr = *m_gpios[gpioPort][gpioPin];
-
-    if(curr.m_GPIO_KEY == GPIO_Key::INVALID || curr.m_pinMode != pinMode){
-        *m_gpios[gpioPort][gpioPin] = GPIO(key,pinMode);
+    if (m_gpios[gpioPort][gpioPin].m_GPIO_KEY == GPIO_Key::INVALID){
+        m_gpios[gpioPort][gpioPin] = GPIO(key,pinMode);
     }
 
     return m_gpios[gpioPort][gpioPin];

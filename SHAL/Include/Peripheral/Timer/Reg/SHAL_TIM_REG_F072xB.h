@@ -14,7 +14,7 @@
 
 #include "SHAL_CORE.h"
 
-enum class Timer_Key { //For STM32F072
+enum class Timer_Key : uint8_t { //For STM32F072
     S_TIM1,
     S_TIM2,
     S_TIM3,

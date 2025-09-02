@@ -20,7 +20,7 @@
 
 
 //Build enum map of available GPIO pins
-enum class GPIO_Key {
+enum class GPIO_Key : uint8_t {
     #define X(key) key,
         AVAILABLE_GPIO
     #undef X

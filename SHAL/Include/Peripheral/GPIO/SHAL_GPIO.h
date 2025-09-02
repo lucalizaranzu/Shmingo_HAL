@@ -10,7 +10,7 @@
 #include <cassert>
 #include "SHAL_GPIO_REG_F072xB.h"
 
-enum class PinMode {
+enum class PinMode : uint8_t{
     INPUT_MODE,
     OUTPUT_MODE,
     ALTERNATE_FUNCTION_MODE,
@@ -39,10 +39,7 @@ private:
     GPIO();
 
     GPIO_Key m_GPIO_KEY = GPIO_Key::INVALID;
-    PinMode m_pinMode = PinMode::INVALID;
 
-    GPIO_TypeDef* p_GPIORegister = nullptr;
-    unsigned long m_offset = 0;
 };
 
 
@@ -53,12 +50,12 @@ class GPIOManager{
 
 public:
 
-    static GPIO* get(GPIO_Key, PinMode pinMode);
+    static GPIO& get(GPIO_Key, PinMode pinMode);
     GPIOManager() = delete;
 
 private:
 
-inline static GPIO* m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{nullptr}};
+inline static GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
 
 };
 
