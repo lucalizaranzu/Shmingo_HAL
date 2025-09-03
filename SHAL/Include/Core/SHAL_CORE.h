@@ -23,6 +23,10 @@ struct SHAL_Peripheral_Register {
     unsigned long offset;
 };
 
+struct SHAL_EXTIO_Register{
+    volatile uint32_t* EXT_ICR;
+    unsigned long mask;
+};
 
 //---------------------------------------------------------
 

@@ -29,7 +29,7 @@ int main() {
     timer2.setCallbackFunc(tim2Handler);
     timer2.start();
 
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN; //Enable SYSCFG clock (needed for EXTI)
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //Enable SYSCFG clock (needed for EXTI)
 
     SYSCFG->EXTICR[0] &= ~SYSCFG_EXTICR1_EXTI0; //Clear EXTI0 mapping
     SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PB; //Map PA0 -> EXTI0

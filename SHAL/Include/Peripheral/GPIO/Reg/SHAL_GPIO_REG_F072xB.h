@@ -87,6 +87,65 @@ constexpr SHAL_Peripheral getGPIORegister(const GPIO_Key g){
     __builtin_unreachable();
 }
 
+constexpr SHAL_EXTIO_Register getGPIOEXTICR(const GPIO_Key g){
+    switch(g) {
+        case GPIO_Key::A0: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI0_PA};
+        case GPIO_Key::A1: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI1_PA};
+        case GPIO_Key::A2: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI2_PA};
+        case GPIO_Key::A3: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI3_PA};
+        case GPIO_Key::A4: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI4_PA};
+        case GPIO_Key::A5: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI5_PA};
+        case GPIO_Key::A6: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI6_PA};
+        case GPIO_Key::A7: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI7_PA};
+        case GPIO_Key::A8: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI8_PA};
+        case GPIO_Key::A9: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI9_PA};
+        case GPIO_Key::A10: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI10_PA};
+        case GPIO_Key::A11: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI11_PA};
+        case GPIO_Key::A12: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI12_PA};
+        case GPIO_Key::A13: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI13_PA};
+        case GPIO_Key::A14: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI14_PA};
+        case GPIO_Key::A15: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI15_PA};
+        case GPIO_Key::B0: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI0_PB};
+        case GPIO_Key::B1: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI1_PB};
+        case GPIO_Key::B2: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI2_PB};
+        case GPIO_Key::B3: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI3_PB};
+        case GPIO_Key::B4: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI4_PB};
+        case GPIO_Key::B5: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI5_PB};
+        case GPIO_Key::B6: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI6_PB};
+        case GPIO_Key::B7: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI7_PB};
+        case GPIO_Key::B8: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI8_PB};
+        case GPIO_Key::B9: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI9_PB};
+        case GPIO_Key::B10: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI10_PB};
+        case GPIO_Key::B11: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI11_PB};
+        case GPIO_Key::B12: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI12_PB};
+        case GPIO_Key::B13: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI13_PB};
+        case GPIO_Key::B14: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI14_PB};
+        case GPIO_Key::B15: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI15_PB};
+        case GPIO_Key::C0: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI0_PC};
+        case GPIO_Key::C1: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI1_PC};
+        case GPIO_Key::C2: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI2_PC};
+        case GPIO_Key::C3: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI3_PC};
+        case GPIO_Key::C4: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI4_PC};
+        case GPIO_Key::C5: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI5_PC};
+        case GPIO_Key::C6: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI6_PC};
+        case GPIO_Key::C7: return {&SYSCFG->EXTICR[1],SYSCFG_EXTICR2_EXTI7_PC};
+        case GPIO_Key::C8: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI8_PC};
+        case GPIO_Key::C9: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI9_PC};
+        case GPIO_Key::C10: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI10_PC};
+        case GPIO_Key::C11: return {&SYSCFG->EXTICR[2],SYSCFG_EXTICR3_EXTI11_PC};
+        case GPIO_Key::C12: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI12_PC};
+        case GPIO_Key::C13: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI13_PC};
+        case GPIO_Key::C14: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI14_PC};
+        case GPIO_Key::C15: return {&SYSCFG->EXTICR[3],SYSCFG_EXTICR4_EXTI15_PC};
+
+        case GPIO_Key::INVALID:
+        case GPIO_Key::NUM_GPIO:
+            assert(false);
+            return SHAL_EXTIO_Register(nullptr,0); //Unreachable
+    }
+    __builtin_unreachable();
+}
+
 constexpr SHAL_Peripheral_Register getGPIORCCEnable(const GPIO_Key g){
     switch(g) {
         case GPIO_Key::A0:
