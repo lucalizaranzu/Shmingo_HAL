@@ -73,3 +73,20 @@ GPIO& GPIOManager::get(GPIO_Key key, PinMode pinMode) {
 
     return m_gpios[gpioPort][gpioPin];
 }
+
+void GPIOManager::getInterruptGPIO(GPIO_Key key, TriggerMode mode, EXTICallback callback) {
+    unsigned int gpioPort = getGPIOPortNumber(key);
+    unsigned long gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
+
+    if (m_gpios[gpioPort][gpioPin].m_GPIO_KEY == GPIO_Key::INVALID){
+        m_gpios[gpioPort][gpioPin] = GPIO(key,PinMode::INPUT_MODE); //Hardcode input mode for interrupt
+    }
+
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //TODO check if this is different across STM32 models, enable EXT
+
+    SHAL_EXTIO_Register EXTILineEnable = getGPIOEXTICR(key);
+
+    *EXTILineEnable.EXT_ICR |= EXTILineEnable.mask; //Set bits to enable correct port on correct line
+
+
+}

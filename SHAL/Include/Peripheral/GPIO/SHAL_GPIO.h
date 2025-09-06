@@ -9,6 +9,9 @@
 
 #include <cassert>
 #include "SHAL_GPIO_REG_F072xB.h"
+#include "SHAL_EXTI_CALLBACK.h"
+
+
 
 enum class PinMode : uint8_t{
     INPUT_MODE,
@@ -17,8 +20,20 @@ enum class PinMode : uint8_t{
     ANALOG_MODE,
     INVALID
 };
-
 unsigned long getPinMode(PinMode mode);
+
+enum class TriggerMode : uint8_t{
+    RISING_EDGE,
+    FALLING_EDGE,
+    RISING_FALLING_EDGE
+};
+
+unsigned long getTriggerMode(TriggerMode mode);
+
+
+
+
+
 
 //Abstraction of GPIO registers
 class GPIO{
@@ -42,8 +57,11 @@ private:
 
 };
 
-
+//Init GPIO for normal use
 #define initGPIO(GPIO_KEY, PIN_MODE) GPIOManager::get(GPIO_KEY, PIN_MODE)
+
+//Init GPIO for use as an external interrupt
+#define useGPIOAsInterrupt(GPIO_KEY, Trigger_Mode, Callback) GPIOManager::getInterruptGPIO(GPIO_KEY, Trigger_Mode, Callback)
 
 //Manages instances of GPIO objects
 class GPIOManager{
@@ -51,6 +69,9 @@ class GPIOManager{
 public:
 
     static GPIO& get(GPIO_Key, PinMode pinMode);
+
+    static void getInterruptGPIO(GPIO_Key key, TriggerMode mode, EXTICallback callback);
+
     GPIOManager() = delete;
 
 private:
@@ -58,5 +79,6 @@ private:
 inline static GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
 
 };
+
 
 #endif //SHMINGO_HAL_SHAL_GPIO_H

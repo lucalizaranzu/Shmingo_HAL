@@ -12,6 +12,7 @@
 
 #define AVAILABLE_PORTS 3
 #define PINS_PER_PORT 16
+#define NUM_EXTI_LINES 16
 
 #define AVAILABLE_GPIO \
     X(A0) X(A1) X(A2) X(A3) X(A4) X(A5) X(A6) X(A7) X(A8) X(A9) X(A10) X(A11) X(A12) X(A13) X(A14) X(A15) \
