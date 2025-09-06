@@ -3,7 +3,7 @@
 //
 
 #include "SHAL_GPIO.h"
-
+#include "SHAL_EXTI_CALLBACK.h"
 
 unsigned long getPinMode(PinMode mode){
     switch(mode){
@@ -74,7 +74,7 @@ GPIO& GPIOManager::get(GPIO_Key key, PinMode pinMode) {
     return m_gpios[gpioPort][gpioPin];
 }
 
-void GPIOManager::getInterruptGPIO(GPIO_Key key, TriggerMode mode, EXTICallback callback) {
+void GPIOManager::getInterruptGPIO(GPIO_Key key, TriggerMode triggerMode, EXTICallback callback) {
     unsigned int gpioPort = getGPIOPortNumber(key);
     unsigned long gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
 
@@ -82,11 +82,34 @@ void GPIOManager::getInterruptGPIO(GPIO_Key key, TriggerMode mode, EXTICallback 
         m_gpios[gpioPort][gpioPin] = GPIO(key,PinMode::INPUT_MODE); //Hardcode input mode for interrupt
     }
 
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //TODO check if this is different across STM32 models, enable EXT
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //Enable EXT, TODO check if this is different across STM32 models
+    NVIC_EnableIRQ(getGPIOEXTICR(key).IRQN); //Enable IRQN for pin
+    EXTI->IMR |= (1 << gpioPin); //Enable correct EXTI line
 
     SHAL_EXTIO_Register EXTILineEnable = getGPIOEXTICR(key);
+    *EXTILineEnable.EXT_ICR |= EXTILineEnable.mask; //Set bits to enable correct port on correct line TODO Find way to clear bits before
 
-    *EXTILineEnable.EXT_ICR |= EXTILineEnable.mask; //Set bits to enable correct port on correct line
 
+    uint32_t rising_mask = 0x00;
+    uint32_t falling_mask = 0x00;
 
+    //Set rising and falling edge triggers based on pin offset (enabled EXTI line)
+    switch(triggerMode){
+        case TriggerMode::RISING_EDGE:
+            rising_mask = 1 << gpioPin;
+            break;
+        case TriggerMode::FALLING_EDGE:
+            falling_mask = 1 << gpioPin;
+            break;
+        case TriggerMode::RISING_FALLING_EDGE:
+            falling_mask = 1 << gpioPin;
+            falling_mask = 1 << gpioPin;
+    }
+
+    //Set triggers
+    EXTI->RTSR |= rising_mask;
+    EXTI->FTSR |= falling_mask;
+
+    //Set callback
+    registerEXTICallback(key,callback);
 }

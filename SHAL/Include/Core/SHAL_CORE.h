@@ -26,6 +26,7 @@ struct SHAL_Peripheral_Register {
 struct SHAL_EXTIO_Register{
     volatile uint32_t* EXT_ICR;
     unsigned long mask;
+    IRQn_Type IRQN;
 };
 
 //---------------------------------------------------------

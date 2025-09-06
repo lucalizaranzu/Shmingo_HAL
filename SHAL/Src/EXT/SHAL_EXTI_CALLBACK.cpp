@@ -33,3 +33,8 @@ DEFINE_MULTI_EXTI_IRQ(4,15);
  #error "Please select first the target STM32F0xx device used in your application (in stm32f0xx.h file)"
 #endif
 
+
+//Link function to EXTI line
+void registerEXTICallback(GPIO_Key key, EXTICallback callback){
+    EXTI_callbacks[getGPIORegister(key).global_offset] = callback;
+}
