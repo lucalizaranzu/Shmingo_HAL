@@ -6,7 +6,7 @@
 #define SHMINGO_HAL_SHAL_UART_TYPES_H
 
 #include "SHAL_CORE.h"
-#include "SHAL_GPIO_REG.h"
+#include "SHAL_GPIO.h"
 
 enum class AF_Mask : uint8_t{
     AF0 = 0x00,
@@ -30,8 +30,8 @@ struct SHAL_UART_Pair{
 };
 
 struct SHAL_UART_ENABLE_REG{
-    volatile uint32_t* USART_EN_Reg;
-    uint32_t USART_EN_Mask;
+    volatile uint32_t* reg;
+    uint32_t mask;
 };
 
 #endif //SHMINGO_HAL_SHAL_UART_TYPES_H

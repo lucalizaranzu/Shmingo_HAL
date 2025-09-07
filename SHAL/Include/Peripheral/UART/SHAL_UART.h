@@ -27,7 +27,7 @@ private:
     UART() = default; //Initializer for array
 
     //Creates a UART based on a pair of two valid U(S)ART pins
-    explicit UART(const UART_Pair pair);
+    explicit UART(UART_Pair pair);
 
     UART_Pair m_UARTPair = UART_Pair::INVALID;
 

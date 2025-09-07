@@ -9,7 +9,6 @@
 #include <cassert>
 
 #include "SHAL_UART_TYPES.h"
-#include "SHAL_GPIO_REG.h"
 
 #define NUM_USART_LINES 4
 
