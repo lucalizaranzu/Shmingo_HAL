@@ -34,6 +34,7 @@ set(PROJECT_INCLUDE_DIRECTORIES
         SHAL/Include/Peripheral/Timer/Reg
         SHAL/Include/Peripheral/GPIO
         SHAL/Include/Peripheral/GPIO/Reg
+        SHAL/Include/Peripheral/GPIO/UART
         SHAL/Include/Peripheral/EXT/
         ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Include
 )

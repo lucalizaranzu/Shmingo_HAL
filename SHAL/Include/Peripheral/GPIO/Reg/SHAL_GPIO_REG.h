@@ -5,34 +5,43 @@
 #ifndef SHMINGO_HAL_SHAL_GPIO_REG_H
 #define SHMINGO_HAL_SHAL_GPIO_REG_H
 
-#include "SHAL_CORE.h"
+#if defined(STM32F030x6)
+#include "stm32f030x6.h"
+#elif defined(STM32F030x8)
+#include "stm32f030x8.h"
+#elif defined(STM32F031x6)
+#include "stm32f031x6.h"
+#elif defined(STM32F038xx)
+#include "stm32f038xx.h"
+#elif defined(STM32F042x6)
+#include "stm32f042x6.h"
+#elif defined(STM32F048xx)
+#include "stm32f048xx.h"
+#elif defined(STM32F051x8)
+#include "stm32f051x8.h"
+#elif defined(STM32F058xx)
+#include "stm32f058xx.h"
+#elif defined(STM32F070x6)
+#include "stm32f070x6.h"
+#elif defined(STM32F070xB)
+#include "stm32f070xb.h"
+#elif defined(STM32F071xB)
+#include "stm32f071xb.h"
+#elif defined(STM32F072xB)
+#include "stm32f072xb.h"
+#include "SHAL_GPIO_REG_F072xB.h"
+#elif defined(STM32F078xx)
+#include "stm32f078xx.h"
+#elif defined(STM32F091xC)
+  #include "stm32f091xc.h"
+#elif defined(STM32F098xx)
+  #include "stm32f098xx.h"
+#elif defined(STM32F030xC)
+  #include "stm32f030xc.h"
+#else
+ #error "Please select first the target STM32F0xx device used in your application (in stm32f0xx.h file)"
+#endif
 
-struct SHAL_EXTIO_Register{
-    volatile uint32_t* EXT_ICR;
-    uint32_t mask;
-    IRQn_Type IRQN;
-};
-
-enum class AF_Mask : uint8_t{
-    AF0 = 0x00,
-    AF1 = 0x01,
-    AF2 = 0x02,
-    AF3 = 0x03,
-    AF4 = 0x04,
-    AF5 = 0x05,
-    AF6 = 0x06,
-    AF7 = 0x07
-};
-
-//Represents a pair of pins usable for USART Tx + Rx in combination, and their alternate function mapping
-struct SHAL_UART_Pair{
-    uint8_t TxPinNumber;
-    uint8_t RxPinNumber;
-    volatile uint32_t* TxReg;
-    volatile uint32_t* RxReg;
-    AF_Mask TxMask;
-    AF_Mask RxMask;
-};
 
 
 

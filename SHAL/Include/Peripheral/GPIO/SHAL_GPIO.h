@@ -5,10 +5,10 @@
 #ifndef SHMINGO_HAL_SHAL_GPIO_H
 #define SHMINGO_HAL_SHAL_GPIO_H
 
-#include "SHAL_CORE.h"
+#include "SHAL_GPIO_REG.h"
 
 #include <cassert>
-#include "SHAL_GPIO_REG_F072xB.h"
+
 #include "SHAL_EXTI_CALLBACK.h"
 
 
@@ -27,13 +27,6 @@ enum class TriggerMode : uint8_t{
     FALLING_EDGE,
     RISING_FALLING_EDGE
 };
-
-unsigned long getTriggerMode(TriggerMode mode);
-
-
-
-
-
 
 //Abstraction of GPIO registers
 class GPIO{
