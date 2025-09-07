@@ -28,7 +28,6 @@
 #elif defined(STM32F071xB)
 #include "stm32f071xb.h"
 #elif defined(STM32F072xB)
-#include "stm32f072xb.h"
 #include "SHAL_GPIO_REG_F072xB.h"
 #elif defined(STM32F078xx)
 #include "stm32f078xx.h"
