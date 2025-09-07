@@ -55,7 +55,7 @@ void GPIO::setHigh() {
     static_cast<GPIO_TypeDef*>(gpioPeripheral.registers)->ODR |= (1 << gpioPeripheral.global_offset);
 }
 
-void GPIO::toggle() {
+void GPIO::toggle() volatile {
     auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
     static_cast<GPIO_TypeDef*>(gpioPeripheral.registers)->ODR ^= (1 << gpioPeripheral.global_offset);
 }

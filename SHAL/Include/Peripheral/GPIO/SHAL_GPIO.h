@@ -40,7 +40,7 @@ class GPIO{
 
 public:
 
-    void toggle();
+    void toggle() volatile;
 
     //TODO replace stupid offset hack from APB
     void setHigh();

@@ -2,8 +2,8 @@
 #include "stm32f0xx.h"
 
 
-GPIO* blueLED = nullptr;
-GPIO* greenLED = nullptr;
+volatile GPIO* blueLED = nullptr;
+volatile GPIO* greenLED = nullptr;
 
 extern "C" void EXTI0_1_IRQHandler(void) {
     if (EXTI->PR & (1 << 0)) {   //Check pending flag
