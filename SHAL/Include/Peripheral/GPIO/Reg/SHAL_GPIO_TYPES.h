@@ -28,6 +28,7 @@ enum class AF_Mask : uint8_t{
 //Represents a pair of pins usable for USART Tx + Rx in combination, and their alternate function mapping
 struct SHAL_UART_Pair{
 
+    USART_TypeDef* USARTReg;
     uint8_t TxPinNumber;
     uint8_t RxPinNumber;
     volatile uint32_t* TxReg;

@@ -49,45 +49,20 @@ enum class UART_Pair : uint8_t{
     Tx4C10_Rx4C11
 };
 
-enum class USART {
-    USART_1,
-    USART_2,
-    USART_3,
-    USART_4
-};
 
 constexpr SHAL_UART_Pair getUARTPair(const UART_Pair pair){
     switch(pair){
-        case UART_Pair::Tx1A9_Rx1A10: return {9,10,&GPIOA->AFR[1],&GPIOA->AFR[1],AF_Mask::AF1,AF_Mask::AF1};
-        case UART_Pair::Tx1B6_Rx1B7: return {6,7,&GPIOB->AFR[0],&GPIOB->AFR[0],AF_Mask::AF0,AF_Mask::AF0};
-        case UART_Pair::Tx2A2_Rx2A3: return {2,3,&GPIOA->AFR[0],&GPIOA->AFR[0],AF_Mask::AF1,AF_Mask::AF1};
-        case UART_Pair::Tx2A14_Rx2A15: return {14,15,&GPIOA->AFR[1],&GPIOA->AFR[1],AF_Mask::AF1,AF_Mask::AF1};
-        case UART_Pair::Tx3B10_Rx3B11: return {10,11,&GPIOB->AFR[1],&GPIOB->AFR[1],AF_Mask::AF4,AF_Mask::AF4};
-        case UART_Pair::Tx3C4_Rx3C5: return {4,5,&GPIOC->AFR[0],&GPIOC->AFR[0],AF_Mask::AF1,AF_Mask::AF1};
-        case UART_Pair::Tx3C10_Rx3C11: return {10,11,&GPIOC->AFR[1],&GPIOC->AFR[1],AF_Mask::AF1,AF_Mask::AF1};
-        case UART_Pair::Tx4A0_Rx4A1: return {0,1,&GPIOA->AFR[0],&GPIOA->AFR[0],AF_Mask::AF4,AF_Mask::AF4};
-        case UART_Pair::Tx4C10_Rx4C11: return {10,11,&GPIOC->AFR[1],&GPIOC->AFR[1],AF_Mask::AF0,AF_Mask::AF0};
+        case UART_Pair::Tx1A9_Rx1A10: return {USART1,9,10,&GPIOA->AFR[1],&GPIOA->AFR[1],AF_Mask::AF1,AF_Mask::AF1};
+        case UART_Pair::Tx1B6_Rx1B7: return {USART1,6,7,&GPIOB->AFR[0],&GPIOB->AFR[0],AF_Mask::AF0,AF_Mask::AF0};
+        case UART_Pair::Tx2A2_Rx2A3: return {USART2,2,3,&GPIOA->AFR[0],&GPIOA->AFR[0],AF_Mask::AF1,AF_Mask::AF1};
+        case UART_Pair::Tx2A14_Rx2A15: return {USART2,14,15,&GPIOA->AFR[1],&GPIOA->AFR[1],AF_Mask::AF1,AF_Mask::AF1};
+        case UART_Pair::Tx3B10_Rx3B11: return {USART3,10,11,&GPIOB->AFR[1],&GPIOB->AFR[1],AF_Mask::AF4,AF_Mask::AF4};
+        case UART_Pair::Tx3C4_Rx3C5: return {USART3,4,5,&GPIOC->AFR[0],&GPIOC->AFR[0],AF_Mask::AF1,AF_Mask::AF1};
+        case UART_Pair::Tx3C10_Rx3C11: return {USART3,10,11,&GPIOC->AFR[1],&GPIOC->AFR[1],AF_Mask::AF1,AF_Mask::AF1};
+        case UART_Pair::Tx4A0_Rx4A1: return {USART4,0,1,&GPIOA->AFR[0],&GPIOA->AFR[0],AF_Mask::AF4,AF_Mask::AF4};
+        case UART_Pair::Tx4C10_Rx4C11: return {USART4,10,11,&GPIOC->AFR[1],&GPIOC->AFR[1],AF_Mask::AF0,AF_Mask::AF0};
     }
 }
-
-constexpr USART getUSARTReg(const UART_Pair pair){
-    switch(pair){
-        case UART_Pair::Tx1A9_Rx1A10:
-        case UART_Pair::Tx1B6_Rx1B7:
-            return USART::USART_1;
-        case UART_Pair::Tx2A2_Rx2A3:
-        case UART_Pair::Tx2A14_Rx2A15:
-            return USART::USART_2;
-        case UART_Pair::Tx3B10_Rx3B11:
-        case UART_Pair::Tx3C4_Rx3C5:
-        case UART_Pair::Tx3C10_Rx3C11:
-            return USART::USART_3;
-        case UART_Pair::Tx4A0_Rx4A1:
-        case UART_Pair::Tx4C10_Rx4C11:
-            return USART::USART_4;
-    }
-}
-
 
 constexpr SHAL_Peripheral getGPIORegister(const GPIO_Key g){
     switch(g) {
