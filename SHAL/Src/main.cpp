@@ -18,7 +18,7 @@ void tim2Handler(){
 
 int main() {
 
-    UART uart2 = initUART(UART_Pair::Tx2A2_Rx2A3);
+    UART uart2 = getUART(UART_Pair::Tx2A2_Rx2A3);
 
     uart2.begin(115200);
 

@@ -31,7 +31,7 @@ UART::UART(const UART_Pair pair) : m_UARTPair(pair){
      * The AFR register for GPIO_Typedef* is actually two registers - a low reg and high reg.
      * The low reg handles pins 0-7, and the high reg handles 8-15.
      * Each pin gets 4 bits in the register for AFR0 - AFR7. Hence 8 * 4 = 32 bits.
-     * Each AFR is a different function, look at the DATASHEET (not reference manual) to find these alternate functions
+     * Each AFR is a different function, look at the DATASHEET (not reference manual) to find these alternate function mappings
      */
     getGPIORegister(Tx_Key).reg->AFR[TxAFR] |= getAFMask(uart_pair.TxMask) << (4 * (Tx_Pin % 8));
     getGPIORegister(Rx_Key).reg->AFR[RxAFR] |= getAFMask(uart_pair.RxMask) << (4 * (Rx_Pin % 8));
@@ -72,11 +72,11 @@ void UART::sendChar(char c) {
 
 
 
-
 UART& UARTManager::get(UART_Pair pair) {
 
-    //Always reassign since we could be changing to different pins for some reason
-    m_UARTs[getUARTChannel(pair)] = UART(pair);
-
+    //Reassign if pair doesn't match
+    if(m_UARTs[getUARTChannel(pair)].m_UARTPair != pair) {
+        m_UARTs[getUARTChannel(pair)] = UART(pair);
+    }
     return m_UARTs[getUARTChannel(pair)];
 }

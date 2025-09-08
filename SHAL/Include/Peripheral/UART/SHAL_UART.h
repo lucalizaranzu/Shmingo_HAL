@@ -37,7 +37,7 @@ private:
 };
 
 
-#define initUART(uart_pair) UARTManager::get(uart_pair)
+#define getUART(uart_pair) UARTManager::get(uart_pair)
 
 class UARTManager{
 
