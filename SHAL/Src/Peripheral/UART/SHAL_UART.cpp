@@ -51,7 +51,7 @@ void UART::begin(uint32_t baudRate) volatile {
 
     usart->CR1 = USART_CR1_TE | USART_CR1_RE; //Tx enable and Rx Enable
 
-    usart->BRR = 8000000 / baudRate; //MAKE SURE ANY FUNCTION THAT CHANGES CLOCK UPDATES THIS!
+    usart->BRR = 8000000 / baudRate; //MAKE SURE ANY FUNCTION THAT CHANGES CLOCK UPDATES THIS! //TODO DO NOT HARDCODE THIS SHIT
 
     usart->CR1 |= USART_CR1_UE;
 
