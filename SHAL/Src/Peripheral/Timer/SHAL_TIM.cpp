@@ -6,8 +6,8 @@
 #include <cassert>
 
 Timer::Timer(Timer_Key t) : TIMER_KEY(t){
-    SHAL_Peripheral_Register rcc = getTimerRCC(TIMER_KEY);
-    *rcc.reg |= (1 << rcc.offset);
+    TIM_RCC_Enable rcc = getTimerRCC(TIMER_KEY);
+    *rcc.busEnableReg |= (1 << rcc.offset);
 }
 
 Timer::Timer() : TIMER_KEY(Timer_Key::S_TIM_INVALID){

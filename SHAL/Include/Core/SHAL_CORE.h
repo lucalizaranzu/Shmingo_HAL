@@ -13,15 +13,7 @@
 
 //Universal structs and defines ---------------------------
 
-struct SHAL_Peripheral {
-    void* registers;
-    unsigned long global_offset;
-};
 
-struct SHAL_Peripheral_Register {
-    volatile uint32_t* reg;
-    unsigned long offset;
-};
 
 
 

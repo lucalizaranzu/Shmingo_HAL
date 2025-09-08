@@ -31,9 +31,9 @@ GPIO::GPIO() : m_GPIO_KEY(GPIO_Key::INVALID){
 
 GPIO::GPIO(GPIO_Key key, PinMode pinMode) : m_GPIO_KEY(key) {
 
-    SHAL_Peripheral gpioPeripheral = getGPIORegister(key);
+    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(key);
 
-    auto gpioRegister = static_cast<GPIO_TypeDef*>(gpioPeripheral.registers);
+    auto gpioRegister = gpioPeripheral.reg;
     unsigned long registerOffset = gpioPeripheral.global_offset;
 
     volatile unsigned long* gpioEnable = getGPIORCCEnable(key).reg;
@@ -47,17 +47,17 @@ GPIO::GPIO(GPIO_Key key, PinMode pinMode) : m_GPIO_KEY(key) {
 
 void GPIO::setLow() {
     auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    static_cast<GPIO_TypeDef*>(gpioPeripheral.registers)->ODR &= ~(1 << gpioPeripheral.global_offset);
+    gpioPeripheral.reg->ODR &= ~(1 << gpioPeripheral.global_offset);
 }
 
 void GPIO::setHigh() {
     auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    static_cast<GPIO_TypeDef*>(gpioPeripheral.registers)->ODR |= (1 << gpioPeripheral.global_offset);
+    gpioPeripheral.reg->ODR |= (1 << gpioPeripheral.global_offset);
 }
 
 void GPIO::toggle() volatile {
-    auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    static_cast<GPIO_TypeDef*>(gpioPeripheral.registers)->ODR ^= (1 << gpioPeripheral.global_offset);
+    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    gpioPeripheral.reg->ODR ^= (1 << gpioPeripheral.global_offset);
 }
 
 

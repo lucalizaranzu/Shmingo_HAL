@@ -6,11 +6,11 @@
   ******************************************************************************
   */
 
-#ifndef SHMINGO_HAL_SHAL_EXTI_CALLBACK_H
-#define SHMINGO_HAL_SHAL_EXTI_CALLBACK_H
+#ifndef SHAL_EXTI_CALLBACK_H
+#define SHAL_EXTI_CALLBACK_H
 
 #include "SHAL_CORE.h"
-#include "SHAL_GPIO_REG_F072xB.h"
+#include "SHAL_GPIO_REG.h"
 
 #define DEFINE_EXTI_IRQ(EXTI_Channel)                           \
 extern "C" void EXTI##EXTI_Channel##_IRQHandler(void) {         \
@@ -38,4 +38,4 @@ typedef void (*EXTICallback)(); //Typedef for callback function
 
 void registerEXTICallback(GPIO_Key key, EXTICallback callback);
 
-#endif //SHMINGO_HAL_SHAL_EXTI_CALLBACK_H
+#endif //SHAL_EXTI_CALLBACK_H

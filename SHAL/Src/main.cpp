@@ -17,6 +17,11 @@ void tim2Handler(){
 }
 
 int main() {
+
+    UART uart2 = initUART(UART_Pair::Tx2A2_Rx2A3);
+
+    uart2.begin(115200);
+
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
 
     Timer timer2 = getTimer(Timer_Key::S_TIM2);
@@ -43,5 +48,6 @@ int main() {
 
     while (true) {
     	__WFI();
+        uart2.sendString("Hello\r\n");
     }
 }

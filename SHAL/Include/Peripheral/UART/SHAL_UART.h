@@ -16,11 +16,14 @@ class UART{
     friend class UARTManager;
 public:
 
+    //begins Tx and Usart TODO either modify this function or add a new one that supports Rx
+    void begin(uint32_t baudRate);
+
     //Sends a string
     void sendString(const char* s);
 
     //Sends a char
-    void sendChar(const char c);
+    void sendChar(char c);
 
 private:
 
@@ -33,11 +36,14 @@ private:
 
 };
 
+
+#define initUART(uart_pair) UARTManager::get(uart_pair)
+
 class UARTManager{
 
 public:
 
-    static UART& get(UART_Pair);
+    static UART& get(UART_Pair pair);
 
 
     UARTManager() = delete;

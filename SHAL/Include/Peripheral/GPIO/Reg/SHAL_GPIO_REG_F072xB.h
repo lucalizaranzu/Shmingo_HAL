@@ -2,8 +2,8 @@
 // Created by Luca on 8/29/2025.
 //
 
-#ifndef SHMINGO_HAL_SHAL_GPIO_REG_F072XB_H
-#define SHMINGO_HAL_SHAL_GPIO_REG_F072XB_H
+#ifndef SHAL_GPIO_REG_F072XB_H
+#define SHAL_GPIO_REG_F072XB_H
 
 #include <stm32f072xb.h>
 #include <cassert>
@@ -31,7 +31,7 @@ enum class GPIO_Key : uint8_t {
 
 
 
-constexpr SHAL_Peripheral getGPIORegister(const GPIO_Key g){
+constexpr SHAL_GPIO_Peripheral getGPIORegister(const GPIO_Key g){
     switch(g) {
         case GPIO_Key::A0: return {GPIOA,0};
         case GPIO_Key::A1: return {GPIOA,1};
@@ -84,7 +84,7 @@ constexpr SHAL_Peripheral getGPIORegister(const GPIO_Key g){
         case GPIO_Key::INVALID:
         case GPIO_Key::NUM_GPIO:
             assert(false);
-            return SHAL_Peripheral(nullptr,0); //Unreachable
+            return SHAL_GPIO_Peripheral(nullptr,0); //Unreachable
     }
     __builtin_unreachable();
 }
@@ -143,7 +143,7 @@ constexpr SHAL_EXTIO_Register getGPIOEXTICR(const GPIO_Key g){
         case GPIO_Key::INVALID:
         case GPIO_Key::NUM_GPIO:
             assert(false);
-            return SHAL_EXTIO_Register(nullptr,0); //Unreachable
+            return SHAL_EXTIO_Register(nullptr,0, EXTI4_15_IRQn); //Unreachable
     }
     __builtin_unreachable();
 }

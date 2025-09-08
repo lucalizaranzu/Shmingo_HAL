@@ -7,10 +7,11 @@
   ******************************************************************************
   */
 
-#ifndef SHMINGO_HAL_SHAL_TIM_CALLBACK_H
-#define SHMINGO_HAL_SHAL_TIM_CALLBACK_H
+#ifndef SHAL_TIM_CALLBACK_H
+#define SHAL_TIM_CALLBACK_H
 
 #include "SHAL_CORE.h"
+#include "SHAL_TIM_REG.h"
 
 #define DEFINE_TIMER_IRQ(key, irq_handler)                \
 extern "C" void irq_handler(void) {                       \

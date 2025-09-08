@@ -2,8 +2,8 @@
 // Created by Luca on 9/7/2025.
 //
 
-#ifndef SHMINGO_HAL_SHAL_UART_REG_F072XB_H
-#define SHMINGO_HAL_SHAL_UART_REG_F072XB_H
+#ifndef SHAL_UART_REG_F072XB_H
+#define SHAL_UART_REG_F072XB_H
 
 #include <stm32f072xb.h>
 #include <cassert>
@@ -99,6 +99,19 @@ constexpr SHAL_UART_ENABLE_REG getUARTEnableReg(const UART_Pair pair){
             return {nullptr, 0};
     }
     __builtin_unreachable();
+}
+
+constexpr uint32_t getAFMask(const AF_Mask mask){
+    switch(mask){
+        case AF_Mask::AF0: return 0x00;
+        case AF_Mask::AF1: return 0x01;
+        case AF_Mask::AF2: return 0x02;
+        case AF_Mask::AF3: return 0x03;
+        case AF_Mask::AF4: return 0x04;
+        case AF_Mask::AF5: return 0x05;
+        case AF_Mask::AF6: return 0x06;
+        case AF_Mask::AF7: return 0x07;
+    }
 }
 
 #endif //SHMINGO_HAL_SHAL_UART_REG_F072XB_H

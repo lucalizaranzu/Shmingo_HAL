@@ -2,15 +2,13 @@
 // Created by Luca on 9/7/2025.
 //
 
-#ifndef SHMINGO_HAL_SHAL_UART_REG_H
-#define SHMINGO_HAL_SHAL_UART_REG_H
+#ifndef SHAL_UART_REG_H
+#define SHAL_UART_REG_H
 
 //
 // Created by Luca on 9/6/2025.
 //
 
-#ifndef SHMINGO_HAL_SHAL_GPIO_REG_H
-#define SHMINGO_HAL_SHAL_GPIO_REG_H
 
 #if defined(STM32F030x6)
 #include "stm32f030x6.h"
@@ -47,11 +45,6 @@
 #else
  #error "Please select first the target STM32F0xx device used in your application (in stm32f0xx.h file)"
 #endif
-
-
-
-
-#endif //SHMINGO_HAL_SHAL_GPIO_REG_H
 
 
 #endif //SHMINGO_HAL_SHAL_UART_REG_H
