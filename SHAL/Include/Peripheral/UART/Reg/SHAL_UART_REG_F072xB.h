@@ -112,6 +112,7 @@ constexpr uint32_t getAFMask(const AF_Mask mask){
         case AF_Mask::AF6: return 0x06;
         case AF_Mask::AF7: return 0x07;
     }
+    __builtin_unreachable();
 }
 
 #endif //SHMINGO_HAL_SHAL_UART_REG_F072XB_H

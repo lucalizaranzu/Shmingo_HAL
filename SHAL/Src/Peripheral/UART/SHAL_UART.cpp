@@ -17,16 +17,24 @@ UART::UART(const UART_Pair pair) : m_UARTPair(pair){
     GPIO_Key Tx_Key = uart_pair.TxKey; //Tx pin
     GPIO_Key Rx_Key = uart_pair.RxKey; //Rx pin
 
+    uint8_t Tx_Pin = getGPIORegister(Tx_Key).global_offset;
+    uint8_t Rx_Pin = getGPIORegister(Rx_Key).global_offset;
+
     initGPIO(Tx_Key,PinMode::ALTERNATE_FUNCTION_MODE); //Initialize Tx GPIO with alternate function (initializes GPIO port as well)
     initGPIO(Rx_Key,PinMode::ALTERNATE_FUNCTION_MODE); //Initialize Rx GPIO with alternate function
 
     //Determine which AFR register (high or low) to write depending on pin
-    uint8_t TxAFR = getGPIORegister(Tx_Key).global_offset < 8 ? 0 : 1; //Use AFR[0] if pin < 8, AFR[1] if pin >= 8
-    uint8_t RxAFR = getGPIORegister(Rx_Key).global_offset < 8 ? 0 : 1;
+    uint8_t TxAFR = Tx_Pin < 8 ? 0 : 1; //Use AFR[0] if pin < 8, AFR[1] if pin >= 8
+    uint8_t RxAFR = Rx_Pin < 8 ? 0 : 1;
 
-    //Apply Alternate Function masks to the AFR registers for each GPIO to enable alternate functions
-    getGPIORegister(Tx_Key).reg->AFR[TxAFR] |= getAFMask(uart_pair.TxMask);
-    getGPIORegister(Rx_Key).reg->AFR[RxAFR] |= getAFMask(uart_pair.RxMask);
+    /*Apply Alternate Function masks to the AFR registers for each GPIO to enable alternate functions
+     * The AFR register for GPIO_Typedef* is actually two registers - a low reg and high reg.
+     * The low reg handles pins 0-7, and the high reg handles 8-15.
+     * Each pin gets 4 bits in the register for AFR0 - AFR7. Hence 8 * 4 = 32 bits.
+     * Each AFR is a different function, look at the DATASHEET (not reference manual) to find these alternate functions
+     */
+    getGPIORegister(Tx_Key).reg->AFR[TxAFR] |= getAFMask(uart_pair.TxMask) << (4 * (Tx_Pin % 8));
+    getGPIORegister(Rx_Key).reg->AFR[RxAFR] |= getAFMask(uart_pair.RxMask) << (4 * (Rx_Pin % 8));
 
     SHAL_UART_ENABLE_REG pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the UART channel
 
@@ -43,7 +51,7 @@ void UART::begin(uint32_t baudRate) {
 
     usart->CR1 = USART_CR1_TE | USART_CR1_RE; //Tx enable and Rx Enable
 
-    usart->BRR = 48000000 / baudRate; //MAKE SURE ANY FUNCTION THAT CHANGES CLOCK UPDATES THIS!
+    usart->BRR = 8000000 / baudRate; //MAKE SURE ANY FUNCTION THAT CHANGES CLOCK UPDATES THIS!
 
     usart->CR1 |= USART_CR1_UE;
 
