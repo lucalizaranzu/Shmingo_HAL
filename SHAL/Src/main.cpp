@@ -4,12 +4,10 @@
 
 volatile GPIO* blueLED = nullptr;
 volatile GPIO* greenLED = nullptr;
+volatile UART* uart2;
 
-extern "C" void EXTI0_1_IRQHandler(void) {
-    if (EXTI->PR & (1 << 0)) {   //Check pending flag
-        EXTI->PR |= (1 << 0);    //Clear it by writing 1
-        greenLED->toggle();
-    }
+void c3Interrupt(){
+    greenLED->toggle();
 }
 
 void tim2Handler(){
@@ -18,11 +16,11 @@ void tim2Handler(){
 
 int main() {
 
-    UART uart2 = getUART(UART_Pair::Tx2A2_Rx2A3);
+    uart2 = &getUART(UART_Pair::Tx2A2_Rx2A3);
 
-    uart2.begin(115200);
+    uart2->begin(115200);
 
-    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+    useGPIOAsInterrupt(GPIO_Key::C3,TriggerMode::RISING_EDGE,c3Interrupt);
 
     Timer timer2 = getTimer(Timer_Key::S_TIM2);
 
@@ -34,20 +32,7 @@ int main() {
     timer2.setCallbackFunc(tim2Handler);
     timer2.start();
 
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //Enable SYSCFG clock (needed for EXTI)
-
-    SYSCFG->EXTICR[0] &= ~SYSCFG_EXTICR1_EXTI0; //Clear EXTI0 mapping
-    SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PB; //Map PA0 -> EXTI0
-
-    EXTI->IMR |= (1 << 0);   //Unmask EXTI0
-    EXTI->RTSR |= (1 << 0);  //Trigger on rising edge
-
-    NVIC_EnableIRQ(EXTI0_1_IRQn); //EXTI lines 0 and 1 share an IRQ vector
-
-    __enable_irq();
-
     while (true) {
     	__WFI();
-        uart2.sendString("Hello\r\n");
     }
 }

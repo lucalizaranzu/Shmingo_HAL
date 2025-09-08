@@ -22,11 +22,11 @@ extern "C" void EXTI##EXTI_Channel##_IRQHandler(void) {         \
 };
 
 #define DEFINE_MULTI_EXTI_IRQ(EXTI_Channel_Min, EXTI_Channel_Max)                   \
-extern "C" void EXTI##EXTI_Channel_Max##_##EXTI_Channel_Min##_IRQHandler(void) {    \
+extern "C" void EXTI##EXTI_Channel_Min##_##EXTI_Channel_Max##_IRQHandler(void) {    \
     for(uint8_t line = EXTI_Channel_Min; line <= EXTI_Channel_Max; line++){         \
         if (EXTI->PR & (1 << line)) {                                   \
             EXTI->PR |= (1 << line); /*clear flag */                    \
-            auto cb = EXTI_callbacks[line];                                 \
+            auto cb = EXTI_callbacks[line];                                         \
             if (cb) cb();                                                           \
         };                                                                          \
     }                                                                               \

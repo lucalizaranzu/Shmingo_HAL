@@ -75,8 +75,9 @@ GPIO& GPIOManager::get(GPIO_Key key, PinMode pinMode) {
 }
 
 void GPIOManager::getInterruptGPIO(GPIO_Key key, TriggerMode triggerMode, EXTICallback callback) {
-    unsigned int gpioPort = getGPIOPortNumber(key);
-    unsigned long gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
+
+    uint32_t gpioPort = getGPIOPortNumber(key);
+    uint32_t gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
 
     if (m_gpios[gpioPort][gpioPin].m_GPIO_KEY == GPIO_Key::INVALID){
         m_gpios[gpioPort][gpioPin] = GPIO(key,PinMode::INPUT_MODE); //Hardcode input mode for interrupt
@@ -112,4 +113,6 @@ void GPIOManager::getInterruptGPIO(GPIO_Key key, TriggerMode triggerMode, EXTICa
 
     //Set callback
     registerEXTICallback(key,callback);
+
+    __enable_irq(); //Enable IRQ just in case
 }

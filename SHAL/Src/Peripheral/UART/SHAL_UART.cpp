@@ -41,7 +41,7 @@ UART::UART(const UART_Pair pair) : m_UARTPair(pair){
     *pairUARTEnable.reg |= pairUARTEnable.mask; //Enable UART line
 }
 
-void UART::begin(uint32_t baudRate) {
+void UART::begin(uint32_t baudRate) volatile {
 
     USART_TypeDef* usart = getUARTPair(m_UARTPair).USARTReg;
 
@@ -57,11 +57,11 @@ void UART::begin(uint32_t baudRate) {
 
 }
 
-void UART::sendString(const char *s) {
+void UART::sendString(const char *s) volatile {
     while (*s) sendChar(*s++); //Send chars while we haven't reached end of s
 }
 
-void UART::sendChar(char c) {
+void UART::sendChar(char c) volatile {
 
     USART_TypeDef* usart = getUARTPair(m_UARTPair).USARTReg;
 

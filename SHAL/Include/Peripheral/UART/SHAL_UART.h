@@ -17,13 +17,13 @@ class UART{
 public:
 
     //begins Tx and Usart TODO either modify this function or add a new one that supports Rx
-    void begin(uint32_t baudRate);
+    void begin(uint32_t baudRate) volatile;
 
     //Sends a string
-    void sendString(const char* s);
+    void sendString(const char* s) volatile;
 
     //Sends a char
-    void sendChar(char c);
+    void sendChar(char c) volatile;
 
 private:
 

@@ -209,7 +209,7 @@ constexpr SHAL_Peripheral_Register getGPIORCCEnable(const GPIO_Key g){
     __builtin_unreachable();
 }
 
-constexpr unsigned int getGPIOPortNumber(const GPIO_Key g){
+constexpr uint32_t getGPIOPortNumber(const GPIO_Key g){
     switch(g) {
         case GPIO_Key::A0:
         case GPIO_Key::A1:
