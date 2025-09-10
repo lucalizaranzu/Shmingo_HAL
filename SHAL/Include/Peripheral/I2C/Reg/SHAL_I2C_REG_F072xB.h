@@ -10,6 +10,9 @@
 
 #include "SHAL_I2C_TYPES.h"
 
+#define NUM_I2C_BUSES 2
+
+
 enum class I2C_Pair : uint8_t{
     //I2C_1
     SCL1B6_SDA1B7, //AF1

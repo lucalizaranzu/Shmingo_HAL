@@ -46,7 +46,6 @@ public:
 
     static SHAL_UART& get(uint8_t uart);
 
-
     UARTManager() = delete;
 
 private:

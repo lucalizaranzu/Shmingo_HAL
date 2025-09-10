@@ -5,10 +5,6 @@
 #ifndef SHAL_UART_REG_H
 #define SHAL_UART_REG_H
 
-//
-// Created by Luca on 9/6/2025.
-//
-
 
 #if defined(STM32F030x6)
 #include "stm32f030x6.h"
