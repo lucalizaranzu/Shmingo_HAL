@@ -13,9 +13,16 @@
 
 //Universal structs and defines ---------------------------
 
-
-
-
+enum class AF_Mask : uint8_t{
+    AF0,
+    AF1,
+    AF2,
+    AF3,
+    AF4,
+    AF5,
+    AF6,
+    AF7
+};
 
 //---------------------------------------------------------
 
