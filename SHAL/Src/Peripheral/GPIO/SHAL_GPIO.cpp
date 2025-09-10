@@ -11,20 +11,12 @@ GPIO::GPIO() : m_GPIO_KEY(GPIO_Key::INVALID){
     //Do not initialize anything
 }
 
-GPIO::GPIO(GPIO_Key key, PinMode pinMode) : m_GPIO_KEY(key) {
-
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(key);
-
-    auto gpioRegister = gpioPeripheral.reg;
-    unsigned long registerOffset = gpioPeripheral.global_offset;
+GPIO::GPIO(GPIO_Key key) : m_GPIO_KEY(key) {
 
     volatile unsigned long* gpioEnable = getGPIORCCEnable(key).reg;
     unsigned long gpioOffset = getGPIORCCEnable(key).offset;
 
     *gpioEnable |= (1 << gpioOffset); //Set enable flag
-
-    gpioRegister->MODER &= ~(0x03 << (2 * registerOffset)); //Clear any previous mode
-    gpioRegister->MODER |= (static_cast<uint8_t>(pinMode) << (2 * registerOffset)); //Set mode based on pinmode bit structure
 }
 
 void GPIO::setLow() {
@@ -41,6 +33,8 @@ void GPIO::toggle() volatile {
     SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
     gpioPeripheral.reg->ODR ^= (1 << gpioPeripheral.global_offset);
 }
+
+
 
 void GPIO::setPinType(PinType type) volatile {
     SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
@@ -68,41 +62,30 @@ void GPIO::setAlternateFunction(GPIO_Alternate_Function AF) volatile {
     gpioPeripheral.reg->AFR[afrIndex] |= (static_cast<int>(AF) << (gpioPeripheral.global_offset * 4));
 }
 
-
-GPIO& GPIOManager::get(GPIO_Key key, PinMode pinMode) {
-
-    unsigned int gpioPort = getGPIOPortNumber(key);
-    unsigned long gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
-
-    if (m_gpios[gpioPort][gpioPin].m_GPIO_KEY == GPIO_Key::INVALID){
-        m_gpios[gpioPort][gpioPin] = GPIO(key,pinMode);
-    }
-
-    return m_gpios[gpioPort][gpioPin];
+void GPIO::setPinMode(PinMode mode) volatile {
+    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    gpioPeripheral.reg->MODER &= ~(0x03 << (2 * gpioPeripheral.global_offset)); //Clear any previous mode
+    gpioPeripheral.reg->MODER |= (static_cast<uint8_t>(mode) << (2 * gpioPeripheral.global_offset)); //Set mode based on pinmode bit structure
 }
 
-void GPIOManager::getInterruptGPIO(GPIO_Key key, TriggerMode triggerMode, EXTICallback callback) {
+void GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) {
 
-    uint32_t gpioPort = getGPIOPortNumber(key);
-    uint32_t gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
+    uint32_t gpioPin = getGPIORegister(m_GPIO_KEY).global_offset; //Use existing structs to get offset
 
-    if (m_gpios[gpioPort][gpioPin].m_GPIO_KEY == GPIO_Key::INVALID){
-        m_gpios[gpioPort][gpioPin] = GPIO(key,PinMode::INPUT_MODE); //Hardcode input mode for interrupt
-    }
+    setPinMode(PinMode::INPUT_MODE); //Explicitly set mode to input
 
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //Enable EXT, TODO check if this is different across STM32 models
-    NVIC_EnableIRQ(getGPIOEXTICR(key).IRQN); //Enable IRQN for pin
+    NVIC_EnableIRQ(getGPIOEXTICR(m_GPIO_KEY).IRQN); //Enable IRQN for pin
     EXTI->IMR |= (1 << gpioPin); //Enable correct EXTI line
 
-    SHAL_EXTIO_Register EXTILineEnable = getGPIOEXTICR(key);
+    SHAL_EXTIO_Register EXTILineEnable = getGPIOEXTICR(m_GPIO_KEY);
     *EXTILineEnable.EXT_ICR |= EXTILineEnable.mask; //Set bits to enable correct port on correct line TODO Find way to clear bits before
-
 
     uint32_t rising_mask = 0x00;
     uint32_t falling_mask = 0x00;
 
     //Set rising and falling edge triggers based on pin offset (enabled EXTI line)
-    switch(triggerMode){
+    switch(mode){
         case TriggerMode::RISING_EDGE:
             rising_mask = 1 << gpioPin;
             break;
@@ -119,7 +102,20 @@ void GPIOManager::getInterruptGPIO(GPIO_Key key, TriggerMode triggerMode, EXTICa
     EXTI->FTSR |= falling_mask;
 
     //Set callback
-    registerEXTICallback(key,callback);
+    registerEXTICallback(m_GPIO_KEY,callback);
 
     __enable_irq(); //Enable IRQ just in case
+}
+
+
+GPIO& GPIOManager::get(GPIO_Key key) {
+
+    unsigned int gpioPort = getGPIOPortNumber(key);
+    unsigned long gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
+
+    if (m_gpios[gpioPort][gpioPin].m_GPIO_KEY == GPIO_Key::INVALID){
+        m_gpios[gpioPort][gpioPin] = GPIO(key);
+    }
+
+    return m_gpios[gpioPort][gpioPin];
 }

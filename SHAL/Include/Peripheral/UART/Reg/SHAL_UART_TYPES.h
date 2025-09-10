@@ -15,8 +15,8 @@ struct SHAL_UART_Pair{
     USART_TypeDef* USARTReg;
     GPIO_Key TxKey;
     GPIO_Key RxKey;
-    GPIO_Alternate_Function TxMask;
-    GPIO_Alternate_Function RxMask;
+    GPIO_Alternate_Function TxAlternateFunctionMask;
+    GPIO_Alternate_Function RxAlternateFunctionMask;
 };
 
 struct SHAL_UART_ENABLE_REG{

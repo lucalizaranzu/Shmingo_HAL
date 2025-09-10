@@ -25,14 +25,14 @@ enum class I2C_Pair : uint8_t{
 
 constexpr SHAL_I2C_Pair getI2CPair(const I2C_Pair pair){
     switch(pair){
-        case I2C_Pair::SCL1B6_SDA1B7: return {I2C1,GPIO_Key::B6,GPIO_Key::B7,AF_Mask::AF1,AF_Mask::AF1};
-        case I2C_Pair::SCL1B8_SDA1B9: return {I2C1,GPIO_Key::B8,GPIO_Key::B9,AF_Mask::AF1,AF_Mask::AF1};
-        case I2C_Pair::SCL2B10_SDA2B11: return {I2C2,GPIO_Key::B10,GPIO_Key::B11,AF_Mask::AF1,AF_Mask::AF1};
-        case I2C_Pair::SCL2B13_SDA2B14: return {I2C2,GPIO_Key::B13,GPIO_Key::B14,AF_Mask::AF5,AF_Mask::AF5};
+        case I2C_Pair::SCL1B6_SDA1B7: return {I2C1,GPIO_Key::B6,GPIO_Key::B7,GPIO_Alternate_Function::AF1,GPIO_Alternate_Function::AF1};
+        case I2C_Pair::SCL1B8_SDA1B9: return {I2C1,GPIO_Key::B8,GPIO_Key::B9,GPIO_Alternate_Function::AF1,GPIO_Alternate_Function::AF1};
+        case I2C_Pair::SCL2B10_SDA2B11: return {I2C2,GPIO_Key::B10,GPIO_Key::B11,GPIO_Alternate_Function::AF1,GPIO_Alternate_Function::AF1};
+        case I2C_Pair::SCL2B13_SDA2B14: return {I2C2,GPIO_Key::B13,GPIO_Key::B14,GPIO_Alternate_Function::AF5,GPIO_Alternate_Function::AF5};
         case I2C_Pair::NUM_PAIRS:
         case I2C_Pair::INVALID:
             assert(false);
-            return {nullptr,GPIO_Key::INVALID,GPIO_Key::INVALID,AF_Mask::AF0,AF_Mask::AF0};
+            return {nullptr,GPIO_Key::INVALID,GPIO_Key::INVALID,GPIO_Alternate_Function::AF0,GPIO_Alternate_Function::AF0};
     }
     __builtin_unreachable();
 }

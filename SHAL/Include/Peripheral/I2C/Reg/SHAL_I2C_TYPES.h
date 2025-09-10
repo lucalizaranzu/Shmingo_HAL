@@ -13,8 +13,8 @@ struct SHAL_I2C_Pair {
     I2C_TypeDef* I2CReg;
     GPIO_Key SCL_Key;
     GPIO_Key SDA_Key;
-    AF_Mask SCL_Mask;
-    AF_Mask SDA_Mask;
+    GPIO_Alternate_Function SCL_Mask;
+    GPIO_Alternate_Function SDA_Mask;
 };
 
 struct SHAL_I2C_Enable_REG{

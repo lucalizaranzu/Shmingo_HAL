@@ -7,11 +7,12 @@ volatile GPIO* greenLED = nullptr;
 volatile UART* uart2;
 
 void c3Interrupt(){
-    greenLED->toggle();
+    PIN(A5).toggle();
+    uart2->sendString("test");
 }
 
 void tim2Handler(){
-    blueLED->toggle();
+    PIN(A4).toggle();
 }
 
 int main() {
@@ -20,12 +21,12 @@ int main() {
 
     uart2->begin(115200);
 
-    useGPIOAsInterrupt(GPIO_Key::C3,TriggerMode::RISING_EDGE, c3Interrupt);
+    PIN(C3).useAsExternalInterrupt(TriggerMode::RISING_EDGE,c3Interrupt);
 
     Timer timer2 = getTimer(Timer_Key::S_TIM2);
 
-    blueLED = &initGPIO(GPIO_Key::A4, PinMode::OUTPUT_MODE);
-    greenLED = &initGPIO(GPIO_Key::A5, PinMode::OUTPUT_MODE);
+    PIN(A4).setPinMode(PinMode::OUTPUT_MODE);
+    PIN(A5).setPinMode(PinMode::OUTPUT_MODE);
 
     timer2.setPrescaler(8000 - 1);
     timer2.setARR(1500 - 1);
