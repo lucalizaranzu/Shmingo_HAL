@@ -2,13 +2,9 @@
 #include "stm32f0xx.h"
 
 
-volatile GPIO* blueLED = nullptr;
-volatile GPIO* greenLED = nullptr;
-volatile UART* uart2;
-
 void c3Interrupt(){
     PIN(A5).toggle();
-    uart2->sendString("test");
+    UART(2).sendString("New test");
 }
 
 void tim2Handler(){
@@ -17,9 +13,10 @@ void tim2Handler(){
 
 int main() {
 
-    uart2 = &getUART(UART_Pair::Tx2A2_Rx2A3);
 
-    uart2->begin(115200);
+    UART(2).init(UART_Pair::Tx2A2_Rx2A3);
+
+    UART(2).begin(115200);
 
     PIN(C3).useAsExternalInterrupt(TriggerMode::RISING_EDGE,c3Interrupt);
 

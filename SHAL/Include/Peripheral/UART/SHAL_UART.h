@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    SHAL_TIM.h
   * @author  Luca Lizaranzu
-  * @brief   Relating to UART and USART object abstractions
+  * @brief   Relating to SHAL_UART and USART object abstractions
   ******************************************************************************
   */
 
@@ -11,10 +11,12 @@
 
 #include "SHAL_UART_REG.h"
 
-class UART{
+class SHAL_UART{
 
     friend class UARTManager;
 public:
+
+    void init(UART_Pair pair);
 
     //begins Tx and Usart TODO either modify this function or add a new one that supports Rx
     void begin(uint32_t baudRate) volatile;
@@ -27,30 +29,29 @@ public:
 
 private:
 
-    UART() = default; //Initializer for array
+    SHAL_UART() = default; //Initializer for array
 
-    //Creates a UART based on a pair of two valid U(S)ART pins
-    explicit UART(UART_Pair pair);
+    //Creates a SHAL_UART based on a pair of two valid U(S)ART pins
 
     UART_Pair m_UARTPair = UART_Pair::INVALID;
 
 };
 
 
-#define getUART(uart_pair) UARTManager::get(uart_pair)
+#define UART(num) UARTManager::get(num)
 
 class UARTManager{
 
 public:
 
-    static UART& get(UART_Pair pair);
+    static SHAL_UART& get(uint8_t uart);
 
 
     UARTManager() = delete;
 
 private:
 
-    inline static UART m_UARTs[NUM_USART_LINES] = {};
+    inline static SHAL_UART m_UARTs[NUM_USART_LINES] = {};
 
 };
 

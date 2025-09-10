@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    SHAL_TIM.h
   * @author  Luca Lizaranzu
-  * @brief   Related to USART and UART abstractions
+  * @brief   Related to USART and SHAL_UART abstractions
   ******************************************************************************
   */
 
@@ -10,10 +10,13 @@
 #include "SHAL_UART.h"
 #include "SHAL_GPIO.h"
 
-UART::UART(const UART_Pair pair) : m_UARTPair(pair){
+void SHAL_UART::init(const UART_Pair pair){
+
+    m_UARTPair = pair;
+
     SHAL_UART_Pair uart_pair = getUARTPair(pair); //Get the UART_PAIR information to be initialized
 
-    //Get the GPIO pins for this UART setup
+    //Get the SHAL_GPIO pins for this SHAL_UART setup
     GPIO_Key Tx_Key = uart_pair.TxKey; //Tx pin
     GPIO_Key Rx_Key = uart_pair.RxKey; //Rx pin
 
@@ -23,12 +26,12 @@ UART::UART(const UART_Pair pair) : m_UARTPair(pair){
     GET_GPIO(Tx_Key).setAlternateFunction(uart_pair.TxAlternateFunctionMask);
     GET_GPIO(Rx_Key).setAlternateFunction(uart_pair.RxAlternateFunctionMask);
 
-    SHAL_UART_ENABLE_REG pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the UART channel
+    SHAL_UART_ENABLE_REG pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the SHAL_UART channel
 
-    *pairUARTEnable.reg |= pairUARTEnable.mask; //Enable UART line
+    *pairUARTEnable.reg |= pairUARTEnable.mask; //Enable SHAL_UART line
 }
 
-void UART::begin(uint32_t baudRate) volatile {
+void SHAL_UART::begin(uint32_t baudRate) volatile {
 
     USART_TypeDef* usart = getUARTPair(m_UARTPair).USARTReg;
 
@@ -44,11 +47,11 @@ void UART::begin(uint32_t baudRate) volatile {
 
 }
 
-void UART::sendString(const char *s) volatile {
+void SHAL_UART::sendString(const char *s) volatile {
     while (*s) sendChar(*s++); //Send chars while we haven't reached end of s
 }
 
-void UART::sendChar(char c) volatile {
+void SHAL_UART::sendChar(char c) volatile {
 
     USART_TypeDef* usart = getUARTPair(m_UARTPair).USARTReg;
 
@@ -59,11 +62,6 @@ void UART::sendChar(char c) volatile {
 
 
 
-UART& UARTManager::get(UART_Pair pair) {
-
-    //Reassign if pair doesn't match
-    if(m_UARTs[getUARTChannel(pair)].m_UARTPair != pair) {
-        m_UARTs[getUARTChannel(pair)] = UART(pair);
-    }
-    return m_UARTs[getUARTChannel(pair)];
+SHAL_UART& UARTManager::get(uint8_t uart) {
+    return m_UARTs[uart];
 }

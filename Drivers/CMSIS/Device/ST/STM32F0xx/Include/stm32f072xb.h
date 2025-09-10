@@ -369,16 +369,16 @@ typedef struct
 
 typedef struct
 {
-  __IO uint32_t MODER;        /*!< GPIO port mode register,                     Address offset: 0x00      */
-  __IO uint32_t OTYPER;       /*!< GPIO port output type register,              Address offset: 0x04      */
-  __IO uint32_t OSPEEDR;      /*!< GPIO port output speed register,             Address offset: 0x08      */
-  __IO uint32_t PUPDR;        /*!< GPIO port pull-up/pull-down register,        Address offset: 0x0C      */
-  __IO uint32_t IDR;          /*!< GPIO port input data register,               Address offset: 0x10      */
-  __IO uint32_t ODR;          /*!< GPIO port output data register,              Address offset: 0x14      */
-  __IO uint32_t BSRR;         /*!< GPIO port bit set/reset register,      Address offset: 0x1A */
-  __IO uint32_t LCKR;         /*!< GPIO port configuration lock register,       Address offset: 0x1C      */
-  __IO uint32_t AFR[2];       /*!< GPIO alternate function low register,  Address offset: 0x20-0x24 */
-  __IO uint32_t BRR;          /*!< GPIO bit reset register,                     Address offset: 0x28      */
+  __IO uint32_t MODER;        /*!< SHAL_GPIO port mode register,                     Address offset: 0x00      */
+  __IO uint32_t OTYPER;       /*!< SHAL_GPIO port output type register,              Address offset: 0x04      */
+  __IO uint32_t OSPEEDR;      /*!< SHAL_GPIO port output speed register,             Address offset: 0x08      */
+  __IO uint32_t PUPDR;        /*!< SHAL_GPIO port pull-up/pull-down register,        Address offset: 0x0C      */
+  __IO uint32_t IDR;          /*!< SHAL_GPIO port input data register,               Address offset: 0x10      */
+  __IO uint32_t ODR;          /*!< SHAL_GPIO port output data register,              Address offset: 0x14      */
+  __IO uint32_t BSRR;         /*!< SHAL_GPIO port bit set/reset register,      Address offset: 0x1A */
+  __IO uint32_t LCKR;         /*!< SHAL_GPIO port configuration lock register,       Address offset: 0x1C      */
+  __IO uint32_t AFR[2];       /*!< SHAL_GPIO alternate function low register,  Address offset: 0x20-0x24 */
+  __IO uint32_t BRR;          /*!< SHAL_GPIO bit reset register,                     Address offset: 0x28      */
 } GPIO_TypeDef;
 
 /**
@@ -6490,7 +6490,7 @@ typedef struct
 
 /******************************************************************************/
 /*                                                                            */
-/*                       General Purpose IOs (GPIO)                           */
+/*                       General Purpose IOs (SHAL_GPIO)                           */
 /*                                                                            */
 /******************************************************************************/
 /*******************  Bit definition for GPIO_MODER register  *****************/
@@ -10933,7 +10933,7 @@ typedef struct
                                        ((INSTANCE) == DMA1_Channel6) || \
                                        ((INSTANCE) == DMA1_Channel7))
 
-/****************************** GPIO Instances ********************************/
+/****************************** SHAL_GPIO Instances ********************************/
 #define IS_GPIO_ALL_INSTANCE(INSTANCE)  (((INSTANCE) == GPIOA) || \
                                          ((INSTANCE) == GPIOB) || \
                                          ((INSTANCE) == GPIOC) || \
@@ -10941,14 +10941,14 @@ typedef struct
                                          ((INSTANCE) == GPIOE) || \
                                          ((INSTANCE) == GPIOF))
 
-/**************************** GPIO Alternate Function Instances ***************/
+/**************************** SHAL_GPIO Alternate Function Instances ***************/
 #define IS_GPIO_AF_INSTANCE(INSTANCE)   (((INSTANCE) == GPIOA) || \
                                          ((INSTANCE) == GPIOB) || \
                                          ((INSTANCE) == GPIOC) || \
                                          ((INSTANCE) == GPIOD) || \
                                          ((INSTANCE) == GPIOE))
 
-/****************************** GPIO Lock Instances ***************************/
+/****************************** SHAL_GPIO Lock Instances ***************************/
 #define IS_GPIO_LOCK_INSTANCE(INSTANCE) (((INSTANCE) == GPIOA) || \
                                          ((INSTANCE) == GPIOB))
 
@@ -11192,11 +11192,11 @@ typedef struct
 /****************************** TSC Instances *********************************/
 #define IS_TSC_ALL_INSTANCE(INSTANCE) ((INSTANCE) == TSC)
 
-/*********************** UART Instances : IRDA mode ***************************/
+/*********************** SHAL_UART Instances : IRDA mode ***************************/
 #define IS_IRDA_INSTANCE(INSTANCE) (((INSTANCE) == USART1) || \
                                     ((INSTANCE) == USART2))
 
-/********************* UART Instances : Smard card mode ***********************/
+/********************* SHAL_UART Instances : Smard card mode ***********************/
 #define IS_SMARTCARD_INSTANCE(INSTANCE) (((INSTANCE) == USART1) || \
                                          ((INSTANCE) == USART2))
 
@@ -11210,35 +11210,35 @@ typedef struct
 #define IS_USART_AUTOBAUDRATE_DETECTION_INSTANCE(INSTANCE) (((INSTANCE) == USART1) || \
                                                             ((INSTANCE) == USART2))
 
-/******************** UART Instances : Asynchronous mode **********************/
+/******************** SHAL_UART Instances : Asynchronous mode **********************/
 #define IS_UART_INSTANCE(INSTANCE)   (((INSTANCE) == USART1) || \
                                       ((INSTANCE) == USART2) || \
                                       ((INSTANCE) == USART3) || \
                                       ((INSTANCE) == USART4))
 
-/******************** UART Instances : Half-Duplex mode **********************/
+/******************** SHAL_UART Instances : Half-Duplex mode **********************/
 #define IS_UART_HALFDUPLEX_INSTANCE(INSTANCE)   (((INSTANCE) == USART1) || \
                                                  ((INSTANCE) == USART2) || \
                                                  ((INSTANCE) == USART3) || \
                                                  ((INSTANCE) == USART4))
 
-/****************** UART Instances : Hardware Flow control ********************/
+/****************** SHAL_UART Instances : Hardware Flow control ********************/
 #define IS_UART_HWFLOW_INSTANCE(INSTANCE) (((INSTANCE) == USART1) || \
                                            ((INSTANCE) == USART2) || \
                                            ((INSTANCE) == USART3) || \
                                            ((INSTANCE) == USART4))
 
-/****************** UART Instances : LIN mode ********************/
+/****************** SHAL_UART Instances : LIN mode ********************/
 #define IS_UART_LIN_INSTANCE(INSTANCE) (((INSTANCE) == USART1) || \
                                         ((INSTANCE) == USART2))
 
-/****************** UART Instances : wakeup from stop mode ********************/
+/****************** SHAL_UART Instances : wakeup from stop mode ********************/
 #define IS_UART_WAKEUP_FROMSTOP_INSTANCE(INSTANCE) (((INSTANCE) == USART1) || \
                                                     ((INSTANCE) == USART2))
 /* Old macro definition maintained for legacy purpose */
 #define IS_UART_WAKEUP_INSTANCE         IS_UART_WAKEUP_FROMSTOP_INSTANCE
 
-/****************** UART Instances : Driver enable detection ********************/
+/****************** SHAL_UART Instances : Driver enable detection ********************/
 #define IS_UART_DRIVER_ENABLE_INSTANCE(INSTANCE) (((INSTANCE) == USART1) || \
                                                   ((INSTANCE) == USART2) || \
                                                   ((INSTANCE) == USART3) || \

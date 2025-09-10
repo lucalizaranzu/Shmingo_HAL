@@ -20,7 +20,7 @@
     X(C0) X(C1) X(C2) X(C3) X(C4) X(C5) X(C6) X(C7) X(C8) X(C9) X(C10) X(C11) X(C12) X(C13) X(C14) X(C15)
 
 
-//Build enum map of available GPIO pins
+//Build enum map of available SHAL_GPIO pins
 enum class GPIO_Key : uint8_t {
     #define X(key) key,
         AVAILABLE_GPIO

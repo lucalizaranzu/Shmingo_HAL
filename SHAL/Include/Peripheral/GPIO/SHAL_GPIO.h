@@ -15,8 +15,8 @@
 
 
 
-//Abstraction of GPIO registers
-class GPIO{
+//Abstraction of SHAL_GPIO registers
+class SHAL_GPIO{
 
 public:
 
@@ -43,8 +43,8 @@ private:
 
     friend class GPIOManager;
 
-    explicit GPIO(GPIO_Key key);
-    GPIO();
+    explicit SHAL_GPIO(GPIO_Key key);
+    SHAL_GPIO();
 
     GPIO_Key m_GPIO_KEY = GPIO_Key::INVALID;
 
@@ -54,7 +54,7 @@ private:
 
 
 
-//Init GPIO for normal use
+//Init SHAL_GPIO for normal use
 #define PIN_TO_KEY(name) GPIO_Key::name
 #define PIN(name) GPIOManager::get(PIN_TO_KEY(name))
 
@@ -62,19 +62,19 @@ private:
 
 #define GPIO_A
 
-//Manages instances of GPIO objects
+//Manages instances of SHAL_GPIO objects
 class GPIOManager{
 
 public:
 
-    static GPIO& get(GPIO_Key);
+    static SHAL_GPIO& get(GPIO_Key);
 
 
     GPIOManager() = delete;
 
 private:
 
-inline static GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
+inline static SHAL_GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
 
 };
 
