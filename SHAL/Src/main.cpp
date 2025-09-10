@@ -20,7 +20,7 @@ int main() {
 
     uart2->begin(115200);
 
-    useGPIOAsInterrupt(GPIO_Key::C3,TriggerMode::RISING_EDGE,c3Interrupt);
+    useGPIOAsInterrupt(GPIO_Key::C3,TriggerMode::RISING_EDGE, c3Interrupt);
 
     Timer timer2 = getTimer(Timer_Key::S_TIM2);
 

@@ -11,22 +11,50 @@
 
 #include "SHAL_EXTI_CALLBACK.h"
 
-
-
 enum class PinMode : uint8_t{
-    INPUT_MODE,
-    OUTPUT_MODE,
-    ALTERNATE_FUNCTION_MODE,
-    ANALOG_MODE,
-    INVALID
+    INPUT_MODE                  = 0x00,
+    OUTPUT_MODE                 = 0x01,
+    ALTERNATE_FUNCTION_MODE     = 0x02,
+    ANALOG_MODE                 = 0x03,
+    INVALID                     = 0x00,
 };
-unsigned long getPinMode(PinMode mode);
+
+enum class GPIO_Alternate_Function : uint8_t{
+    AF0                         = 0x00,
+    AF1                         = 0x01,
+    AF2                         = 0x02,
+    AF3                         = 0x03,
+    AF4                         = 0x04,
+    AF5                         = 0x05,
+    AF6                         = 0x06,
+    AF7                         = 0x07,
+};
+
+enum class PinType : uint8_t{
+    PUSH_PULL                   = 0x00,
+    OPEN_DRAIN                  = 0x01,
+};
+
+enum class InternalResistorType : uint8_t{
+    NO_PULL                     = 0x00,
+    PULLUP                      = 0x01,
+    PULLDOWN                    = 0x02,
+};
+
+enum class OutputSpeed : uint8_t{
+    LOW_SPEED                   = 0x00,
+    MEDIUM_SPEED                = 0x01,
+    HIGH_SPEED                  = 0x02,
+    VERY_HIGH_SPEED             = 0x03,
+};
 
 enum class TriggerMode : uint8_t{
     RISING_EDGE,
     FALLING_EDGE,
     RISING_FALLING_EDGE
 };
+
+
 
 //Abstraction of GPIO registers
 class GPIO{
@@ -38,6 +66,14 @@ public:
     //TODO replace stupid offset hack from APB
     void setHigh();
     void setLow();
+
+    void setAlternateFunction(GPIO_Alternate_Function AF) volatile;
+
+    void setPinType(PinType type) volatile;
+
+    void setOutputSpeed(OutputSpeed speed) volatile;
+
+    void setInternalResistor(InternalResistorType type) volatile;
 
 private:
 

@@ -5,24 +5,6 @@
 #include "SHAL_GPIO.h"
 #include "SHAL_EXTI_CALLBACK.h"
 
-unsigned long getPinMode(PinMode mode){
-    switch(mode){
-        case PinMode::INPUT_MODE:
-            return 0b00;
-        case PinMode::OUTPUT_MODE:
-            return 0b01;
-        case PinMode::ALTERNATE_FUNCTION_MODE:
-            return 0b10;
-        case PinMode::ANALOG_MODE:
-            return 0b11;
-        case PinMode::INVALID:
-            assert(false);
-            return 0;
-    }
-    __builtin_unreachable();
-}
-
-
 
 
 GPIO::GPIO() : m_GPIO_KEY(GPIO_Key::INVALID){
@@ -41,8 +23,8 @@ GPIO::GPIO(GPIO_Key key, PinMode pinMode) : m_GPIO_KEY(key) {
 
     *gpioEnable |= (1 << gpioOffset); //Set enable flag
 
-    gpioRegister->MODER &= ~(0b11 << (2 * registerOffset)); //Clear any previous mode
-    gpioRegister->MODER |= (getPinMode(pinMode) << (2 * registerOffset)); //Set mode based on pinmode bit structure
+    gpioRegister->MODER &= ~(0x03 << (2 * registerOffset)); //Clear any previous mode
+    gpioRegister->MODER |= (static_cast<uint8_t>(pinMode) << (2 * registerOffset)); //Set mode based on pinmode bit structure
 }
 
 void GPIO::setLow() {
@@ -60,6 +42,31 @@ void GPIO::toggle() volatile {
     gpioPeripheral.reg->ODR ^= (1 << gpioPeripheral.global_offset);
 }
 
+void GPIO::setPinType(PinType type) volatile {
+    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    gpioPeripheral.reg->OTYPER &= ~(1 << gpioPeripheral.global_offset);
+    gpioPeripheral.reg->OTYPER |= (static_cast<uint8_t>(type) << gpioPeripheral.global_offset);
+}
+
+void GPIO::setOutputSpeed(OutputSpeed speed) volatile {
+    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    gpioPeripheral.reg->OSPEEDR |= (static_cast<uint8_t>(speed) << (2 * gpioPeripheral.global_offset));
+}
+
+void GPIO::setInternalResistor(InternalResistorType type) volatile {
+    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    gpioPeripheral.reg->PUPDR &= ~(0x03 << (2 * gpioPeripheral.global_offset));
+    gpioPeripheral.reg->PUPDR |= (static_cast<uint8_t>(type) << (2 * gpioPeripheral.global_offset));
+}
+
+void GPIO::setAlternateFunction(GPIO_Alternate_Function AF) volatile {
+    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+
+    int afrIndex = gpioPeripheral.global_offset < 8 ? 0 : 1; //Get index of AFR
+
+    gpioPeripheral.reg->AFR[afrIndex] &= ~(0xF << (gpioPeripheral.global_offset * 4));
+    gpioPeripheral.reg->AFR[afrIndex] |= (static_cast<int>(AF) << (gpioPeripheral.global_offset * 4));
+}
 
 
 GPIO& GPIOManager::get(GPIO_Key key, PinMode pinMode) {
