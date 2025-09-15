@@ -18,6 +18,11 @@ class Timer {
     friend class TimerManager;
 public:
 
+    ///
+    /// \param prescaler The amount of times the base clock has to cycle before the timer adds one to the count
+    /// \param autoReload The number of timer counts before the count is reset and IRQ is called
+    void init(uint32_t prescaler, uint32_t autoReload);
+
     //Starts the counter
     void start();
 
@@ -49,12 +54,16 @@ private:
 
 
 #define getTimer(timer_key) TimerManager::get(timer_key)
+#define TIM(num) TimerManager::getTimerFromIndex(num)
 
 //Manages all timers so user does not have to personally initialize
 class TimerManager{
 public:
 
     static Timer& get(Timer_Key);
+
+    static Timer& getTimerFromIndex(uint8_t index){return timers[index];}
+
     TimerManager() = delete;
 
 private:

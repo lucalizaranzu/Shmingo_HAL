@@ -12,6 +12,11 @@
 
 #define NUM_USART_LINES 4
 
+#define SHAL_UART1 UART(1)
+#define SHAL_UART2 UART(2)
+#define SHAL_UART3 UART(3)
+#define SHAL_UART4 UART(4)
+
 //Valid usart Tx and Rx pairings for STM32F072
 enum class UART_Pair : uint8_t{
     //UART1

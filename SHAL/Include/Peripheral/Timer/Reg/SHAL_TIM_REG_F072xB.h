@@ -29,6 +29,17 @@ enum class Timer_Key : uint8_t { //For STM32F072
     S_TIM_INVALID
 };
 
+#define SHAL_TIM1 TimerManager::get(Timer_Key::S_TIM1)
+#define SHAL_TIM2 TimerManager::get(Timer_Key::S_TIM2)
+#define SHAL_TIM3 TimerManager::get(Timer_Key::S_TIM3)
+#define SHAL_TIM6 TimerManager::get(Timer_Key::S_TIM6)
+#define SHAL_TIM7 TimerManager::get(Timer_Key::S_TIM7)
+#define SHAL_TIM14 TimerManager::get(Timer_Key::S_TIM14)
+#define SHAL_TIM15 TimerManager::get(Timer_Key::S_TIM15)
+#define SHAL_TIM16 TimerManager::get(Timer_Key::S_TIM16)
+#define SHAL_TIM17 TimerManager::get(Timer_Key::S_TIM17)
+
+
 
 //Get TIMER_KEY peripheral struct including bus register, enable mask, TIMER_KEY mask
 constexpr TIM_RCC_Enable getTimerRCC(Timer_Key t) {

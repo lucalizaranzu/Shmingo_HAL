@@ -13,22 +13,19 @@ void tim2Handler(){
 
 int main() {
 
+    //Setup UART2 (used by nucleo devices for USB comms)
+    SHAL_UART2.init(UART_Pair::Tx2A2_Rx2A3);
+    SHAL_UART2.begin(115200);
 
-    UART(2).init(UART_Pair::Tx2A2_Rx2A3);
-
-    UART(2).begin(115200);
-
+    //Use pin C3 to trigger a function on external interrupt
     PIN(C3).useAsExternalInterrupt(TriggerMode::RISING_EDGE,c3Interrupt);
 
-    Timer timer2 = getTimer(Timer_Key::S_TIM2);
+    SHAL_TIM2.init(8000-1,1500-1);
+    SHAL_TIM2.setCallbackFunc(tim2Handler);
+    SHAL_TIM2.start();
 
     PIN(A4).setPinMode(PinMode::OUTPUT_MODE);
     PIN(A5).setPinMode(PinMode::OUTPUT_MODE);
-
-    timer2.setPrescaler(8000 - 1);
-    timer2.setARR(1500 - 1);
-    timer2.setCallbackFunc(tim2Handler);
-    timer2.start();
 
     while (true) {
     	__WFI();

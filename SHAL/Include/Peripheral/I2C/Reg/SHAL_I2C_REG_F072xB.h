@@ -12,6 +12,8 @@
 
 #define NUM_I2C_BUSES 2
 
+#define SHAL_I2C1 I2C(1)
+#define SHAL_I2C2 I2C(2)
 
 enum class I2C_Pair : uint8_t{
     //I2C_1
