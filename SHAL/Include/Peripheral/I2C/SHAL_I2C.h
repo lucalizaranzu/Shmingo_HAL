@@ -15,6 +15,16 @@ class SHAL_I2C{
 
 public:
 
+    void init(I2C_Pair pair) volatile;
+
+    void masterTransmit();
+
+    //Manually set the clock configuration. Refer to your MCU's reference manual for examples
+    void setClockConfig(uint8_t prescaler, uint8_t dataSetupTime, uint8_t dataHoldTime, uint8_t SCLHighPeriod, uint8_t SCLLowPeriod);
+
+    //Set clock configuration based on a value calculated from STM32CubeMX, or other similar tools
+    void setClockConfig(uint32_t configuration);
+
 private:
 
     SHAL_I2C() = default;

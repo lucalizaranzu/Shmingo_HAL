@@ -17,9 +17,29 @@ struct SHAL_I2C_Pair {
     GPIO_Alternate_Function SDA_Mask;
 };
 
-struct SHAL_I2C_Enable_REG{
+struct SHAL_I2C_Enable_Reg{
     volatile uint32_t* reg;
     uint32_t mask;
+};
+
+struct SHAL_I2C_Reset_Reg{
+    volatile uint32_t* reg;
+    uint32_t mask;
+};
+
+//Manual values for I2C timer register
+struct SHAL_I2C_Timing_Reg{
+    volatile uint32_t* reg;
+    uint8_t prescaler_offset;
+    uint8_t prescaler_width;
+    uint8_t dataSetupTime_offset;
+    uint8_t dataSetupTime_width;
+    uint8_t dataHoldTime_offset;
+    uint8_t dataHoldTime_width;
+    uint8_t SCLHighPeriod_offset;
+    uint8_t SCLHighPeriod_width;
+    uint8_t SCLLowPeriod_offset;
+    uint8_t SCLLowPeriod_width;
 };
 
 #endif //SHMINGO_HAL_SHAL_I2C_TYPES_H

@@ -40,7 +40,7 @@ constexpr SHAL_I2C_Pair getI2CPair(const I2C_Pair pair){
     __builtin_unreachable();
 }
 
-constexpr SHAL_I2C_Enable_REG getI2CEnableReg(const I2C_Pair pair){
+constexpr SHAL_I2C_Enable_Reg getI2CEnableReg(const I2C_Pair pair){
     switch(pair){
         case I2C_Pair::SCL1B6_SDA1B7:
         case I2C_Pair::SCL1B8_SDA1B9:
@@ -52,6 +52,39 @@ constexpr SHAL_I2C_Enable_REG getI2CEnableReg(const I2C_Pair pair){
         case I2C_Pair::INVALID:
             assert(false);
             return {nullptr, 0};
+    }
+    __builtin_unreachable();
+}
+
+constexpr SHAL_I2C_Reset_Reg getI2CResetReg(const I2C_Pair pair){
+    switch(pair){
+        case I2C_Pair::SCL1B6_SDA1B7:
+        case I2C_Pair::SCL1B8_SDA1B9:
+            return {&RCC->APB1RSTR,RCC_APB1RSTR_I2C1RST};
+        case I2C_Pair::SCL2B10_SDA2B11:
+        case I2C_Pair::SCL2B13_SDA2B14:
+            return {&RCC->APB1RSTR,RCC_APB1RSTR_I2C2RST};
+        case I2C_Pair::NUM_PAIRS:
+        case I2C_Pair::INVALID:
+            assert(false);
+            return {nullptr, 0};
+    }
+    __builtin_unreachable();
+}
+
+//Gets all the bits in the I2C timer register, these values should rarely be manually set, but I wanted to support it anyway
+constexpr SHAL_I2C_Timing_Reg getI2CTimerReg(const I2C_Pair pair){
+    switch(pair){
+        case I2C_Pair::SCL1B6_SDA1B7:
+        case I2C_Pair::SCL1B8_SDA1B9:
+            return {&I2C1->TIMINGR,31,4,23,4,19,4,15,8,7,0};
+        case I2C_Pair::SCL2B10_SDA2B11:
+        case I2C_Pair::SCL2B13_SDA2B14:
+            return {&I2C2->TIMINGR,31,4,23,4,19,4,15,8,7,0};
+        case I2C_Pair::NUM_PAIRS:
+        case I2C_Pair::INVALID:
+            assert(false);
+            __builtin_unreachable();
     }
     __builtin_unreachable();
 }
