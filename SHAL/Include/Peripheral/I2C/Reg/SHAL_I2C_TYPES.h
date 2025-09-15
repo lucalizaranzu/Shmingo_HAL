@@ -31,15 +31,10 @@ struct SHAL_I2C_Reset_Reg{
 struct SHAL_I2C_Timing_Reg{
     volatile uint32_t* reg;
     uint8_t prescaler_offset;
-    uint8_t prescaler_width;
     uint8_t dataSetupTime_offset;
-    uint8_t dataSetupTime_width;
     uint8_t dataHoldTime_offset;
-    uint8_t dataHoldTime_width;
     uint8_t SCLHighPeriod_offset;
-    uint8_t SCLHighPeriod_width;
     uint8_t SCLLowPeriod_offset;
-    uint8_t SCLLowPeriod_width;
 };
 
 #endif //SHMINGO_HAL_SHAL_I2C_TYPES_H

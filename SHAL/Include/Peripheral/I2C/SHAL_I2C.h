@@ -17,7 +17,16 @@ public:
 
     void init(I2C_Pair pair) volatile;
 
-    void masterTransmit();
+    ///
+    /// \param addr I2C address of slave device
+    /// \param reg Address of register in slave device to write to
+    /// \param data Data to write to slave register
+    void masterTransmit(uint8_t addr, uint8_t reg, uint8_t data);
+
+    ///
+    /// \param addr I2C address of slave device
+    /// \param reg Register to read data from
+    uint8_t masterReceive(uint8_t addr, uint8_t reg);
 
     //Manually set the clock configuration. Refer to your MCU's reference manual for examples
     void setClockConfig(uint8_t prescaler, uint8_t dataSetupTime, uint8_t dataHoldTime, uint8_t SCLHighPeriod, uint8_t SCLLowPeriod);
@@ -33,9 +42,7 @@ private:
 
 };
 
-
-
-
+#define I2C(num) I2CManager::get(num)
 
 class I2CManager{
 
@@ -47,7 +54,7 @@ public:
 
 private:
 
-    inline static SHAL_I2C m_UARTs[NUM_I2C_BUSES] = {};
+    inline static SHAL_I2C m_I2CBuses[NUM_I2C_BUSES] = {};
 
 };
 

@@ -77,10 +77,10 @@ constexpr SHAL_I2C_Timing_Reg getI2CTimerReg(const I2C_Pair pair){
     switch(pair){
         case I2C_Pair::SCL1B6_SDA1B7:
         case I2C_Pair::SCL1B8_SDA1B9:
-            return {&I2C1->TIMINGR,31,4,23,4,19,4,15,8,7,0};
+            return {&I2C1->TIMINGR,31,23,19,15,7};
         case I2C_Pair::SCL2B10_SDA2B11:
         case I2C_Pair::SCL2B13_SDA2B14:
-            return {&I2C2->TIMINGR,31,4,23,4,19,4,15,8,7,0};
+            return {&I2C2->TIMINGR,31,23,19,15,7};
         case I2C_Pair::NUM_PAIRS:
         case I2C_Pair::INVALID:
             assert(false);

@@ -29,6 +29,8 @@ void SHAL_UART::init(const UART_Pair pair){
     SHAL_UART_ENABLE_REG pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the SHAL_UART channel
 
     *pairUARTEnable.reg |= pairUARTEnable.mask; //Enable SHAL_UART line
+
+
 }
 
 void SHAL_UART::begin(uint32_t baudRate) volatile {
@@ -63,5 +65,11 @@ void SHAL_UART::sendChar(char c) volatile {
 
 
 SHAL_UART& UARTManager::get(uint8_t uart) {
+
+    if(uart > NUM_USART_LINES - 1){
+        assert(false);
+        //Memory fault
+    }
+
     return m_UARTs[uart];
 }
