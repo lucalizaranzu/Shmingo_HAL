@@ -98,6 +98,12 @@ void SHAL_I2C::masterRead(uint8_t addr, uint8_t *readBuffer, uint8_t bytesToRead
     masterWriteRead(addr,nullptr,0,readBuffer,bytesToRead);
 }
 
+uint8_t SHAL_I2C::masterWriteReadByte(uint8_t addr, const uint8_t *writeData, size_t writeLen) {
+    uint8_t val = 0;
+    masterWriteRead(addr, writeData, writeLen, &val, 1);
+    return val;
+}
+
 SHAL_I2C& I2CManager::get(uint8_t I2CBus) {
 
     if(I2CBus > NUM_I2C_BUSES - 1){

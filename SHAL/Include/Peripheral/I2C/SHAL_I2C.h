@@ -27,6 +27,8 @@ public:
     /// \param readLen number of bytes to be read
     void masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t writeLen, uint8_t* readData, size_t readLen);
 
+    uint8_t masterWriteReadByte(uint8_t addr, const uint8_t* writeData, size_t writeLen);
+
     /// Function to write an array of commands to an I2C device
     /// \param addr Address of slave device
     /// \param writeData Pointer to array of commands

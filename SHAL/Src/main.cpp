@@ -4,7 +4,7 @@
 
 void c3Interrupt(){
     PIN(A5).toggle();
-    UART(2).sendString("New test");
+    SHAL_UART2.sendString("New test");
 }
 
 void tim2Handler(){
@@ -20,6 +20,7 @@ int main() {
     SHAL_UART2.begin(115200);
 
     SHAL_I2C1.init(I2C_Pair::SCL1B6_SDA1B7);
+    SHAL_I2C1.setClockConfig(0x2000090E);
 
     //Use pin C3 to trigger a function on external interrupt
     PIN(C3).useAsExternalInterrupt(TriggerMode::RISING_EDGE,c3Interrupt);
@@ -31,11 +32,27 @@ int main() {
     PIN(A4).setPinMode(PinMode::OUTPUT_MODE);
     PIN(A5).setPinMode(PinMode::OUTPUT_MODE);
 
-    c3Interrupt();
+    //Temporary setup for DHT20
 
-    SHAL_delay_ms(3000);
+    PIN(A5).setLow();
 
-    c3Interrupt(); //test
+    SHAL_delay_ms(5000); //Wait 100 ms from datasheet
+
+    PIN(A5).setHigh();
+
+    uint8_t initByte[1] = {0x71};
+
+    uint8_t status = SHAL_I2C1.masterWriteReadByte(0x38,initByte,1);
+
+    if ((status & 0x18) != 0x18) {
+        SHAL_UART2.sendString("DHT ready");
+    } else {
+        SHAL_UART2.sendString("DHT broke");
+    }
+
+    PIN(A5).setLow();
+
+    //End setup
 
     while (true) {
     	__WFI();
