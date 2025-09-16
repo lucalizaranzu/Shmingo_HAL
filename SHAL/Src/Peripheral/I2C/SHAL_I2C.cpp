@@ -5,14 +5,20 @@
 #include "SHAL_I2C.h"
 #include "SHAL_GPIO.h"
 
+#include "SHAL_UART.h"
+
 void SHAL_I2C::init(I2C_Pair pair) volatile {
     m_I2CPair = pair;
 
-    SHAL_I2C_Pair I2CPair = getI2CPair(pair); //Get the UART_PAIR information to be initialized
+    SHAL_I2C_Pair I2CPair = getI2CPair(pair); //Get the I2C_PAIR information to be initialized
 
     //Get the SHAL_GPIO pins for this SHAL_I2C setup
     GPIO_Key SCL_Key = I2CPair.SCL_Key; //SCL pin
     GPIO_Key SDA_Key = I2CPair.SDA_Key; //SDA pin
+
+    SHAL_I2C_Enable_Reg pairI2CEnable = getI2CEnableReg(pair); //Register and mask to enable the I2C peripheral
+
+    *pairI2CEnable.reg &= ~pairI2CEnable.mask; //Enable I2C peripheral clock
 
     GET_GPIO(SCL_Key).setPinMode(PinMode::ALTERNATE_FUNCTION_MODE); //Implicitly initializes and enables GPIO bus
     GET_GPIO(SDA_Key).setPinMode(PinMode::ALTERNATE_FUNCTION_MODE);
@@ -30,13 +36,12 @@ void SHAL_I2C::init(I2C_Pair pair) volatile {
     GET_GPIO(SCL_Key).setInternalResistor(InternalResistorType::PULLUP);
     GET_GPIO(SDA_Key).setInternalResistor(InternalResistorType::PULLUP);
 
-    SHAL_I2C_Enable_Reg pairI2CEnable = getI2CEnableReg(pair); //Register and mask to enable the I2C peripheral
     SHAL_I2C_Reset_Reg pairI2CReset = getI2CResetReg(pair);
 
-    *pairI2CReset.reg |= pairI2CReset.mask; //Reset peripheral
     *pairI2CEnable.reg |= pairI2CEnable.mask; //Enable I2C peripheral clock
 
-    I2CPair.I2CReg->CR1 |= I2C_CR1_PE; //Enable I2C peripheral
+    *pairI2CReset.reg |= pairI2CReset.mask; //Reset peripheral
+    *pairI2CReset.reg &= ~pairI2CReset.mask; //Reset peripheral
 }
 
 void SHAL_I2C::setClockConfig(uint8_t prescaler, uint8_t dataSetupTime, uint8_t dataHoldTime, uint8_t SCLHighPeriod, uint8_t SCLLowPeriod) {
@@ -48,33 +53,47 @@ void SHAL_I2C::setClockConfig(uint8_t prescaler, uint8_t dataSetupTime, uint8_t 
     *clockReg.reg |= (dataHoldTime << clockReg.dataHoldTime_offset);
     *clockReg.reg |= (SCLHighPeriod << clockReg.SCLHighPeriod_offset);
     *clockReg.reg |= (SCLLowPeriod << clockReg.SCLLowPeriod_offset);
+
+    getI2CPair(m_I2CPair).I2CReg->CR1 |= I2C_CR1_PE; //Enable I2C peripheral
 }
 
 void SHAL_I2C::setClockConfig(uint32_t configuration) {
     *getI2CTimerReg(m_I2CPair).reg = configuration;
+
+    getI2CPair(m_I2CPair).I2CReg->CR1 |= I2C_CR1_PE; //Enable I2C peripheral
 }
 
 void SHAL_I2C::masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t writeLen, uint8_t* readData, size_t readLen) {
     volatile I2C_TypeDef* I2CPeripheral = getI2CPair(m_I2CPair).I2CReg;
 
+    SHAL_UART2.sendString("1\t\n");
+
     //Wait for I2C  bus
     while (I2CPeripheral->ISR & I2C_ISR_BUSY);
+
+    SHAL_UART2.sendString("2\t\n");
+
 
     //Write phase
     if (writeLen > 0) {
         //Configure: NBYTES = wlen, write mode, START
-        I2CPeripheral->CR2 = (addr << 1) |
-                             (writeLen << I2C_CR2_NBYTES_Pos) |
-                             I2C_CR2_START;
+        I2CPeripheral->CR2 = (addr << 1) | (writeLen << I2C_CR2_NBYTES_Pos) | I2C_CR2_START;
+
+        SHAL_UART2.sendString("2.5\t\n");
 
         for (size_t i = 0; i < writeLen; i++) {
-            while (!(I2CPeripheral->ISR & I2C_ISR_TXIS)); // TX ready
+            while(!(I2CPeripheral->ISR & I2C_ISR_TXIS)); //TX ready
             I2CPeripheral->TXDR = writeData[i];
         }
+
+        SHAL_UART2.sendString("2.67\t\n");
 
         //Wait until transfer complete
         while (!(I2CPeripheral->ISR & I2C_ISR_TC));
     }
+
+    SHAL_UART2.sendString("3\t\n");
+
 
     //Read phase
     if (readLen > 0) {
@@ -88,6 +107,9 @@ void SHAL_I2C::masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t wri
             readData[i] = static_cast<uint8_t>(I2CPeripheral->RXDR);
         }
     }
+
+    SHAL_UART2.sendString("4\t\n");
+
 }
 
 void SHAL_I2C::masterWrite(uint8_t addr, const uint8_t *writeData, uint8_t writeLen) {

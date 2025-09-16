@@ -42,7 +42,7 @@ int main() {
 
     uint8_t initByte[1] = {0x71};
 
-    uint8_t status = SHAL_I2C1.masterWriteReadByte(0x38,initByte,1);
+    uint8_t status = SHAL_I2C1.masterWriteReadByte(0xEE,initByte,1);
 
     if ((status & 0x18) != 0x18) {
         SHAL_UART2.sendString("DHT ready");
