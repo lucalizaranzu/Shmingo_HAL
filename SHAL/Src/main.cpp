@@ -13,9 +13,13 @@ void tim2Handler(){
 
 int main() {
 
+    SHAL_init();
+
     //Setup UART2 (used by nucleo devices for USB comms)
     SHAL_UART2.init(UART_Pair::Tx2A2_Rx2A3);
     SHAL_UART2.begin(115200);
+
+    SHAL_I2C1.init(I2C_Pair::SCL1B6_SDA1B7);
 
     //Use pin C3 to trigger a function on external interrupt
     PIN(C3).useAsExternalInterrupt(TriggerMode::RISING_EDGE,c3Interrupt);
@@ -26,6 +30,12 @@ int main() {
 
     PIN(A4).setPinMode(PinMode::OUTPUT_MODE);
     PIN(A5).setPinMode(PinMode::OUTPUT_MODE);
+
+    c3Interrupt();
+
+    SHAL_delay_ms(3000);
+
+    c3Interrupt(); //test
 
     while (true) {
     	__WFI();

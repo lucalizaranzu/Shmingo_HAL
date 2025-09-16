@@ -11,5 +11,6 @@
 #include "SHAL_TIM.h"
 #include "SHAL_GPIO.h"
 #include "SHAL_UART.h"
+#include "SHAL_I2C.h"
 
 #endif

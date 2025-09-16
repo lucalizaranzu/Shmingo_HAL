@@ -5,6 +5,8 @@
 #ifndef SHMINGO_HAL_SHAL_I2C_H
 #define SHMINGO_HAL_SHAL_I2C_H
 
+#include <cstdio>
+
 #include "SHAL_CORE.h"
 #include "SHAL_I2C_REG.h"
 
@@ -17,16 +19,26 @@ public:
 
     void init(I2C_Pair pair) volatile;
 
-    ///
-    /// \param addr I2C address of slave device
-    /// \param reg Address of register in slave device to write to
-    /// \param data Data to write to slave register
-    void masterTransmit(uint8_t addr, uint8_t reg, uint8_t data);
+    /// General I2C function to send commands to a device, then read back any returned data if necessary
+    /// \param addr address of slave device
+    /// \param writeData pointer to array of write commands
+    /// \param writeLen number of write commands
+    /// \param readData pointer to buffer to write received data to
+    /// \param readLen number of bytes to be read
+    void masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t writeLen, uint8_t* readData, size_t readLen);
 
-    ///
-    /// \param addr I2C address of slave device
-    /// \param reg Register to read data from
-    uint8_t masterReceive(uint8_t addr, uint8_t reg);
+    /// Function to write an array of commands to an I2C device
+    /// \param addr Address of slave device
+    /// \param writeData Pointer to array of commands
+    /// \param writeLen Number of commands
+    void masterWrite(uint8_t addr, const uint8_t* writeData, uint8_t writeLen);
+
+    /// Function to read bytes from an I2C device
+    /// \param addr Address of slave device
+    /// \param readBuffer Pointer to buffer where data will be placed
+    /// \param bytesToRead Number of bytes to read
+    void masterRead(uint8_t addr, uint8_t* readBuffer, uint8_t bytesToRead);
+
 
     //Manually set the clock configuration. Refer to your MCU's reference manual for examples
     void setClockConfig(uint8_t prescaler, uint8_t dataSetupTime, uint8_t dataHoldTime, uint8_t SCLHighPeriod, uint8_t SCLLowPeriod);

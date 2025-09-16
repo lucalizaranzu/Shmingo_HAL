@@ -54,59 +54,48 @@ void SHAL_I2C::setClockConfig(uint32_t configuration) {
     *getI2CTimerReg(m_I2CPair).reg = configuration;
 }
 
-void SHAL_I2C::masterTransmit(uint8_t addr, uint8_t reg, uint8_t data) {
-
+void SHAL_I2C::masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t writeLen, uint8_t* readData, size_t readLen) {
     volatile I2C_TypeDef* I2CPeripheral = getI2CPair(m_I2CPair).I2CReg;
 
-    //Wait until not busy
+    //Wait for I2C  bus
     while (I2CPeripheral->ISR & I2C_ISR_BUSY);
 
-    //Send start + slave address
-    I2CPeripheral->CR2 = (addr << 1) | (2 << I2C_CR2_NBYTES_Pos) | I2C_CR2_START | I2C_CR2_AUTOEND; //Pack bits in compliance with I2C format
+    //Write phase
+    if (writeLen > 0) {
+        //Configure: NBYTES = wlen, write mode, START
+        I2CPeripheral->CR2 = (addr << 1) |
+                             (writeLen << I2C_CR2_NBYTES_Pos) |
+                             I2C_CR2_START;
 
-    //Wait until TX ready
-    while (!(I2CPeripheral->ISR & I2C_ISR_TXIS));
+        for (size_t i = 0; i < writeLen; i++) {
+            while (!(I2CPeripheral->ISR & I2C_ISR_TXIS)); // TX ready
+            I2CPeripheral->TXDR = writeData[i];
+        }
 
-    //Send register address
-    I2CPeripheral->TXDR = reg;
+        //Wait until transfer complete
+        while (!(I2CPeripheral->ISR & I2C_ISR_TC));
+    }
 
-    //Wait until TX ready
-    while (!(I2CPeripheral->ISR & I2C_ISR_TXIS));
+    //Read phase
+    if (readLen > 0) {
+        I2CPeripheral->CR2 = (addr << 1) |
+                             I2C_CR2_RD_WRN |
+                             (readLen << I2C_CR2_NBYTES_Pos) |
+                             I2C_CR2_START | I2C_CR2_AUTOEND;
 
-    //Send data to write to register
-    I2CPeripheral->TXDR = data;
+        for (size_t i = 0; i < readLen; i++) {
+            while (!(I2CPeripheral->ISR & I2C_ISR_RXNE)); //RX ready
+            readData[i] = static_cast<uint8_t>(I2CPeripheral->RXDR);
+        }
+    }
 }
 
+void SHAL_I2C::masterWrite(uint8_t addr, const uint8_t *writeData, uint8_t writeLen) {
+    masterWriteRead(addr,writeData,writeLen,nullptr,0);
+}
 
-uint8_t SHAL_I2C::masterReceive(uint8_t addr, uint8_t reg) {
-
-    volatile I2C_TypeDef* I2CPeripheral = getI2CPair(m_I2CPair).I2CReg;
-
-    //Send register address with write
-
-    //Wait for bus
-    while (I2CPeripheral->ISR & I2C_ISR_BUSY);
-
-    //Send start with I2C config
-    I2CPeripheral->CR2 = (addr << 1) | (1 << I2C_CR2_NBYTES_Pos) | I2C_CR2_START;
-
-    //Wait for transmit
-    while (!(I2CPeripheral->ISR & I2C_ISR_TXIS));
-
-    //Set address to read from
-    I2CPeripheral->TXDR = reg;
-
-    //Wait for transfer to complete
-    while (!(I2CPeripheral->ISR & I2C_ISR_TC));
-
-    //Restart in read mode, auto end
-    I2CPeripheral->CR2 = (addr << 1) | I2C_CR2_RD_WRN |
-                (1 << I2C_CR2_NBYTES_Pos) |
-                I2C_CR2_START | I2C_CR2_AUTOEND;
-
-    //Wait
-    while (!(I2C1->ISR & I2C_ISR_RXNE));
-    return (uint8_t)I2C1->RXDR;
+void SHAL_I2C::masterRead(uint8_t addr, uint8_t *readBuffer, uint8_t bytesToRead) {
+    masterWriteRead(addr,nullptr,0,readBuffer,bytesToRead);
 }
 
 SHAL_I2C& I2CManager::get(uint8_t I2CBus) {

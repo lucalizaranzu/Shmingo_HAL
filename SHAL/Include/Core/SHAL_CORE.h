@@ -11,9 +11,24 @@
 
 #include <cstdint>
 
+//Overall init function for SHAL --------------------------
+
+void SHAL_init();
+
+//---------------------------------------------------------
+
+
+
+
 //Universal structs and defines ---------------------------
 
+//Currently configures systick to count down in microseconds
+void systick_init();
 
+//Max of 16ms, use SHAL_delay_ms for longer delay
+void SHAL_delay_us(uint32_t us);
+
+void SHAL_delay_ms(uint32_t ms);
 
 //---------------------------------------------------------
 
