@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    SHAL_TIM.h
   * @author  Luca Lizaranzu
-  * @brief   Related to USART and UART abstractions
+  * @brief   Related to USART and SHAL_UART abstractions
   ******************************************************************************
   */
 
@@ -10,38 +10,30 @@
 #include "SHAL_UART.h"
 #include "SHAL_GPIO.h"
 
-UART::UART(const UART_Pair pair) : m_UARTPair(pair){
+void SHAL_UART::init(const UART_Pair pair){
+
+    m_UARTPair = pair;
+
     SHAL_UART_Pair uart_pair = getUARTPair(pair); //Get the UART_PAIR information to be initialized
 
-    //Get the GPIO pins for this UART setup
+    //Get the SHAL_GPIO pins for this SHAL_UART setup
     GPIO_Key Tx_Key = uart_pair.TxKey; //Tx pin
     GPIO_Key Rx_Key = uart_pair.RxKey; //Rx pin
 
-    uint8_t Tx_Pin = getGPIORegister(Tx_Key).global_offset;
-    uint8_t Rx_Pin = getGPIORegister(Rx_Key).global_offset;
+    GET_GPIO(Tx_Key).setPinMode(PinMode::ALTERNATE_FUNCTION_MODE);
+    GET_GPIO(Rx_Key).setPinMode(PinMode::ALTERNATE_FUNCTION_MODE);
 
-    initGPIO(Tx_Key,PinMode::ALTERNATE_FUNCTION_MODE); //Initialize Tx GPIO with alternate function (initializes GPIO port as well)
-    initGPIO(Rx_Key,PinMode::ALTERNATE_FUNCTION_MODE); //Initialize Rx GPIO with alternate function
+    GET_GPIO(Tx_Key).setAlternateFunction(uart_pair.TxAlternateFunctionMask);
+    GET_GPIO(Rx_Key).setAlternateFunction(uart_pair.RxAlternateFunctionMask);
 
-    //Determine which AFR register (high or low) to write depending on pin
-    uint8_t TxAFR = Tx_Pin < 8 ? 0 : 1; //Use AFR[0] if pin < 8, AFR[1] if pin >= 8
-    uint8_t RxAFR = Rx_Pin < 8 ? 0 : 1;
+    SHAL_UART_ENABLE_REG pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the SHAL_UART channel
 
-    /*Apply Alternate Function masks to the AFR registers for each GPIO to enable alternate functions
-     * The AFR register for GPIO_Typedef* is actually two registers - a low reg and high reg.
-     * The low reg handles pins 0-7, and the high reg handles 8-15.
-     * Each pin gets 4 bits in the register for AFR0 - AFR7. Hence 8 * 4 = 32 bits.
-     * Each AFR is a different function, look at the DATASHEET (not reference manual) to find these alternate function mappings
-     */
-    getGPIORegister(Tx_Key).reg->AFR[TxAFR] |= getAFMask(uart_pair.TxMask) << (4 * (Tx_Pin % 8));
-    getGPIORegister(Rx_Key).reg->AFR[RxAFR] |= getAFMask(uart_pair.RxMask) << (4 * (Rx_Pin % 8));
+    *pairUARTEnable.reg |= pairUARTEnable.mask; //Enable SHAL_UART line
 
-    SHAL_UART_ENABLE_REG pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the UART channel
 
-    *pairUARTEnable.reg |= pairUARTEnable.mask; //Enable UART line
 }
 
-void UART::begin(uint32_t baudRate) volatile {
+void SHAL_UART::begin(uint32_t baudRate) volatile {
 
     USART_TypeDef* usart = getUARTPair(m_UARTPair).USARTReg;
 
@@ -57,11 +49,11 @@ void UART::begin(uint32_t baudRate) volatile {
 
 }
 
-void UART::sendString(const char *s) volatile {
+void SHAL_UART::sendString(const char *s) volatile {
     while (*s) sendChar(*s++); //Send chars while we haven't reached end of s
 }
 
-void UART::sendChar(char c) volatile {
+void SHAL_UART::sendChar(char c) volatile {
 
     USART_TypeDef* usart = getUARTPair(m_UARTPair).USARTReg;
 
@@ -72,11 +64,12 @@ void UART::sendChar(char c) volatile {
 
 
 
-UART& UARTManager::get(UART_Pair pair) {
+SHAL_UART& UARTManager::get(uint8_t uart) {
 
-    //Reassign if pair doesn't match
-    if(m_UARTs[getUARTChannel(pair)].m_UARTPair != pair) {
-        m_UARTs[getUARTChannel(pair)] = UART(pair);
+    if(uart > NUM_USART_LINES - 1){
+        assert(false);
+        //Memory fault
     }
-    return m_UARTs[getUARTChannel(pair)];
+
+    return m_UARTs[uart];
 }

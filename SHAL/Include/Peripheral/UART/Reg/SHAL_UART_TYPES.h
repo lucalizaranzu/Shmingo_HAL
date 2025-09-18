@@ -8,25 +8,15 @@
 #include "SHAL_CORE.h"
 #include "SHAL_GPIO_REG.h"
 
-enum class AF_Mask : uint8_t{
-    AF0,
-    AF1,
-    AF2,
-    AF3,
-    AF4,
-    AF5,
-    AF6,
-    AF7
-};
+
 
 //Represents a pair of pins usable for USART Tx + Rx in combination, and their alternate function mapping
 struct SHAL_UART_Pair{
-
     USART_TypeDef* USARTReg;
     GPIO_Key TxKey;
     GPIO_Key RxKey;
-    AF_Mask TxMask;
-    AF_Mask RxMask;
+    GPIO_Alternate_Function TxAlternateFunctionMask;
+    GPIO_Alternate_Function RxAlternateFunctionMask;
 };
 
 struct SHAL_UART_ENABLE_REG{

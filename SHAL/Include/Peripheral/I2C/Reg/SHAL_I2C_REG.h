@@ -1,10 +1,9 @@
 //
-// Created by Luca on 9/7/2025.
+// Created by Luca on 9/9/2025.
 //
 
-#ifndef SHAL_UART_REG_H
-#define SHAL_UART_REG_H
-
+#ifndef SHAL_I2C_REG_H
+#define SHAL_I2C_REG_H
 
 #if defined(STM32F030x6)
 #include "stm32f030x6.h"
@@ -29,7 +28,7 @@
 #elif defined(STM32F071xB)
 #include "stm32f071xb.h"
 #elif defined(STM32F072xB)
-#include "SHAL_UART_REG_F072xB.h"
+#include "SHAL_I2C_REG_F072xB.h"
 #elif defined(STM32F078xx)
 #include "stm32f078xx.h"
 #elif defined(STM32F091xC)
@@ -42,5 +41,4 @@
  #error "Please select first the target STM32F0xx device used in your application (in stm32f0xx.h file)"
 #endif
 
-
-#endif //SHMINGO_HAL_SHAL_UART_REG_H
+#endif //SHAL_I2C_REG_H

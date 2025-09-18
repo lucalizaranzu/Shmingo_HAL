@@ -13,23 +13,10 @@
 
 
 
-enum class PinMode : uint8_t{
-    INPUT_MODE,
-    OUTPUT_MODE,
-    ALTERNATE_FUNCTION_MODE,
-    ANALOG_MODE,
-    INVALID
-};
-unsigned long getPinMode(PinMode mode);
 
-enum class TriggerMode : uint8_t{
-    RISING_EDGE,
-    FALLING_EDGE,
-    RISING_FALLING_EDGE
-};
 
-//Abstraction of GPIO registers
-class GPIO{
+//Abstraction of SHAL_GPIO registers
+class SHAL_GPIO{
 
 public:
 
@@ -39,37 +26,55 @@ public:
     void setHigh();
     void setLow();
 
+    void setPinMode(PinMode mode) volatile;
+
+    void setAlternateFunction(GPIO_Alternate_Function AF) volatile;
+
+    void setPinType(PinType type) volatile;
+
+    void setOutputSpeed(OutputSpeed speed) volatile;
+
+    void setInternalResistor(InternalResistorType type) volatile;
+
+
+    void useAsExternalInterrupt(TriggerMode mode, EXTICallback callback);
+
 private:
 
     friend class GPIOManager;
 
-    explicit GPIO(GPIO_Key key, PinMode pinMode);
-    GPIO();
+    explicit SHAL_GPIO(GPIO_Key key);
+    SHAL_GPIO();
 
     GPIO_Key m_GPIO_KEY = GPIO_Key::INVALID;
 
 };
 
-//Init GPIO for normal use
-#define initGPIO(GPIO_KEY, PIN_MODE) GPIOManager::get(GPIO_KEY, PIN_MODE)
 
-//Init GPIO for use as an external interrupt
-#define useGPIOAsInterrupt(GPIO_KEY, Trigger_Mode, Callback) GPIOManager::getInterruptGPIO(GPIO_KEY, Trigger_Mode, Callback)
 
-//Manages instances of GPIO objects
+
+
+//Init SHAL_GPIO for normal use
+#define PIN_TO_KEY(name) GPIO_Key::name
+#define PIN(name) GPIOManager::get(PIN_TO_KEY(name))
+
+#define GET_GPIO(key) GPIOManager::get(key)
+
+#define GPIO_A
+
+//Manages instances of SHAL_GPIO objects
 class GPIOManager{
 
 public:
 
-    static GPIO& get(GPIO_Key, PinMode pinMode);
+    static SHAL_GPIO& get(GPIO_Key);
 
-    static void getInterruptGPIO(GPIO_Key key, TriggerMode mode, EXTICallback callback);
 
     GPIOManager() = delete;
 
 private:
 
-inline static GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
+inline static SHAL_GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
 
 };
 

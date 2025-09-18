@@ -11,11 +11,56 @@
 
 #include <cstdint>
 
+//Overall init function for SHAL --------------------------
+
+void SHAL_init();
+
+//---------------------------------------------------------
+
+
+
+
 //Universal structs and defines ---------------------------
 
+typedef bool (*condition_fn_t)(void);
+
+#define SHAL_WAIT_FOR_CONDITION_US(cond, timeout_us) \
+    SHAL_wait_for_condition_us([&](){ return (cond); }, (timeout_us))
+
+#define SHAL_WAIT_FOR_CONDITION_MS(cond, timeout_ms) \
+    SHAL_wait_for_condition_ms([&](){ return (cond); }, (timeout_ms))
 
 
 
+//Currently configures systick to count down in microseconds
+void systick_init();
+
+//Max of 16ms, use SHAL_delay_ms for longer delay
+void SHAL_delay_us(uint32_t us);
+
+void SHAL_delay_ms(uint32_t ms);
+
+template<typename Condition>
+bool SHAL_wait_for_condition_us(Condition cond, uint32_t timeout_us) {
+    while (timeout_us--) {
+        if (cond()) {
+            return true; // success
+        }
+        SHAL_delay_us(1);
+    }
+    return false; // timeout
+}
+
+template<typename Condition>
+bool SHAL_wait_for_condition_ms(Condition cond, uint32_t timeout_ms) {
+    while (timeout_ms--) {
+        if (cond()) {
+            return true; // success
+        }
+        SHAL_delay_ms(1);
+    }
+    return false; // timeout
+}
 
 //---------------------------------------------------------
 

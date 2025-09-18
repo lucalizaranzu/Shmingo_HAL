@@ -36,6 +36,8 @@ set(PROJECT_INCLUDE_DIRECTORIES
         SHAL/Include/Peripheral/GPIO/Reg
         SHAL/Include/Peripheral/UART
         SHAL/Include/Peripheral/UART/Reg
+        SHAL/Include/Peripheral/I2C
+        SHAL/Include/Peripheral/I2C/Reg
         SHAL/Include/Peripheral/EXT/
         ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Include
 )

@@ -6,8 +6,7 @@
 #include <cassert>
 
 Timer::Timer(Timer_Key t) : TIMER_KEY(t){
-    TIM_RCC_Enable rcc = getTimerRCC(TIMER_KEY);
-    *rcc.busEnableReg |= (1 << rcc.offset);
+
 }
 
 Timer::Timer() : TIMER_KEY(Timer_Key::S_TIM_INVALID){
@@ -37,6 +36,14 @@ void Timer::enableInterrupt() {
     NVIC_EnableIRQ(getIRQn(TIMER_KEY));
 }
 
+void Timer::init(uint32_t prescaler, uint32_t autoReload) {
+    TIM_RCC_Enable rcc = getTimerRCC(TIMER_KEY);
+    *rcc.busEnableReg |= (1 << rcc.offset);
+
+    setPrescaler(prescaler);
+    setARR(autoReload);
+}
+
 
 Timer &TimerManager::get(Timer_Key timer_key) {
 
@@ -52,3 +59,5 @@ Timer &TimerManager::get(Timer_Key timer_key) {
 
     return timers[static_cast<int>(timer_key)];
 }
+
+
