@@ -40,3 +40,23 @@ void SHAL_delay_ms(uint32_t ms){
         SHAL_delay_us(1000);
     }
 }
+
+bool SHAL_wait_for_condition_us(condition_fn_t condition, uint32_t timeout_us){
+    while (timeout_us--) {
+        if (condition()) {
+            return true; // Condition met
+        }
+        SHAL_delay_us(1); // Wait 1 µs
+    }
+    return false; // Timeout
+}
+
+bool SHAL_wait_for_condition_ms(condition_fn_t condition, uint32_t timeout_ms){
+    while (timeout_ms--) {
+        if (condition()) {
+            return true; // Condition met
+        }
+        SHAL_delay_ms(1); // Wait 1 µs
+    }
+    return false; // Timeout
+}

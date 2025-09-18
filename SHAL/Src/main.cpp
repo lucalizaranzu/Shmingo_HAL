@@ -3,8 +3,40 @@
 
 
 void c3Interrupt(){
-    PIN(A5).toggle();
-    SHAL_UART2.sendString("New test");
+    SHAL_UART2.sendString("Begin\r\n");
+
+    uint8_t cmd[3] = {0xAC, 0x33, 0x00};
+    SHAL_I2C1.masterWrite(0x38, cmd, 3);
+
+    SHAL_UART2.sendString("Hello\r\n");
+
+    SHAL_delay_ms(100);
+
+    uint8_t buffer[7] = {0};
+
+    SHAL_UART2.sendString("Buffer created?\r\n");
+
+    //Read 7 bytes (status + 5 data + CRC)
+    SHAL_I2C1.masterRead(0x38, buffer, 7);
+
+    SHAL_UART2.sendString("Read complete\r\n");
+
+    //Parse humidity (20 bits)
+    uint32_t rawHumidity = ((uint32_t)buffer[1] << 12) |
+                           ((uint32_t)buffer[2] << 4) |
+                           ((uint32_t)buffer[3] >> 4);
+
+    // Parse temperature (20 bits)
+    uint32_t rawTemp = (((uint32_t)buffer[3] & 0x0F) << 16) |
+                       ((uint32_t)buffer[4] << 8) |
+                       ((uint32_t)buffer[5]);
+
+    float humidity = (rawHumidity * 100.0f) / 1048576.0f;     // 2^20 = 1048576
+    float temperature = (rawTemp * 200.0f) / 1048576.0f - 50.0f;
+
+    char buf[64];
+    sprintf(buf, "Temp: %.2f C, Hum: %.2f %%\r\n", temperature, humidity);
+    SHAL_UART2.sendString(buf);
 }
 
 void tim2Handler(){
@@ -32,25 +64,18 @@ int main() {
     PIN(A4).setPinMode(PinMode::OUTPUT_MODE);
     PIN(A5).setPinMode(PinMode::OUTPUT_MODE);
 
-    //Temporary setup for DHT20
 
-    PIN(A5).setLow();
 
-    SHAL_delay_ms(5000); //Wait 100 ms from datasheet
+    SHAL_delay_ms(3000); //Wait 100 ms from datasheet
 
-    PIN(A5).setHigh();
+    uint8_t cmd = 0x71;
+    uint8_t status = 0;
 
-    uint8_t initByte[1] = {0x71};
+    SHAL_I2C1.masterWriteRead(0x38, &cmd, 1, &status, 1);
 
-    uint8_t status = SHAL_I2C1.masterWriteReadByte(0xEE,initByte,1);
-
-    if ((status & 0x18) != 0x18) {
-        SHAL_UART2.sendString("DHT ready");
-    } else {
-        SHAL_UART2.sendString("DHT broke");
-    }
-
-    PIN(A5).setLow();
+    char statusString[32];
+    sprintf(statusString, "Status = 0x%02X\r\n", status);
+    SHAL_UART2.sendString(statusString);
 
     //End setup
 

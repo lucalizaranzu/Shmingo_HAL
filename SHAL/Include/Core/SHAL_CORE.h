@@ -22,6 +22,9 @@ void SHAL_init();
 
 //Universal structs and defines ---------------------------
 
+typedef bool (*condition_fn_t)(void);
+
+
 //Currently configures systick to count down in microseconds
 void systick_init();
 
@@ -29,6 +32,10 @@ void systick_init();
 void SHAL_delay_us(uint32_t us);
 
 void SHAL_delay_ms(uint32_t ms);
+
+bool SHAL_wait_for_condition_us(condition_fn_t condition, uint32_t timeout_us);
+
+bool SHAL_wait_for_condition_ms(condition_fn_t condition, uint32_t timeout_ms);
 
 //---------------------------------------------------------
 
