@@ -65,13 +65,12 @@ void SHAL_I2C::setClockConfig(uint32_t configuration) {
 
 void SHAL_I2C::masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t writeLen, uint8_t* readData, size_t readLen) {
 
-    SHAL_UART2.sendString("Beginning of writeread\r\n");
-
-
     volatile I2C_TypeDef* I2CPeripheral = getI2CPair(m_I2CPair).I2CReg;
 
-    //Wait for I2C  bus
-    while (I2CPeripheral->ISR & I2C_ISR_BUSY);
+    if(!SHAL_WAIT_FOR_CONDITION_MS((I2CPeripheral->ISR & I2C_ISR_BUSY) == 0, 100)){
+        SHAL_UART2.sendString("I2C timed out waiting for not busy\r\n");
+        return;
+    }
 
     //Write phase
     if (writeLen > 0) {
@@ -79,12 +78,18 @@ void SHAL_I2C::masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t wri
         I2CPeripheral->CR2 = (addr << 1) | (writeLen << I2C_CR2_NBYTES_Pos) | I2C_CR2_START;
 
         for (size_t i = 0; i < writeLen; i++) {
-            while(!(I2CPeripheral->ISR & I2C_ISR_TXIS)); //TX ready
+            if(!SHAL_WAIT_FOR_CONDITION_MS((I2CPeripheral->ISR & I2C_ISR_TXIS) != 0, 100)){
+                SHAL_UART2.sendString("I2C timed out waiting for TX\r\n");
+                return;
+            }
             I2CPeripheral->TXDR = writeData[i];
         }
 
         //Wait until transfer complete
-        while (!(I2CPeripheral->ISR & I2C_ISR_TC));
+        if(!SHAL_WAIT_FOR_CONDITION_MS((I2CPeripheral->ISR & I2C_ISR_TC) != 0, 100)){
+            SHAL_UART2.sendString("I2C timed out waiting for TC\r\n");
+            return;
+        }
     }
 
     //Read phase
@@ -92,18 +97,24 @@ void SHAL_I2C::masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t wri
 
         SHAL_UART2.sendString("Read initiated\r\n");
 
-        I2CPeripheral->CR2 = (addr << 1) |
-                             I2C_CR2_RD_WRN |
-                             (readLen << I2C_CR2_NBYTES_Pos) |
-                             I2C_CR2_START | I2C_CR2_AUTOEND;
+        I2CPeripheral->CR2 &= ~(I2C_CR2_NBYTES | I2C_CR2_SADD | I2C_CR2_RD_WRN);
+        I2CPeripheral->CR2 |= (addr << 1) |
+                              I2C_CR2_RD_WRN |
+                              (readLen << I2C_CR2_NBYTES_Pos) |
+                              I2C_CR2_START | I2C_CR2_AUTOEND;
 
         for (size_t i = 0; i < readLen; i++) {
-            while (!(I2CPeripheral->ISR & I2C_ISR_RXNE)); //RX ready
+            if(!SHAL_WAIT_FOR_CONDITION_MS((I2CPeripheral->ISR & I2C_ISR_RXNE) != 0 , 100)){
+                SHAL_UART2.sendString("I2C timed out waiting for RXNE\r\n");
+                return;
+            }
             SHAL_UART2.sendString("Read byte");
             readData[i] = static_cast<uint8_t>(I2CPeripheral->RXDR);
         }
     }
-    SHAL_UART2.sendString("\r\n");
+    else{
+        I2CPeripheral->CR2 |= I2C_CR2_STOP;
+    }
 }
 
 void SHAL_I2C::masterWrite(uint8_t addr, const uint8_t *writeData, uint8_t writeLen) {

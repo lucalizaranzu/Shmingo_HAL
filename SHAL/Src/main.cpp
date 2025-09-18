@@ -1,6 +1,7 @@
 #include "SHAL.h"
 #include "stm32f0xx.h"
 
+#include <stdlib.h>
 
 void c3Interrupt(){
     SHAL_UART2.sendString("Begin\r\n");
@@ -8,35 +9,36 @@ void c3Interrupt(){
     uint8_t cmd[3] = {0xAC, 0x33, 0x00};
     SHAL_I2C1.masterWrite(0x38, cmd, 3);
 
-    SHAL_UART2.sendString("Hello\r\n");
-
     SHAL_delay_ms(100);
 
-    uint8_t buffer[7] = {0};
-
-    SHAL_UART2.sendString("Buffer created?\r\n");
+    uint8_t dht_buf[7] = {0};
 
     //Read 7 bytes (status + 5 data + CRC)
-    SHAL_I2C1.masterRead(0x38, buffer, 7);
-
-    SHAL_UART2.sendString("Read complete\r\n");
+    SHAL_I2C1.masterRead(0x38, dht_buf, 7);
 
     //Parse humidity (20 bits)
-    uint32_t rawHumidity = ((uint32_t)buffer[1] << 12) |
-                           ((uint32_t)buffer[2] << 4) |
-                           ((uint32_t)buffer[3] >> 4);
+    uint32_t rawHumidity = ((uint32_t)dht_buf[1] << 12) |
+                           ((uint32_t)dht_buf[2] << 4) |
+                           ((uint32_t)dht_buf[3] >> 4);
 
-    // Parse temperature (20 bits)
-    uint32_t rawTemp = (((uint32_t)buffer[3] & 0x0F) << 16) |
-                       ((uint32_t)buffer[4] << 8) |
-                       ((uint32_t)buffer[5]);
+    uint32_t rawTemp = (((uint32_t)dht_buf[3] & 0x0F) << 16) |
+                       ((uint32_t)dht_buf[4] << 8) |
+                       ((uint32_t)dht_buf[5]);
 
-    float humidity = (rawHumidity * 100.0f) / 1048576.0f;     // 2^20 = 1048576
-    float temperature = (rawTemp * 200.0f) / 1048576.0f - 50.0f;
+    // Use 64-bit intermediate to avoid overflow
+    uint32_t hum_hundredths = (uint32_t)(((uint64_t)rawHumidity * 10000ULL) >> 20);
+    int32_t temp_hundredths = (int32_t)((((uint64_t)rawTemp * 20000ULL) >> 20) - 5000);
 
-    char buf[64];
-    sprintf(buf, "Temp: %.2f C, Hum: %.2f %%\r\n", temperature, humidity);
-    SHAL_UART2.sendString(buf);
+    char out[80];
+    sprintf(out, "rawH=0x%05lX rawT=0x%05lX\r\n",
+            (unsigned long)rawHumidity, (unsigned long)rawTemp);
+    SHAL_UART2.sendString(out);
+
+    // print as X.YY
+    sprintf(out, "Temp: %ld.%02ld C, Hum: %ld.%02ld %%\r\n",
+            (long)(temp_hundredths / 100), (long)(abs(temp_hundredths % 100)),
+            (long)(hum_hundredths / 100), (long)(hum_hundredths % 100));
+    SHAL_UART2.sendString(out);
 }
 
 void tim2Handler(){
@@ -77,6 +79,10 @@ int main() {
     sprintf(statusString, "Status = 0x%02X\r\n", status);
     SHAL_UART2.sendString(statusString);
 
+
+    SHAL_delay_ms(10);
+
+    c3Interrupt();
     //End setup
 
     while (true) {
