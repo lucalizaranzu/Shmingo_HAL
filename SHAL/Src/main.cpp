@@ -1,7 +1,7 @@
 #include "SHAL.h"
 #include "stm32f0xx.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 void c3Interrupt(){
     SHAL_UART2.sendString("Begin\r\n");
