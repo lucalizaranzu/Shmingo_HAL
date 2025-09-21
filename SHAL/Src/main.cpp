@@ -66,8 +66,6 @@ int main() {
     PIN(A4).setPinMode(PinMode::OUTPUT_MODE);
     PIN(A5).setPinMode(PinMode::OUTPUT_MODE);
 
-
-
     SHAL_delay_ms(3000); //Wait 100 ms from datasheet
 
     uint8_t cmd = 0x71;
