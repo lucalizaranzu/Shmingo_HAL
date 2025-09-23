@@ -13,9 +13,6 @@
 #include "SHAL_ADC.h"
 
 
-
-
-
 //Abstraction of SHAL_GPIO registers
 class SHAL_GPIO{
 
