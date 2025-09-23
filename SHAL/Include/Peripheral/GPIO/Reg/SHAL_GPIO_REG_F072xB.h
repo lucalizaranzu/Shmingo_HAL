@@ -270,6 +270,79 @@ constexpr uint32_t getGPIOPortNumber(const GPIO_Key g){
     __builtin_unreachable();
 }
 
+constexpr SHAL_GPIO_Port_Info getGPIOPortInfo(GPIO_Key key){
+    switch(key){
+        case GPIO_Key::A0:
+        case GPIO_Key::B0:
+        case GPIO_Key::C0:
+            return {0,ADC_Channel::CH0};
+        case GPIO_Key::A1:
+        case GPIO_Key::B1:
+        case GPIO_Key::C1:
+            return {1,ADC_Channel::CH1};
+        case GPIO_Key::A2:
+        case GPIO_Key::B2:
+        case GPIO_Key::C2:
+            return {2,ADC_Channel::CH2};
+        case GPIO_Key::A3:
+        case GPIO_Key::B3:
+        case GPIO_Key::C3:
+            return {3,ADC_Channel::CH3};
+        case GPIO_Key::A4:
+        case GPIO_Key::B4:
+        case GPIO_Key::C4:
+            return {4,ADC_Channel::CH4};
+        case GPIO_Key::A5:
+        case GPIO_Key::B5:
+        case GPIO_Key::C5:
+            return {5,ADC_Channel::CH5};
+        case GPIO_Key::A6:
+        case GPIO_Key::B6:
+        case GPIO_Key::C6:
+            return {6,ADC_Channel::CH6};
+        case GPIO_Key::A7:
+        case GPIO_Key::B7:
+        case GPIO_Key::C7:
+            return {7,ADC_Channel::CH7};
+        case GPIO_Key::A8:
+        case GPIO_Key::B8:
+        case GPIO_Key::C8:
+            return {8,ADC_Channel::CH8};
+        case GPIO_Key::A9:
+        case GPIO_Key::B9:
+        case GPIO_Key::C9:
+            return {9,ADC_Channel::CH9};
+        case GPIO_Key::A10:
+        case GPIO_Key::B10:
+        case GPIO_Key::C10:
+            return {10,ADC_Channel::CH10};
+        case GPIO_Key::A11:
+        case GPIO_Key::B11:
+        case GPIO_Key::C11:
+            return {11,ADC_Channel::CH11};
+        case GPIO_Key::A12:
+        case GPIO_Key::B12:
+        case GPIO_Key::C12:
+            return {12,ADC_Channel::CH12};
+        case GPIO_Key::A13:
+        case GPIO_Key::B13:
+        case GPIO_Key::C13:
+            return {13,ADC_Channel::CH13};
+        case GPIO_Key::A14:
+        case GPIO_Key::B14:
+        case GPIO_Key::C14:
+            return {14,ADC_Channel::CH14};
+        case GPIO_Key::A15:
+        case GPIO_Key::B15:
+        case GPIO_Key::C15:
+            return {15,ADC_Channel::CH15};
+        case GPIO_Key::NUM_GPIO:
+        case GPIO_Key::INVALID:
+            return {0,ADC_Channel::CH0};
+    }
+    __builtin_unreachable();
+}
+
 
 
 #endif //SHMINGO_HAL_SHAL_GPIO_REG_F072XB_H

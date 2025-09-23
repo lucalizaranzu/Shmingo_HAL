@@ -6,6 +6,7 @@
 #define SHMINGO_HAL_SHAL_ADC_TYPES_H
 
 enum class ADC_Channel : uint32_t {
+    CH0 = ADC_CHSELR_CHSEL0,
     CH1 = ADC_CHSELR_CHSEL1,
     CH2 = ADC_CHSELR_CHSEL2,
     CH3 = ADC_CHSELR_CHSEL3,

@@ -10,6 +10,7 @@
 #include <cassert>
 
 #include "SHAL_EXTI_CALLBACK.h"
+#include "SHAL_ADC.h"
 
 
 
@@ -26,6 +27,11 @@ public:
     void setHigh();
     void setLow();
 
+    /// Uses the ADC to read an analog voltage value
+    /// \param sampleTime The amount of clock cycles to use for the ADC
+    /// \return ADC result
+    uint16_t analogRead(ADC_SampleTime sampleTime = ADC_SampleTime::C239);
+
     void setPinMode(PinMode mode) volatile;
 
     void setAlternateFunction(GPIO_Alternate_Function AF) volatile;
@@ -38,6 +44,8 @@ public:
 
 
     void useAsExternalInterrupt(TriggerMode mode, EXTICallback callback);
+
+
 
 private:
 
@@ -60,7 +68,7 @@ private:
 
 #define GET_GPIO(key) GPIOManager::get(key)
 
-#define GPIO_A
+#define SET_ANALOGREAD_ADC(x) GPIOManager::setGPIOADC(x)
 
 //Manages instances of SHAL_GPIO objects
 class GPIOManager{
@@ -69,12 +77,17 @@ public:
 
     static SHAL_GPIO& get(GPIO_Key);
 
+    static SHAL_ADC getGPIOADC(){ return m_GPIO_ADC;}
+
+    static void setGPIOADC(SHAL_ADC adc){m_GPIO_ADC = adc;}
 
     GPIOManager() = delete;
 
 private:
 
-inline static SHAL_GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
+    inline static SHAL_GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
+
+    inline static SHAL_ADC m_GPIO_ADC = SHAL_ADC(1);
 
 };
 

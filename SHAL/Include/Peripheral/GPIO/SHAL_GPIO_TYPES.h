@@ -6,6 +6,7 @@
 #define SHAL_GPIO_TYPES_H
 
 #include "SHAL_CORE.h"
+#include "SHAL_ADC.h"
 
 struct SHAL_EXTIO_Register{
     volatile uint32_t* EXT_ICR;
@@ -21,6 +22,11 @@ struct SHAL_GPIO_Peripheral {
 struct SHAL_Peripheral_Register {
     volatile uint32_t* reg;
     unsigned long offset;
+};
+
+struct SHAL_GPIO_Port_Info{
+    uint8_t number;
+    ADC_Channel ADCChannel;
 };
 
 enum class PinMode : uint8_t{
@@ -65,7 +71,6 @@ enum class TriggerMode : uint8_t{
     FALLING_EDGE,
     RISING_FALLING_EDGE
 };
-
 
 
 #endif //SHMINGO_HAL_SHAL_GPIO_TYPES_H
