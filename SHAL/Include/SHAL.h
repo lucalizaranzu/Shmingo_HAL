@@ -12,5 +12,6 @@
 #include "SHAL_GPIO.h"
 #include "SHAL_UART.h"
 #include "SHAL_I2C.h"
+#include "SHAL_ADC.h"
 
 #endif

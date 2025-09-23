@@ -31,7 +31,7 @@ public:
     /// \param numChannels Number of channels to convert
     /// \param result Pointer to store converted channel results in
     /// \param time ADC_SampleTime - amount of clock cycles per conversion
-    void singleConvertSingle(ADC_Channel* channels, const int numChannels, uint16_t* result, ADC_SampleTime time = ADC_SampleTime::C239);
+    void multiConvertSingle(ADC_Channel* channels, const int numChannels, uint16_t* result, ADC_SampleTime time = ADC_SampleTime::C239);
 
 
 
@@ -44,14 +44,16 @@ private:
 };
 
 
-
-
+#define SHAL_ADC(x) ADCManager::getByIndex(x-1)
 
 class ADCManager{
 
 public:
 
     static SHAL_ADC& get(ADC_Key key);
+
+    static SHAL_ADC& getByIndex(int index);
+
 
     ADCManager() = delete;
 

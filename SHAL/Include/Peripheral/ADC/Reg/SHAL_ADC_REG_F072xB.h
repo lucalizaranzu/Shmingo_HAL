@@ -8,6 +8,7 @@
 #include "SHAL_CORE.h"
 #include "SHAL_ADC_TYPES.h"
 
+#define SHAL_ADC1 SHAL_ADC(1)
 
 enum class ADC_Key : uint8_t{
     S_ADC1,

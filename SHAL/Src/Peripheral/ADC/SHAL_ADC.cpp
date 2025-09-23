@@ -81,7 +81,7 @@ uint16_t SHAL_ADC::singleConvertSingle(ADC_Channel channel, ADC_SampleTime time)
     return result;
 }
 
-void SHAL_ADC::singleConvertSingle(ADC_Channel* channels, const int numChannels, uint16_t* result, ADC_SampleTime time) {
+void SHAL_ADC::multiConvertSingle(ADC_Channel* channels, const int numChannels, uint16_t* result, ADC_SampleTime time) {
     ADC_TypeDef* ADC_reg = getADCRegister(m_ADCKey);
 
     ADC->CCR |= ADC_CCR_VREFEN | ADC_CCR_TSEN; //Enable VREFINT and Temp sensor in global ADC struct
@@ -100,4 +100,16 @@ void SHAL_ADC::singleConvertSingle(ADC_Channel* channels, const int numChannels,
 
         result[i] = ADC_reg->DR;
     }
+}
+
+SHAL_ADC &ADCManager::get(ADC_Key key) {
+    return m_ADCs[static_cast<uint8_t>(key)];
+}
+
+SHAL_ADC& ADCManager::getByIndex(int index) {
+
+    if(index < static_cast<int>(ADC_Key::NUM_ADC)){
+        return m_ADCs[index];
+    }
+    return m_ADCs[0];
 }
