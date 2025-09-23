@@ -16,7 +16,7 @@ enum class ADC_Key : uint8_t{
     INVALID
 };
 
-ADC_TypeDef* getADCRegister(ADC_Key key){
+constexpr ADC_TypeDef* getADCRegister(ADC_Key key){
     switch(key){
         case ADC_Key::S_ADC1:
             return ADC1;
