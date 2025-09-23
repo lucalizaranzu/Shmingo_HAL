@@ -9,12 +9,22 @@
 #include "SHAL_ADC_TYPES.h"
 
 
-enum class ADC_Key{
-
+enum class ADC_Key : uint8_t{
     S_ADC1,
     NUM_ADC,
     INVALID
 };
 
+ADC_TypeDef* getADCRegister(ADC_Key key){
+    switch(key){
+        case ADC_Key::S_ADC1:
+            return ADC1;
+
+        case ADC_Key::NUM_ADC:
+        case ADC_Key::INVALID:
+            return nullptr;
+    }
+    __builtin_unreachable();
+}
 
 #endif //SHMINGO_HAL_SHAL_ADC_REG_F072XB_H

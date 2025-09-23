@@ -22,6 +22,13 @@ void SHAL_init();
 
 //Universal structs and defines ---------------------------
 
+enum class SHAL_Result{
+    OKAY,
+    ERROR
+};
+
+
+
 typedef bool (*condition_fn_t)(void);
 
 #define SHAL_WAIT_FOR_CONDITION_US(cond, timeout_us) \
@@ -29,7 +36,6 @@ typedef bool (*condition_fn_t)(void);
 
 #define SHAL_WAIT_FOR_CONDITION_MS(cond, timeout_ms) \
     SHAL_wait_for_condition_ms([&](){ return (cond); }, (timeout_ms))
-
 
 
 //Currently configures systick to count down in microseconds
