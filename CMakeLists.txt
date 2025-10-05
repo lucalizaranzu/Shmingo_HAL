@@ -3,15 +3,15 @@ cmake_minimum_required(VERSION 3.19)
 project(shmingo-HAL)
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(MCU_FAMILY "STM32F0xx" CACHE STRING "MCU family")
+set(MCU_FAMILY "STM32L4xx" CACHE STRING "MCU family")
 set(MCU_MODEL "" CACHE STRING "MCU model")
 
-set(CPU_PARAMETERS 
-    -mcpu=cortex-m0
-    -mthumb)
+set(CPU_PARAMETERS
+        -mcpu=cortex-m0
+        -mthumb)
 
-set(STARTUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/MX/startup_stm32f072rbtx.s)
-set(MCU_LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/MX/STM32F072RBTX_FLASH.ld)
+set(STARTUP_SCRIPT MX/L432KC/startup_stm32l432kcux.s)
+set(MCU_LINKER_SCRIPT MX/F072RB/STM32L432KCUX_FLASH.ld)
 
 set(EXECUTABLE ${CMAKE_PROJECT_NAME})
 enable_language(C CXX ASM)
