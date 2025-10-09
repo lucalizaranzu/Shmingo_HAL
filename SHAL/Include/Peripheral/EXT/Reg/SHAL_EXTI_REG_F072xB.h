@@ -1,0 +1,12 @@
+//
+// Created by Luca on 10/8/2025.
+//
+
+#ifndef SHMINGO_HAL_SHAL_EXTI_REG_F072XB_H
+#define SHMINGO_HAL_SHAL_EXTI_REG_F072XB_H
+
+#include "SHAL_CORE.h"
+
+#define EXTI_PENDING_REG(line) (EXTI->PR)
+
+#endif //SHMINGO_HAL_SHAL_EXTI_REG_F072XB_H

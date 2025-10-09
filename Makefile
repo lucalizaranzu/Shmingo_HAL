@@ -6,7 +6,7 @@ BUILD_TYPE   ?= Debug
 TOOLCHAIN    := gcc-arm-none-eabi.cmake
 
 # MCU target (override on command line: make build MCU_MODEL=STM32F051x8)
-MCU_MODEL    ?= STM32L432XX
+MCU_MODEL    ?= STM32L432xx
 MCU_FAMILY   ?= STM32L4xx
 
 # --- Default target ---

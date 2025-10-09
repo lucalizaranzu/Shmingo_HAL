@@ -7,11 +7,12 @@
 
 #include "SHAL_CORE.h"
 #include "SHAL_ADC.h"
+#include "SHAL_ADC_TYPES.h"
 
-struct SHAL_EXTIO_Register{
-    volatile uint32_t* EXT_ICR;
-    uint32_t mask;
-    IRQn_Type IRQN;
+struct SHAL_GPIO_EXTI_Register{
+    volatile uint32_t* EXT_ICR; //4 32 bit registers which say which GPIO a line is connected to
+    uint32_t mask; //Mask for enabling GPIO connection
+    IRQn_Type IRQN; //IRQ number for enabling lines
 };
 
 struct SHAL_GPIO_Peripheral {

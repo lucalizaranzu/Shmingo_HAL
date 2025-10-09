@@ -89,7 +89,7 @@ constexpr SHAL_GPIO_Peripheral getGPIORegister(const GPIO_Key g){
     __builtin_unreachable();
 }
 
-constexpr SHAL_EXTIO_Register getGPIOEXTICR(const GPIO_Key g){
+constexpr SHAL_GPIO_EXTI_Register getGPIOEXTICR(const GPIO_Key g){
     switch(g) {
         case GPIO_Key::A0: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI0_PA,EXTI0_1_IRQn};
         case GPIO_Key::A1: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI1_PA,EXTI0_1_IRQn};
@@ -143,7 +143,7 @@ constexpr SHAL_EXTIO_Register getGPIOEXTICR(const GPIO_Key g){
         case GPIO_Key::INVALID:
         case GPIO_Key::NUM_GPIO:
             assert(false);
-            return SHAL_EXTIO_Register(nullptr,0, EXTI4_15_IRQn); //Unreachable
+            return SHAL_GPIO_EXTI_Register(nullptr, 0, EXTI4_15_IRQn); //Unreachable
     }
     __builtin_unreachable();
 }

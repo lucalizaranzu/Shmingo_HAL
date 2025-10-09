@@ -4,14 +4,14 @@ project(shmingo-HAL)
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(MCU_FAMILY "STM32L4xx" CACHE STRING "MCU family")
-set(MCU_MODEL "" CACHE STRING "MCU model")
+set(MCU_MODEL "STM32L432xx" CACHE STRING "MCU model")
 
 set(CPU_PARAMETERS
         -mcpu=cortex-m0
         -mthumb)
 
 set(STARTUP_SCRIPT MX/L432KC/startup_stm32l432kcux.s)
-set(MCU_LINKER_SCRIPT MX/F072RB/STM32L432KCUX_FLASH.ld)
+set(MCU_LINKER_SCRIPT MX/L432KC/STM32L432KCUX_FLASH.ld)
 
 set(EXECUTABLE ${CMAKE_PROJECT_NAME})
 enable_language(C CXX ASM)
@@ -41,12 +41,16 @@ set(PROJECT_INCLUDE_DIRECTORIES
         SHAL/Include/Peripheral/ADC
         SHAL/Include/Peripheral/ADC/Reg
         SHAL/Include/Peripheral/EXT/
+        SHAL/Include/Peripheral/EXT/Reg
         ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Include
 )
 
 file(GLOB_RECURSE PROJECT_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/*.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Src/${MCU_FAMILY}/*.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Src/${MCU_FAMILY}/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Src/Universal/*.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Src/Universal/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/SHAL/Src/main.cpp
 )
 
 add_executable(${EXECUTABLE}
