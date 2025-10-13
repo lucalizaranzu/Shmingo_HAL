@@ -27,7 +27,7 @@ struct SHAL_Peripheral_Register {
 
 struct SHAL_GPIO_Port_Info{
     uint8_t number;
-    ADC_Channel ADCChannel;
+    SHAL_ADC_Channel ADCChannel;
 };
 
 enum class PinMode : uint8_t{

@@ -109,7 +109,7 @@ void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) 
 
 uint16_t SHAL_GPIO::analogRead(ADC_SampleTime sampleTime) {
 
-    ADC_Channel channel = getGPIOPortInfo(m_GPIO_KEY).ADCChannel;
+    SHAL_ADC_Channel channel = getGPIOPortInfo(m_GPIO_KEY).ADCChannel;
 
     return GPIOManager::getGPIOADC().singleConvertSingle(channel,sampleTime);
 }

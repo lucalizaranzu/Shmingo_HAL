@@ -44,7 +44,7 @@
 #elif defined(STM32L431xx)
   #include "stm32l431xx.h"
 #elif defined(STM32L432xx)
-  #include "stm32l432xx.h"
+  #include "SHAL_I2C_REG_L432KC.h"
 #elif defined(STM32L433xx)
   #include "stm32l433xx.h"
 #elif defined(STM32L442xx)

@@ -20,18 +20,22 @@ public:
 
     SHAL_Result calibrate();
 
+    SHAL_Result configureResolution(SHAL_ADC_Resolution resolution);
+
+    SHAL_Result configureAlignment(SHAL_ADC_Alignment alignment);
+
     /// Performs analog to digital conversion on a single channel, one time
     /// \param channel Channel to be converted
     /// \param time ADC_SampleTime - amount of clock cycles per conversion
     /// \return resulting value
-    uint16_t singleConvertSingle(ADC_Channel channel, ADC_SampleTime time = ADC_SampleTime::C239);
+    uint16_t singleConvertSingle(SHAL_ADC_Channel channel, ADC_SampleTime time = ADC_SampleTime::C239);
 
     /// Performs analog to digital conversion on multiple channels, one time
     /// \param channels Pointer to an array of channels to convert
     /// \param numChannels Number of channels to convert
     /// \param result Pointer to store converted channel results in
     /// \param time ADC_SampleTime - amount of clock cycles per conversion
-    void multiConvertSingle(ADC_Channel* channels, const int numChannels, uint16_t* result, ADC_SampleTime time = ADC_SampleTime::C239);
+    void multiConvertSingle(SHAL_ADC_Channel* channels, int numChannels, uint16_t* result, ADC_SampleTime time = ADC_SampleTime::C239);
 
 
 
@@ -40,6 +44,9 @@ private:
     SHAL_ADC() = default;
 
     ADC_Key m_ADCKey = ADC_Key::INVALID;
+
+    bool isValid();
+    SHAL_Result disable();
 
 };
 

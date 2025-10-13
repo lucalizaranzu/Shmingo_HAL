@@ -28,8 +28,10 @@ enum class SHAL_Result{
 };
 
 
-
-typedef bool (*condition_fn_t)(void);
+#define SHAL_CALL(func) \
+    if(func != SHAL_Result::OKAY){ \
+        return SHAL_Result::ERROR; \
+    }
 
 #define SHAL_WAIT_FOR_CONDITION_US(cond, timeout_us) \
     SHAL_wait_for_condition_us([&](){ return (cond); }, (timeout_us))
@@ -66,6 +68,17 @@ bool SHAL_wait_for_condition_ms(Condition cond, uint32_t timeout_ms) {
         SHAL_delay_ms(1);
     }
     return false; // timeout
+}
+
+void SHAL_set_bits(volatile uint32_t* reg, uint32_t size, uint32_t bits, uint32_t offset){
+    uint32_t mask = (1 << (size)) - 1;
+    *reg &= ~(mask << offset);
+    *reg |= bits << offset;
+}
+
+void SHAL_apply_bitmask(volatile uint32_t* reg, uint32_t mask){
+    *reg &= ~(mask);
+    *reg |= mask;
 }
 
 //---------------------------------------------------------

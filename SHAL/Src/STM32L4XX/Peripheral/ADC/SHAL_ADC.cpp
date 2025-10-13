@@ -13,22 +13,19 @@ SHAL_Result SHAL_ADC::init() {
 
     ADC_TypeDef* ADC_reg = getADCRegister(m_ADCKey);
 
+    SHAL_ADC_RCC_Enable_Reg clock_reg = getADCRCCEnableRegister(m_ADCKey); //Clock enable
 
-    RCC->APB2ENR |= RCC_APB2ENR_ADC1EN; //Enable clock
-    RCC->CR2 |= RCC_CR2_HSI14ON; //Start peripheral oscillator
+    *clock_reg.reg |= clock_reg.mask;
 
-    if(!SHAL_WAIT_FOR_CONDITION_US(((RCC->CR2 & RCC_CR2_HSI14RDY) != 0),50)){ //Wait for clock OKAY
-        return SHAL_Result::ERROR;
-    }
+    SHAL_ADC_Control_Reg control_reg = getADCControlReg(m_ADCKey);
 
-    if((ADC_reg->ISR & ADC_ISR_ADRDY) != 0){ //Set ADRDY to 0
-        ADC_reg->ISR |= ADC_ISR_ADRDY;
-    }
-
-    ADC_reg->CR |= ADC_CR_ADEN; //Enable
-
-    if(!SHAL_WAIT_FOR_CONDITION_US(((ADC_reg->ISR & ADC_ISR_ADRDY) != 0),50)){ //Wait for disable
-        return SHAL_Result::ERROR;
+    if (*control_reg.reg & control_reg.enable_mask) {
+        //request disable: ADEN=1 -> set ADDIS to disable
+        *control_reg.reg |= control_reg.disable_mask;
+        //wait until ADEN cleared (ISR.ADREADY == 0)
+        if(!SHAL_WAIT_FOR_CONDITION_MS((*control_reg.reg & control_reg.enable_mask) == 0, 100)){
+            return SHAL_Result::ERROR;
+        }
     }
 
     if(calibrate() != SHAL_Result::OKAY){ //Calibrate
@@ -40,33 +37,25 @@ SHAL_Result SHAL_ADC::init() {
 
 SHAL_Result SHAL_ADC::calibrate() {
 
-    if(m_ADCKey == ADC_Key::INVALID || m_ADCKey == ADC_Key::NUM_ADC){
+    if(disable() != SHAL_Result::OKAY){ //Disable the ADC
         return SHAL_Result::ERROR;
     }
 
-    ADC_TypeDef* ADC_reg = getADCRegister(m_ADCKey);
+    SHAL_ADC_Control_Reg control_reg = getADCControlReg(m_ADCKey);
 
-    if((ADC_reg->CR & ADC_CR_ADEN) != 0){ //Clear ADEN (enable)
-        ADC_reg->CR |= ADC_CR_ADDIS;
-    }
+    *control_reg.reg |= control_reg.calibration_mask;
 
-    if(!SHAL_WAIT_FOR_CONDITION_US(((ADC_reg->CR & ADC_CR_ADEN) == 0),50)){ //Wait for disable
-        return SHAL_Result::ERROR;
-    }
-
-    ADC_reg->CFGR1 &= ~ADC_CFGR1_DMAEN; //Clear DMAEN
-    ADC_reg->CR |= ADC_CR_ADCAL; //Launch calibration by setting ADCAL
-
-    if(!SHAL_WAIT_FOR_CONDITION_US(((ADC_reg->CR & ADC_CR_ADCAL) == 0),50)){ //Wait for calibration
+    if(!SHAL_WAIT_FOR_CONDITION_US(((*control_reg.reg & control_reg.calibration_mask) == 0),500)){ //Wait for calibration
         return SHAL_Result::ERROR;
     }
 
     return SHAL_Result::OKAY;
 }
 
-uint16_t SHAL_ADC::singleConvertSingle(ADC_Channel channel, ADC_SampleTime time) {
+uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, ADC_SampleTime time) {
 
     ADC_TypeDef* ADC_reg = getADCRegister(m_ADCKey);
+
 
     ADC->CCR |= ADC_CCR_VREFEN | ADC_CCR_TSEN; //Enable VREFINT and Temp sensor in global ADC struct
 
@@ -81,7 +70,7 @@ uint16_t SHAL_ADC::singleConvertSingle(ADC_Channel channel, ADC_SampleTime time)
     return result;
 }
 
-void SHAL_ADC::multiConvertSingle(ADC_Channel* channels, const int numChannels, uint16_t* result, ADC_SampleTime time) {
+void SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, const int numChannels, uint16_t* result, ADC_SampleTime time) {
     ADC_TypeDef* ADC_reg = getADCRegister(m_ADCKey);
 
     ADC->CCR |= ADC_CCR_VREFEN | ADC_CCR_TSEN; //Enable VREFINT and Temp sensor in global ADC struct
@@ -100,6 +89,57 @@ void SHAL_ADC::multiConvertSingle(ADC_Channel* channels, const int numChannels, 
 
         result[i] = ADC_reg->DR;
     }
+}
+
+SHAL_Result SHAL_ADC::disable() {
+
+    if(!isValid()){
+        return SHAL_Result::ERROR;
+    }
+
+    SHAL_ADC_Control_Reg control_reg = getADCControlReg(m_ADCKey);
+    if (*control_reg.reg & control_reg.enable_mask) {
+        //request disable: ADEN=1 -> set ADDIS to disable
+        *control_reg.reg |= control_reg.disable_mask;
+        //wait until ADEN cleared (ISR.ADREADY == 0)
+        if(!SHAL_WAIT_FOR_CONDITION_MS((*control_reg.reg & control_reg.enable_mask) == 0, 100)){
+            return SHAL_Result::ERROR;
+        }
+    }
+
+    return SHAL_Result::OKAY;
+}
+
+bool SHAL_ADC::isValid() {
+    if(m_ADCKey == ADC_Key::INVALID || m_ADCKey == ADC_Key::NUM_ADC){
+        return false;
+    }
+    return true;
+}
+
+SHAL_Result SHAL_ADC::configureResolution(SHAL_ADC_Resolution resolution) {
+    if(!isValid()){
+        return SHAL_Result::ERROR;
+    }
+
+    SHAL_ADC_Config_Reg config_reg = getADCConfigReg(m_ADCKey);
+
+    SHAL_set_bits(config_reg.reg,2)
+
+    return SHAL_Result::OKAY;
+}
+
+SHAL_Result SHAL_ADC::configureAlignment(SHAL_ADC_Alignment alignment) {
+    if(!isValid()){
+        return SHAL_Result::ERROR;
+    }
+
+    SHAL_ADC_Config_Reg config_reg = getADCConfigReg(m_ADCKey);
+
+    *config_reg.reg &= ~(0x1UL << config_reg.alignment_offset); //TODO check if this needs to be abstracted (Do other platforms have >2 resolution possibilities?
+    *config_reg.reg |= static_cast<uint8_t>(alignment) << config_reg.alignment_offset;
+
+    return SHAL_Result::OKAY;
 }
 
 SHAL_ADC &ADCManager::get(ADC_Key key) {
