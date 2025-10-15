@@ -32,6 +32,9 @@ SHAL_Result SHAL_ADC::init() {
         return SHAL_Result::ERROR;
     }
 
+    configureAlignment(SHAL_ADC_Alignment::RIGHT);
+    configureResolution(SHAL_ADC_Resolution::B12);
+
     return SHAL_Result::OKAY;
 }
 
@@ -124,7 +127,7 @@ SHAL_Result SHAL_ADC::configureResolution(SHAL_ADC_Resolution resolution) {
 
     SHAL_ADC_Config_Reg config_reg = getADCConfigReg(m_ADCKey);
 
-    SHAL_set_bits(config_reg.reg,2)
+    SHAL_set_bits(config_reg.reg,2,static_cast<uint8_t>(resolution),config_reg.resolution_offset);
 
     return SHAL_Result::OKAY;
 }

@@ -70,9 +70,7 @@ SHAL_ADC_Data_Reg getADCDataReg(ADC_Key key){
 }
 
 SHAL_ADC_Clock_Reg getADCClockSelectRegister(ADC_Clock_Source clockSource) {
-    constexpr uint32_t ADCSEL_MASK = RCC_CCIPR_ADCSEL_Msk; // covers bits 29:28
-
-    SHAL_ADC_Clock_Reg res = {&RCC->CCIPR, ADCSEL_MASK, 1U << RCC_CCIPR_ADCSEL_Pos}; //Default to PLLSAI1
+    SHAL_ADC_Clock_Reg res = {&RCC->CCIPR, RCC_CCIPR_ADCSEL_Msk, 1U << RCC_CCIPR_ADCSEL_Pos}; //Default to PLLSAI1
 
     switch(clockSource){
         case ADC_Clock_Source::SHAL_PLLSAI1:
@@ -84,8 +82,26 @@ SHAL_ADC_Clock_Reg getADCClockSelectRegister(ADC_Clock_Source clockSource) {
         case ADC_Clock_Source::SHAL_MSI:
             break; //TODO implement this
     }
-
     return res;
+}
+
+SHAL_ADC_Channel_Sampling_Time_Reg getADCChannelSamplingTimeRegister(ADC_Key key, SHAL_ADC_Channel channel){
+    volatile ADC_TypeDef* ADCReg = ADC_TABLE[static_cast<uint8_t>(key)];
+
+    volatile uint32_t* SMPReg = nullptr;
+    uint32_t pos = 0;
+
+    auto channelNum = static_cast<uint8_t>(channel);
+
+    if (channelNum <= 9) {
+        SMPReg = &ADCReg->SQR1;
+        pos = (channelNum * 3);
+    } else {
+        SMPReg = &ADCReg->SQR2;
+        pos = ((channelNum - 10) * 3);
+    }
+
+    return {SMPReg, pos};
 }
 
 constexpr ADC_TypeDef* getADCRegister(ADC_Key key){

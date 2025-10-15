@@ -53,6 +53,11 @@ struct SHAL_ADC_Clock_Reg {
     uint32_t mask;
 };
 
+struct SHAL_ADC_Channel_Sampling_Time_Reg {
+    volatile uint32_t* reg;
+    uint32_t channel_offset;
+};
+
 
 enum class SHAL_ADC_Channel : uint32_t {
     CH0,
@@ -77,14 +82,14 @@ enum class SHAL_ADC_Channel : uint32_t {
 };
 
 enum class ADC_SampleTime : uint32_t {
-    C2          = 0x00, //1.5 cycles per sample
-    C7          = 0x01, //7.5 cycles
-    C13         = 0x02, //13.5 cycles
-    C28         = 0x03, //28.5 cycles
-    C41         = 0x04, //41.5 cycles
-    C55         = 0x05, //55.5 cycles
-    C71         = 0x06, //71.5 cycles
-    C239        = 0x07  //239.5 cycles
+    C1          = 0x00, //1.5 cycles per sample F0
+    C2          = 0x01, //7.5 cycles
+    C3          = 0x02, //13.5 cycles
+    C4          = 0x03, //28.5 cycles
+    C5          = 0x04, //41.5 cycles
+    C6          = 0x05, //55.5 cycles
+    C7          = 0x06, //71.5 cycles
+    C8          = 0x07  //239.5 cycles
 };
 
 enum class SHAL_ADC_Resolution : uint8_t {
