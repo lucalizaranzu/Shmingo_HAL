@@ -81,8 +81,8 @@ SHAL_ADC_Config_Reg getADCConfigReg(ADC_Key key) {
     return res;
 }
 
-SHAL_ADC_ISR getADCISR(ADC_Key key){
-    SHAL_ADC_ISR res = {nullptr, ADC_ISR_EOC};
+SHAL_ADC_ISR_Reg getADCISRReg(ADC_Key key){
+    SHAL_ADC_ISR_Reg res = {nullptr, ADC_ISR_EOC, ADC_ISR_EOS, ADC_ISR_ADRDY};
 
     res.reg = &(ADC_TABLE[static_cast<uint8_t>(key)]->ISR);
     return res;

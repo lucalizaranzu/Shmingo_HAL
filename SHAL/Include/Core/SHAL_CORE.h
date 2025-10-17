@@ -76,10 +76,16 @@ void SHAL_set_bits(volatile uint32_t* reg, uint32_t size, uint32_t bits, uint32_
     *reg |= bits << offset;
 }
 
-void SHAL_apply_bitmask(volatile uint32_t* reg, uint32_t mask){
+void SHAL_clear_bitmask(volatile uint32_t* reg, uint32_t mask){
     *reg &= ~(mask);
+}
+
+void SHAL_apply_bitmask(volatile uint32_t* reg, uint32_t mask){
+    SHAL_clear_bitmask(reg,mask);
     *reg |= mask;
 }
+
+
 
 //---------------------------------------------------------
 

@@ -6,8 +6,8 @@
   ******************************************************************************
   */
 
-#ifndef SHAL_TIM_REG_H
-#define SHAL_TIM_REG_H
+#ifndef SHAL_TIM_REG_F072XB_H
+#define SHAL_TIM_REG_F072XB_H
 
 #include <cassert>
 #include <stm32f072xb.h>

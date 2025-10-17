@@ -27,7 +27,7 @@ public:
     /// Uses the ADC to read an analog voltage value
     /// \param sampleTime The amount of clock cycles to use for the ADC
     /// \return ADC result
-    uint16_t analogRead(SHAL_ADC_SampleTime sampleTime = SHAL_ADC_SampleTime::C239);
+    uint16_t analogRead(SHAL_ADC_SampleTime sampleTime = SHAL_ADC_SampleTime::C8);
 
     void setPinMode(PinMode mode) volatile;
 

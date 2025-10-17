@@ -35,7 +35,7 @@ public:
     /// \param numChannels Number of channels to convert
     /// \param result Pointer to store converted channel results in
     /// \param time SHAL_ADC_SampleTime - amount of clock cycles per conversion
-    void multiConvertSingle(SHAL_ADC_Channel* channels, int numChannels, uint16_t* result, SHAL_ADC_SampleTime time = SHAL_ADC_SampleTime::C8);
+    SHAL_Result multiConvertSingle(SHAL_ADC_Channel* channels, int numChannels, uint16_t* result, SHAL_ADC_SampleTime time = SHAL_ADC_SampleTime::C8);
 
 
 
@@ -48,8 +48,13 @@ private:
     //Checks to see if instance is initialized with a proper ADC peripheral tag
     bool isValid();
 
+    //Enabled peripheral
+    SHAL_Result enable();
+
     //Disables peripheral
     SHAL_Result disable();
+
+    SHAL_Result startConversion();
 
     /// Adds an ADC channel to the conversion sequence
     /// \param channel Channel to add

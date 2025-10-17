@@ -9,7 +9,7 @@
 #ifndef SHAL_TIM_H
 #define SHAL_TIM_H
 
-#include "SHAL_TIM_REG_F072xB.h"
+#include "SHAL_TIM_REG.h"
 #include "SHAL_TIM_CALLBACK.h"
 
 #include <array>
@@ -18,7 +18,7 @@ class Timer {
     friend class TimerManager;
 public:
 
-    ///
+    /// Initializes a timer
     /// \param prescaler The amount of times the base clock has to cycle before the timer adds one to the count
     /// \param autoReload The number of timer counts before the count is reset and IRQ is called
     void init(uint32_t prescaler, uint32_t autoReload);
@@ -40,7 +40,7 @@ public:
 
     //Set TIMER_KEY IRQ callback function
     void setCallbackFunc(TimerCallback callback){
-        registerTimerCallback(TIMER_KEY, callback);
+        registerTimerCallback(m_key, callback);
     }
 
 private:
@@ -48,7 +48,7 @@ private:
     explicit Timer(Timer_Key t);
     Timer();
 
-    Timer_Key TIMER_KEY;
+    Timer_Key m_key;
 
 };
 

@@ -5,17 +5,22 @@
 #include "SHAL_TIM.h"
 #include <cassert>
 
-Timer::Timer(Timer_Key t) : TIMER_KEY(t){
+Timer::Timer(Timer_Key key) : m_key(key){
 
 }
 
-Timer::Timer() : TIMER_KEY(Timer_Key::S_TIM_INVALID){
+Timer::Timer() : m_key(Timer_Key::S_TIM_INVALID){
 
 }
 
 void Timer::start() {
-    getTimerRegister(TIMER_KEY)->CR1 |= TIM_CR1_CEN;
-    getTimerRegister(TIMER_KEY)->EGR |= TIM_EGR_UG; //load prescaler reg and ARR
+
+    auto control_reg = getTimerControlRegister1(m_key);
+    auto event_generation_reg = getTimerEventGenerationRegister(m_key);
+
+    SHAL_apply_bitmask(control_reg.reg, control_reg.counter_enable_mask); //Enable counter
+    SHAL_apply_bitmask(event_generation_reg.reg, event_generation_reg.update_generation_mask);
+
     enableInterrupt();
 }
 
@@ -33,7 +38,7 @@ void Timer::setARR(uint16_t arr) {
 
 void Timer::enableInterrupt() {
     getTimerRegister(TIMER_KEY)->DIER |= TIM_DIER_UIE;
-    NVIC_EnableIRQ(getIRQn(TIMER_KEY));
+    NVIC_EnableIRQ(getTimerIRQn(TIMER_KEY));
 }
 
 void Timer::init(uint32_t prescaler, uint32_t autoReload) {

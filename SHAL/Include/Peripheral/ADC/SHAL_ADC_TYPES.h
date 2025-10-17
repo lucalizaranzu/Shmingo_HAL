@@ -44,9 +44,11 @@ struct SHAL_ADC_Data_Reg {
 };
 
 //Register for the interrupt service routine for ADCs
-struct SHAL_ADC_ISR {
+struct SHAL_ADC_ISR_Reg {
     volatile uint32_t* reg;
     uint32_t end_of_conversion_mask;
+    uint32_t end_of_sequence_mask;
+    uint32_t ready_mask;
 };
 
 //Register controlling the clock source for the ADC

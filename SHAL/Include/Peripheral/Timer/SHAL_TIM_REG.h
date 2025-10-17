@@ -2,8 +2,8 @@
 // Created by Luca on 9/7/2025.
 //
 
-#ifndef SHMINGO_HAL_SHAL_TIM_REG_H
-#define SHMINGO_HAL_SHAL_TIM_REG_H
+#ifndef SHAL_TIM_REG_H
+#define SHAL_TIM_REG_H
 
 #if defined(STM32F030x6)
 #include "stm32f030x6.h"
@@ -46,7 +46,7 @@
 #elif defined(STM32L431xx)
 #include "stm32l431xx.h"
 #elif defined(STM32L432xx)
-#include "stm32l432xx.h"
+#include "SHAL_TIM_REG_L432KC.h"
 #elif defined(STM32L433xx)
 #include "stm32l433xx.h"
 #elif defined(STM32L442xx)
@@ -92,4 +92,4 @@
  #error "Please select first the target STM32F0xx device used in your application (in stm32f0xx.h file)"
 #endif
 
-#endif //SHMINGO_HAL_SHAL_TIM_REG_H
+#endif //SHAL_TIM_REG_H
