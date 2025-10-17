@@ -62,9 +62,6 @@ constexpr SHAL_I2C_Reset_Reg getI2CResetReg(const I2C_Pair pair){
     __builtin_unreachable();
 }
 
-constexpr SHAL_I2C_Reset_Reg getI2CResetRe() {
-    return {&RCC->APB1RSTR1,RCC_APB1RSTR1_I2C1RST};
-}
 //Gets all the bits in the I2C timer register, these values should rarely be manually set, but I wanted to support it anyway
 constexpr SHAL_I2C_Timing_Reg getI2CTimerReg(const I2C_Pair pair){
     switch(pair){

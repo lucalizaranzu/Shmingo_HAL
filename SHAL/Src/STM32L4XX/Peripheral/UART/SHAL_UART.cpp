@@ -10,9 +10,9 @@
 #include "SHAL_UART.h"
 #include "SHAL_GPIO.h"
 
-void SHAL_UART::init(const UART_Pair pair){
+void SHAL_UART::init(UART_Pair_Key pair){
 
-    m_UARTPair = pair;
+    m_key = pair;
 
     SHAL_UART_Pair uart_pair = getUARTPair(pair); //Get the UART_PAIR information to be initialized
 
@@ -26,7 +26,7 @@ void SHAL_UART::init(const UART_Pair pair){
     GET_GPIO(Tx_Key).setAlternateFunction(uart_pair.TxAlternateFunctionMask);
     GET_GPIO(Rx_Key).setAlternateFunction(uart_pair.RxAlternateFunctionMask);
 
-    SHAL_UART_ENABLE_REG pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the SHAL_UART channel
+    SHAL_UART_Enable_Register pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the SHAL_UART channel
 
     *pairUARTEnable.reg |= pairUARTEnable.mask; //Enable SHAL_UART line
 
@@ -35,18 +35,23 @@ void SHAL_UART::init(const UART_Pair pair){
 
 void SHAL_UART::begin(uint32_t baudRate) volatile {
 
-    USART_TypeDef* usart = getUARTPair(m_UARTPair).USARTReg;
+    USART_TypeDef* usart = getUARTPair(m_key).USARTReg;
 
-    usart->CR1 &= ~USART_CR1_UE; //Disable USART
+    auto control_reg = getUARTControlRegister1(m_key);
+
+    SHAL_clear_bitmask(control_reg.reg, control_reg.usart_enable_mask); //Clear enable bit (turn off usart)
 
     usart->CR1 = 0; //Clear USART config
 
-    usart->CR1 = USART_CR1_TE | USART_CR1_RE; //Tx enable and Rx Enable
+    SHAL_apply_bitmask(control_reg.reg, control_reg.transmit_enable_mask); //Enable Tx
+    SHAL_apply_bitmask(control_reg.reg, control_reg.receive_enable_mask);  //Enable Rx
 
-    usart->BRR = 8000000 / baudRate; //MAKE SURE ANY FUNCTION THAT CHANGES CLOCK UPDATES THIS! //TODO DO NOT HARDCODE THIS SHIT
+    auto baud_rate_reg = getUARTBaudRateGenerationRegister(m_key);
 
-    usart->CR1 |= USART_CR1_UE;
+    unsigned long adjustedBaudRate = 8000000 / baudRate;
+    SHAL_set_bits(baud_rate_reg.reg,16,adjustedBaudRate,baud_rate_reg.offset); //MAKE SURE ANY FUNCTION THAT CHANGES CLOCK UPDATES THIS! //TODO DO NOT HARDCODE THIS SHIT
 
+    SHAL_apply_bitmask(control_reg.reg, control_reg.usart_enable_mask); //Clear enable bit (turn off usart)
 }
 
 void SHAL_UART::sendString(const char *s) volatile {
@@ -55,11 +60,14 @@ void SHAL_UART::sendString(const char *s) volatile {
 
 void SHAL_UART::sendChar(char c) volatile {
 
-    USART_TypeDef* usart = getUARTPair(m_UARTPair).USARTReg;
+    auto ISR_non_fifo = getUARTISRFifoDisabled(m_key);
 
-    while(!(usart->ISR & USART_ISR_TXE)); //Wait for usart to finish what it's doing
+    if(!SHAL_WAIT_FOR_CONDITION_US((*ISR_non_fifo.reg & ISR_non_fifo.transmit_data_register_empty_mask) == 0, 500)){
+        return;
+    }
 
-    usart->TDR = c; //Send character
+    auto transmit_reg = getUARTTransmitDataRegister(m_key);
+    SHAL_set_bits_16(transmit_reg.reg,16,static_cast<uint16_t>(c),transmit_reg.offset);
 }
 
 

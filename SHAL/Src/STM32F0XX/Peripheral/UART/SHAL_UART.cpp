@@ -10,7 +10,7 @@
 #include "SHAL_UART.h"
 #include "SHAL_GPIO.h"
 
-void SHAL_UART::init(const UART_Pair pair){
+void SHAL_UART::init(const UART_Pair_Key pair){
 
     m_UARTPair = pair;
 
@@ -26,7 +26,7 @@ void SHAL_UART::init(const UART_Pair pair){
     GET_GPIO(Tx_Key).setAlternateFunction(uart_pair.TxAlternateFunctionMask);
     GET_GPIO(Rx_Key).setAlternateFunction(uart_pair.RxAlternateFunctionMask);
 
-    SHAL_UART_ENABLE_REG pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the SHAL_UART channel
+    SHAL_UART_Enable_Register pairUARTEnable = getUARTEnableReg(pair); //Register and mask to enable the SHAL_UART channel
 
     *pairUARTEnable.reg |= pairUARTEnable.mask; //Enable SHAL_UART line
 

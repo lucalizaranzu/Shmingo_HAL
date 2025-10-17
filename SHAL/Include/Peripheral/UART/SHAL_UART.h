@@ -17,7 +17,7 @@ class SHAL_UART{
     friend class UARTManager;
 public:
 
-    void init(SHAL_UART_Pair pair);
+    void init(UART_Pair_Key pair);
 
     //begins Tx and Usart TODO either modify this function or add a new one that supports Rx
     void begin(uint32_t baudRate) volatile;
@@ -34,7 +34,7 @@ private:
 
     //Creates a SHAL_UART based on a pair of two valid U(S)ART pins
 
-    UART_Pair m_UARTPair = UART_Pair::INVALID;
+    UART_Pair_Key m_key = UART_Pair_Key::INVALID;
 
 };
 

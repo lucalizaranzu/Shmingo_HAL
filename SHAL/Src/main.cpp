@@ -50,7 +50,7 @@ int main() {
     SHAL_init();
 
     //Setup UART2 (used by nucleo devices for USB comms)
-    SHAL_UART2.init(UART_Pair::Tx2A2_Rx2A3);
+    SHAL_UART2.init(UART_Pair_Key::Tx2A2_Rx2A3);
     SHAL_UART2.begin(115200);
 
     SHAL_I2C1.init(I2C_Pair::SCL1B6_SDA1B7);

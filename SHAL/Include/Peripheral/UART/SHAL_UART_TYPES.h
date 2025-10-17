@@ -19,9 +19,33 @@ struct SHAL_UART_Pair{
     GPIO_Alternate_Function RxAlternateFunctionMask;
 };
 
-struct SHAL_UART_ENABLE_REG{
+struct SHAL_UART_Enable_Register{
     volatile uint32_t* reg;
     uint32_t mask;
 };
+
+struct SHAL_UART_Control_Register_1 {
+    volatile uint32_t* reg;
+    uint32_t usart_enable_mask;
+    uint32_t transmit_enable_mask;
+    uint32_t receive_enable_mask;
+};
+
+struct SHAL_UART_Baud_Rate_Generation_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
+};
+
+struct SHAL_UART_Transmit_Data_Register {
+    volatile uint16_t* reg;
+    uint16_t offset;
+};
+
+struct SHAL_UART_ISR_FIFO_Disabled {
+    volatile uint32_t* reg;
+    uint32_t transmit_data_register_empty_mask;
+};
+
+
 
 #endif //SHMINGO_HAL_SHAL_UART_TYPES_H
