@@ -54,18 +54,18 @@ static volatile ADC_TypeDef* ADC_TABLE[1] = { //Lookup table for ADCs
         ADC1,
 };
 
-SHAL_ADC_Common_Control_Reg getADCCommonControl() {
+static inline SHAL_ADC_Common_Control_Reg getADCCommonControl() {
     return {&ADC1_COMMON->CCR ,ADC_CCR_VREFEN,ADC_CCR_TSEN,ADC_CCR_VBATEN};
 }
 
-SHAL_ADC_RCC_Enable_Reg getADCRCCEnableRegister(ADC_Key key){
+static inline SHAL_ADC_RCC_Enable_Reg getADCRCCEnableRegister(ADC_Key key){
     SHAL_ADC_RCC_Enable_Reg res = {nullptr, RCC_AHB2ENR_ADCEN};
 
     res.reg = &(ADC_TABLE[static_cast<uint8_t>(key)]->ISR);
     return res;
 }
 
-SHAL_ADC_Control_Reg getADCControlReg(ADC_Key key) {
+static inline SHAL_ADC_Control_Reg getADCControlReg(ADC_Key key) {
 
     SHAL_ADC_Control_Reg res = {nullptr, ADC_CR_ADEN, ADC_CR_ADDIS, ADC_CR_ADCAL, ADC_CR_ADSTART};
 
@@ -73,7 +73,7 @@ SHAL_ADC_Control_Reg getADCControlReg(ADC_Key key) {
     return res;
 }
 
-SHAL_ADC_Config_Reg getADCConfigReg(ADC_Key key) {
+static inline SHAL_ADC_Config_Reg getADCConfigReg(ADC_Key key) {
 
     SHAL_ADC_Config_Reg res = {nullptr, ADC_CFGR_CONT, ADC_CFGR_RES_Pos, ADC_CFGR_ALIGN_Pos};
 
@@ -81,21 +81,21 @@ SHAL_ADC_Config_Reg getADCConfigReg(ADC_Key key) {
     return res;
 }
 
-SHAL_ADC_ISR_Reg getADCISRReg(ADC_Key key){
+static inline SHAL_ADC_ISR_Reg getADCISRReg(ADC_Key key){
     SHAL_ADC_ISR_Reg res = {nullptr, ADC_ISR_EOC, ADC_ISR_EOS, ADC_ISR_ADRDY};
 
     res.reg = &(ADC_TABLE[static_cast<uint8_t>(key)]->ISR);
     return res;
 }
 
-SHAL_ADC_Data_Reg getADCDataReg(ADC_Key key){
+static inline SHAL_ADC_Data_Reg getADCDataReg(ADC_Key key){
     SHAL_ADC_Data_Reg res = {nullptr, 0xFFFF};
 
     res.reg = &(ADC_TABLE[static_cast<uint8_t>(key)]->DR);
     return res;
 }
 
-SHAL_ADC_Clock_Reg getADCClockSelectRegister(ADC_Clock_Source clockSource) {
+static inline SHAL_ADC_Clock_Reg getADCClockSelectRegister(ADC_Clock_Source clockSource) {
     SHAL_ADC_Clock_Reg res = {&RCC->CCIPR, RCC_CCIPR_ADCSEL_Msk, 1U << RCC_CCIPR_ADCSEL_Pos}; //Default to PLLSAI1
 
     switch(clockSource){
@@ -111,7 +111,7 @@ SHAL_ADC_Clock_Reg getADCClockSelectRegister(ADC_Clock_Source clockSource) {
     return res;
 }
 
-SHAL_ADC_Channel_Sampling_Time_Reg getADCChannelSamplingTimeRegister(ADC_Key key, SHAL_ADC_Channel channel){
+static inline SHAL_ADC_Channel_Sampling_Time_Reg getADCChannelSamplingTimeRegister(ADC_Key key, SHAL_ADC_Channel channel){
     volatile ADC_TypeDef* ADCReg = ADC_TABLE[static_cast<uint8_t>(key)];
 
     volatile uint32_t* SMPReg = nullptr;
@@ -130,14 +130,14 @@ SHAL_ADC_Channel_Sampling_Time_Reg getADCChannelSamplingTimeRegister(ADC_Key key
     return {SMPReg, pos};
 }
 
-SHAL_ADC_Sequence_Amount_Reg getADCSequenceAmountRegister(ADC_Key key){
+static inline SHAL_ADC_Sequence_Amount_Reg getADCSequenceAmountRegister(ADC_Key key){
     SHAL_ADC_Sequence_Amount_Reg res = {nullptr, ADC_SQR1_L_Pos};
 
     res.reg = &(ADC_TABLE[static_cast<uint8_t>(key)]->SQR1);
     return res;
 }
 
-SHAL_ADC_Sequence_Reg getADCSequenceRegisters(ADC_Key key){
+static inline SHAL_ADC_Sequence_Reg getADCSequenceRegisters(ADC_Key key){
 
     volatile ADC_TypeDef* adc_reg = ADC_TABLE[static_cast<uint8_t>(key)];
 

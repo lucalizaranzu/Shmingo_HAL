@@ -74,32 +74,27 @@ void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) 
 
     setPinMode(PinMode::INPUT_MODE); //Explicitly set mode to input
 
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; //Enable EXT, TODO check if this is different across STM32 models
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN; //Enable EXT, TODO Add this to a global SHAL_GLOBAL_TYPES.h file
     NVIC_EnableIRQ(getGPIOEXTICR(m_GPIO_KEY).IRQN); //Enable IRQN for pin
-    EXTI->IMR |= (1 << gpioPin); //Enable correct EXTI line
 
-    SHAL_EXTIO_Register EXTILineEnable = getGPIOEXTICR(m_GPIO_KEY);
+    auto ext_imr = getEXTIInterruptMaskRegister(gpioPin);
+    SHAL_set_bits(ext_imr.reg,1,1,gpioPin);
+
+    SHAL_GPIO_EXTI_Register EXTILineEnable = getGPIOEXTICR(m_GPIO_KEY);
     *EXTILineEnable.EXT_ICR |= EXTILineEnable.mask; //Set bits to enable correct port on correct line TODO Find way to clear bits before
 
     uint32_t rising_mask = 0x00;
     uint32_t falling_mask = 0x00;
 
-    //Set rising and falling edge triggers based on pin offset (enabled EXTI line)
-    switch(mode){
-        case TriggerMode::RISING_EDGE:
-            rising_mask = 1 << gpioPin;
-            break;
-        case TriggerMode::FALLING_EDGE:
-            falling_mask = 1 << gpioPin;
-            break;
-        case TriggerMode::RISING_FALLING_EDGE:
-            falling_mask = 1 << gpioPin;
-            falling_mask = 1 << gpioPin;
+    if(mode == TriggerMode::RISING_EDGE || mode == TriggerMode::RISING_FALLING_EDGE) {
+        auto rising_trigger_selection_reg = getEXTIRisingTriggerSelectionRegister(gpioPin);
+        SHAL_set_bits(rising_trigger_selection_reg.reg, 1, 1, gpioPin);
     }
 
-    //Set triggers
-    EXTI->RTSR |= rising_mask;
-    EXTI->FTSR |= falling_mask;
+    if(mode == TriggerMode::FALLING_EDGE || mode == TriggerMode::RISING_FALLING_EDGE) {
+        auto falling_trigger_selection_reg = getEXTIFallingTriggerSelectionRegister(gpioPin);
+        SHAL_set_bits(falling_trigger_selection_reg.reg,1,1,gpioPin);
+    }
 
     //Set callback
     registerEXTICallback(m_GPIO_KEY,callback);

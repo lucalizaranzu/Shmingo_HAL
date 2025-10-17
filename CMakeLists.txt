@@ -10,8 +10,8 @@ set(CPU_PARAMETERS
         -mcpu=cortex-m0
         -mthumb)
 
-set(STARTUP_SCRIPT MX/L432KC/startup_stm32l432kcux.s)
-set(MCU_LINKER_SCRIPT MX/L432KC/STM32L432KCUX_FLASH.ld)
+set(STARTUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/MX/L432KC/startup_stm32l432kcux.s)
+set(MCU_LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/MX/L432KC/STM32L432KCUX_FLASH.ld)
 
 set(EXECUTABLE ${CMAKE_PROJECT_NAME})
 enable_language(C CXX ASM)
@@ -73,6 +73,8 @@ target_compile_options(${EXECUTABLE} PRIVATE
     -Wextra
     -Wpedantic
     -Wno-unused-parameter
+    -Wno-switch
+    -Wno-implicit-fallthrough
     $<$<COMPILE_LANGUAGE:CXX>:
         -Wno-volatile
         -Wsuggest-override>

@@ -8,6 +8,8 @@
 #include "SHAL_CORE.h"
 #include "SHAL_I2C_TYPES.h"
 
+#define NUM_I2C_BUSES 3
+
 enum class I2C_Pair : uint8_t{
     //I2C_1
     SCL1A9_SDA1A10, //AF4

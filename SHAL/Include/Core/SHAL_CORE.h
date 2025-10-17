@@ -71,24 +71,24 @@ bool SHAL_wait_for_condition_ms(Condition cond, uint32_t timeout_ms) {
 }
 
 //Sets bits starting from offset as the LSB
-void SHAL_set_bits(volatile uint32_t* reg, uint32_t size, uint32_t bits, uint32_t offset){
+static inline void SHAL_set_bits(volatile uint32_t* reg, uint32_t size, uint32_t bits, uint32_t offset){
     uint32_t mask = (1 << (size)) - 1;
     *reg &= ~(mask << offset);
     *reg |= bits << offset;
 }
 
 //Sets bits starting from offset as the LSB (for uint16_t)
-void SHAL_set_bits_16(volatile uint16_t* reg, uint32_t size, uint32_t bits, uint32_t offset){
+static inline void SHAL_set_bits_16(volatile uint16_t* reg, uint32_t size, uint32_t bits, uint32_t offset){
     uint16_t mask = (1 << (size)) - 1;
     *reg &= ~(mask << offset);
     *reg |= bits << offset;
 }
 
-void SHAL_clear_bitmask(volatile uint32_t* reg, uint32_t mask){
+static inline void SHAL_clear_bitmask(volatile uint32_t* reg, uint32_t mask){
     *reg &= ~(mask);
 }
 
-void SHAL_apply_bitmask(volatile uint32_t* reg, uint32_t mask){
+static inline void SHAL_apply_bitmask(volatile uint32_t* reg, uint32_t mask){
     SHAL_clear_bitmask(reg,mask);
     *reg |= mask;
 }

@@ -9,7 +9,13 @@
 #elif defined(STM32L422xx)
 #elif defined(STM32L431xx)
 #elif defined(STM32L432xx)
-DEFINE_EXTI_IRQ()
+DEFINE_EXTI_IRQ(0);
+DEFINE_EXTI_IRQ(1);
+DEFINE_EXTI_IRQ(2);
+DEFINE_EXTI_IRQ(3);
+DEFINE_EXTI_IRQ(4);
+DEFINE_MULTI_EXTI_IRQ(5,9);
+DEFINE_MULTI_EXTI_IRQ(10,15);
 #elif defined(STM32L433xx)
 #elif defined(STM32L442xx)
 #elif defined(STM32L443xx)

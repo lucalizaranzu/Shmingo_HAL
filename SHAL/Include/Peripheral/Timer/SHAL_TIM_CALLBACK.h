@@ -13,11 +13,12 @@
 #include "SHAL_CORE.h"
 #include "SHAL_TIM_REG.h"
 
+
 #define DEFINE_TIMER_IRQ(key, irq_handler)                \
 extern "C" void irq_handler(void) {                       \
-    auto tim_status_reg = getTimerStatusRegister(key)     \
+    auto tim_status_reg = getTimerStatusRegister(key);     \
     if (*tim_status_reg.reg & tim_status_reg.update_interrupt_flag_mask) {                       \
-        SHAL_clear_mask(tim_status_reg.reg,tim_status_reg.update_interrupt_flag_mask) /* clear flag */      \
+        SHAL_clear_bitmask(tim_status_reg.reg,tim_status_reg.update_interrupt_flag_mask); /* clear flag */      \
         auto cb = timer_callbacks[static_cast<int>(key)]; \
         if (cb) cb();                                     \
     };                                                    \
