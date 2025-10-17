@@ -36,6 +36,15 @@ static volatile TIM_TypeDef* TIM_TABLE[6] = {
         TIM16,
 };
 
+static IRQn_Type IRQN_TABLE[6] = {
+    TIM1_TRG_COM_IRQn,
+    TIM2_IRQn,
+    TIM6_DAC_IRQn,
+    TIM7_IRQn,
+    TIM1_BRK_TIM15_IRQn,
+    TIM1_UP_TIM16_IRQn
+};
+
 #define SHAL_TIM1 TimerManager::get(Timer_Key::S_TIM1)
 #define SHAL_TIM2 TimerManager::get(Timer_Key::S_TIM2)
 #define SHAL_TIM6 TimerManager::get(Timer_Key::S_TIM6)
@@ -71,7 +80,7 @@ static inline SHAL_TIM_DMA_Interrupt_Enable_Register getTimerDMAInterruptEnableR
 
     volatile TIM_TypeDef* tim = TIM_TABLE[static_cast<uint8_t>(key)];
 
-    res.reg = &tim->CR1;
+    res.reg = &tim->DIER;
     return res;
 }
 
@@ -81,19 +90,39 @@ static inline SHAL_TIM_Event_Generation_Register getTimerEventGenerationRegister
 
     volatile TIM_TypeDef* tim = TIM_TABLE[static_cast<uint8_t>(key)];
 
-    res.reg = &tim->CR1;
+    res.reg = &tim->EGR;
+    return res;
+}
+
+static inline SHAL_TIM_Prescaler_Register getTimerPrescalerRegister(Timer_Key key){
+
+    SHAL_TIM_Prescaler_Register res = {nullptr, 1UL << 15};
+
+    volatile TIM_TypeDef* tim = TIM_TABLE[static_cast<uint8_t>(key)];
+
+    res.reg = &tim->PSC;
+    return res;
+}
+
+static inline SHAL_TIM_Auto_Reload_Register getTimerAutoReloadRegister(Timer_Key key){
+
+    SHAL_TIM_Auto_Reload_Register res = {nullptr, 1UL << 15};
+
+    volatile TIM_TypeDef* tim = TIM_TABLE[static_cast<uint8_t>(key)];
+
+    res.reg = &tim->ARR;
     return res;
 }
 
 //Get TIMER_KEY peripheral struct including bus register, enable mask, TIMER_KEY mask
 static inline SHAL_TIM_RCC_Register getTimerRCC(Timer_Key t) {
     switch(t) {
-        case Timer_Key::S_TIM1:  return {&RCC->APB2ENR, RCC_APB2ENR_TIM1EN_Pos};
-        case Timer_Key::S_TIM2:  return {&RCC->APB1ENR1, RCC_APB1ENR1_TIM2EN_Pos};
-        case Timer_Key::S_TIM6:  return {&RCC->APB1ENR1, RCC_APB1ENR1_TIM6EN_Pos};
-        case Timer_Key::S_TIM7:  return {&RCC->APB1ENR1, RCC_APB1ENR1_TIM7EN_Pos};
-        case Timer_Key::S_TIM15: return {&RCC->APB2ENR, RCC_APB2ENR_TIM15EN_Pos};
-        case Timer_Key::S_TIM16: return {&RCC->APB2ENR, RCC_APB2ENR_TIM16EN_Pos};
+        case Timer_Key::S_TIM1:  return {&RCC->APB2ENR, RCC_APB2ENR_TIM1EN};
+        case Timer_Key::S_TIM2:  return {&RCC->APB1ENR1, RCC_APB1ENR1_TIM2EN};
+        case Timer_Key::S_TIM6:  return {&RCC->APB1ENR1, RCC_APB1ENR1_TIM6EN};
+        case Timer_Key::S_TIM7:  return {&RCC->APB1ENR1, RCC_APB1ENR1_TIM7EN};
+        case Timer_Key::S_TIM15: return {&RCC->APB2ENR, RCC_APB2ENR_TIM15EN};
+        case Timer_Key::S_TIM16: return {&RCC->APB2ENR, RCC_APB2ENR_TIM16EN};
         case Timer_Key::NUM_TIMERS:
         case Timer_Key::S_TIM_INVALID:
             assert(false);
@@ -103,20 +132,9 @@ static inline SHAL_TIM_RCC_Register getTimerRCC(Timer_Key t) {
 }
 
 
-
+//Get timer IRQN from lookup table
 static inline IRQn_Type getTimerIRQn(Timer_Key t) {
-    switch(t) {
-        case Timer_Key::S_TIM1:  return TIM1_TRG_COM_IRQn;
-        case Timer_Key::S_TIM2:  return TIM2_IRQn;
-        case Timer_Key::S_TIM6:  return TIM6_DAC_IRQn;
-        case Timer_Key::S_TIM7:  return TIM7_IRQn;
-        case Timer_Key::S_TIM15: return TIM1_BRK_TIM15_IRQn;
-        case Timer_Key::S_TIM16: return TIM1_UP_TIM16_IRQn;
-        case Timer_Key::NUM_TIMERS:
-        case Timer_Key::S_TIM_INVALID:
-            __builtin_unreachable();
-    }
-    __builtin_unreachable();
+    return IRQN_TABLE[static_cast<uint8_t>(t)];
 }
 
 #endif

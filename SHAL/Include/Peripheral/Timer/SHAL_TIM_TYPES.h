@@ -9,7 +9,7 @@
 
 struct SHAL_TIM_RCC_Register{
     volatile uint32_t* reg;
-    uint32_t offset;
+    uint32_t enable_mask;
 };
 
 struct SHAL_TIM_Control_Register_1 {
@@ -33,6 +33,16 @@ struct SHAL_TIM_Status_Register {
 struct SHAL_TIM_Event_Generation_Register {
     volatile uint32_t* reg;
     uint32_t update_generation_mask;
+};
+
+struct SHAL_TIM_Prescaler_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
+};
+
+struct SHAL_TIM_Auto_Reload_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
 };
 
 #endif //SHMINGO_HAL_SHAL_TIM_TYPES_H

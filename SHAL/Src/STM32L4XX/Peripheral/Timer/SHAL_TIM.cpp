@@ -25,25 +25,30 @@ void Timer::start() {
 }
 
 void Timer::stop() {
-    getTimerRegister(TIMER_KEY)->CR1 &= ~TIM_CR1_CEN;
+    auto control_reg = getTimerControlRegister1(m_key);
+    SHAL_clear_bitmask(control_reg.reg, control_reg.counter_enable_mask); //Enable counter
 }
 
 void Timer::setPrescaler(uint16_t presc) {
-    getTimerRegister(TIMER_KEY)->PSC = presc;
+    auto prescaler_reg = getTimerPrescalerRegister(m_key);
+    SHAL_set_bits(prescaler_reg.reg, 16, presc, prescaler_reg.offset);
 }
 
 void Timer::setARR(uint16_t arr) {
-    getTimerRegister(TIMER_KEY)->ARR = arr;
+    auto autoreload_reg = getTimerAutoReloadRegister(m_key);
+    SHAL_set_bits(autoreload_reg.reg, 16, arr, autoreload_reg.offset);
 }
 
 void Timer::enableInterrupt() {
-    getTimerRegister(TIMER_KEY)->DIER |= TIM_DIER_UIE;
-    NVIC_EnableIRQ(getTimerIRQn(TIMER_KEY));
+    auto dma_ier = getTimerDMAInterruptEnableRegister(m_key);
+    SHAL_apply_bitmask(dma_ier.reg,dma_ier.update_interrupt_enable_mask);
+
+    NVIC_EnableIRQ(getTimerIRQn(m_key)); //Enable the IRQn in the NVIC
 }
 
 void Timer::init(uint32_t prescaler, uint32_t autoReload) {
-    TIM_RCC_Enable rcc = getTimerRCC(TIMER_KEY);
-    *rcc.busEnableReg |= (1 << rcc.offset);
+    SHAL_TIM_RCC_Register rcc = getTimerRCC(m_key);
+    SHAL_apply_bitmask(rcc.reg,rcc.enable_mask);
 
     setPrescaler(prescaler);
     setARR(autoReload);
@@ -58,11 +63,9 @@ Timer &TimerManager::get(Timer_Key timer_key) {
     Timer& selected = timers[static_cast<int>(timer_key)];
 
     //Timer queried is not initialized yet (defaults to invalid)
-    if(selected.TIMER_KEY == Timer_Key::S_TIM_INVALID){
+    if(selected.m_key == Timer_Key::S_TIM_INVALID){
         timers[static_cast<int>(timer_key)] = Timer(timer_key); //Initialize TIMER_KEY
     }
 
     return timers[static_cast<int>(timer_key)];
 }
-
-
