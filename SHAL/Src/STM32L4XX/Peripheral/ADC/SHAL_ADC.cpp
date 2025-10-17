@@ -55,15 +55,17 @@ SHAL_Result SHAL_ADC::calibrate() {
     return SHAL_Result::OKAY;
 }
 
-uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, ADC_SampleTime time) {
+uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, SHAL_ADC_SampleTime time) {
 
-    ADC_TypeDef* ADC_reg = getADCRegister(m_ADCKey);
+    auto sampleTimeReg = getADCChannelSamplingTimeRegister(m_ADCKey,channel);
 
+    SHAL_set_bits(sampleTimeReg.reg,3,static_cast<uint8_t>(time),sampleTimeReg.channel_offset); //Set sample time register TODO un-hardcode bit width?
 
-    ADC->CCR |= ADC_CCR_VREFEN | ADC_CCR_TSEN; //Enable VREFINT and Temp sensor in global ADC struct
+    auto sequenceReg = getADCSequenceRegisters(m_ADCKey);
 
-    ADC_reg->CHSELR = static_cast<uint32_t>(channel); //Enable channel for conversion
-    ADC_reg->SMPR |= static_cast<uint32_t>(time); //Set sampling time
+    addADCChannelToSequence(channel,0); //Use index 0 to convert channel
+
+    setADCSequenceAmount(1); //Since we're using single convert, convert 1 channel
 
     if(!SHAL_WAIT_FOR_CONDITION_US(((ADC_reg->ISR & ADC_ISR_EOC) != 0),500)){ //Wait for conversion
         return 0; //Failed
@@ -73,7 +75,7 @@ uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, ADC_SampleTime 
     return result;
 }
 
-void SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, const int numChannels, uint16_t* result, ADC_SampleTime time) {
+void SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, const int numChannels, uint16_t* result, SHAL_ADC_SampleTime time) {
     ADC_TypeDef* ADC_reg = getADCRegister(m_ADCKey);
 
     ADC->CCR |= ADC_CCR_VREFEN | ADC_CCR_TSEN; //Enable VREFINT and Temp sensor in global ADC struct
@@ -143,6 +145,32 @@ SHAL_Result SHAL_ADC::configureAlignment(SHAL_ADC_Alignment alignment) {
     *config_reg.reg |= static_cast<uint8_t>(alignment) << config_reg.alignment_offset;
 
     return SHAL_Result::OKAY;
+}
+
+SHAL_Result SHAL_ADC::setADCSequenceAmount(uint32_t amount) {
+    if(!isValid()){return SHAL_Result::ERROR;}
+
+    SHAL_ADC_Sequence_Amount_Reg sequence_amount_reg = getADCSequenceAmountRegister(m_ADCKey);
+
+    SHAL_set_bits(sequence_amount_reg.reg, 4, amount, sequence_amount_reg.offset);
+
+    return SHAL_Result::OKAY;
+}
+
+SHAL_Result SHAL_ADC::addADCChannelToSequence(SHAL_ADC_Channel channel, uint32_t index) {
+    if(!isValid()){return SHAL_Result::ERROR;}
+
+    auto sequenceRegisters = getADCSequenceRegisters(m_ADCKey);
+
+    auto channelNum = static_cast<uint8_t>(channel);
+
+    uint32_t bitSection = (index + 1) % 5; //Need a new variable since SQR1 has its data bits shifted up by one section to make room for the L section
+    uint32_t sequenceRegNumber = (index + 1) / 5;
+
+    volatile uint32_t* sequenceReg = sequenceRegisters.regs[sequenceRegNumber];
+    uint32_t bitSectionOffset = sequenceRegisters.offsets[bitSection];
+
+    SHAL_set_bits(sequenceReg,5,channelNum,bitSectionOffset);
 }
 
 SHAL_ADC &ADCManager::get(ADC_Key key) {

@@ -26,16 +26,16 @@ public:
 
     /// Performs analog to digital conversion on a single channel, one time
     /// \param channel Channel to be converted
-    /// \param time ADC_SampleTime - amount of clock cycles per conversion
+    /// \param time SHAL_ADC_SampleTime - amount of clock cycles per conversion
     /// \return resulting value
-    uint16_t singleConvertSingle(SHAL_ADC_Channel channel, ADC_SampleTime time = ADC_SampleTime::C239);
+    uint16_t singleConvertSingle(SHAL_ADC_Channel channel, SHAL_ADC_SampleTime time = SHAL_ADC_SampleTime::C8);
 
     /// Performs analog to digital conversion on multiple channels, one time
     /// \param channels Pointer to an array of channels to convert
     /// \param numChannels Number of channels to convert
     /// \param result Pointer to store converted channel results in
-    /// \param time ADC_SampleTime - amount of clock cycles per conversion
-    void multiConvertSingle(SHAL_ADC_Channel* channels, int numChannels, uint16_t* result, ADC_SampleTime time = ADC_SampleTime::C239);
+    /// \param time SHAL_ADC_SampleTime - amount of clock cycles per conversion
+    void multiConvertSingle(SHAL_ADC_Channel* channels, int numChannels, uint16_t* result, SHAL_ADC_SampleTime time = SHAL_ADC_SampleTime::C8);
 
 
 
@@ -45,8 +45,22 @@ private:
 
     ADC_Key m_ADCKey = ADC_Key::INVALID;
 
+    //Checks to see if instance is initialized with a proper ADC peripheral tag
     bool isValid();
+
+    //Disables peripheral
     SHAL_Result disable();
+
+    /// Adds an ADC channel to the conversion sequence
+    /// \param channel Channel to add
+    /// \param index Index to add channel to (ADC channel will be the nth channel to convert
+    /// \return Result
+    SHAL_Result addADCChannelToSequence(SHAL_ADC_Channel channel, uint32_t index);
+
+    /// Sets the amount of ADC channels to convert
+    /// \param amount Number of channels to convert
+    /// \return
+    SHAL_Result setADCSequenceAmount(uint32_t amount);
 
 };
 

@@ -10,13 +10,14 @@
 #define SHMINGO_HAL_SHAL_UART_H
 
 #include "SHAL_UART_REG.h"
+#include "SHAL_UART_TYPES.h"
 
 class SHAL_UART{
 
     friend class UARTManager;
 public:
 
-    void init(UART_Pair pair);
+    void init(SHAL_UART_Pair pair);
 
     //begins Tx and Usart TODO either modify this function or add a new one that supports Rx
     void begin(uint32_t baudRate) volatile;

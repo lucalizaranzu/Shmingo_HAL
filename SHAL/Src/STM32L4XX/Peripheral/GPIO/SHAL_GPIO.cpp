@@ -107,7 +107,7 @@ void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) 
     __enable_irq(); //Enable IRQ just in case
 }
 
-uint16_t SHAL_GPIO::analogRead(ADC_SampleTime sampleTime) {
+uint16_t SHAL_GPIO::analogRead(SHAL_ADC_SampleTime sampleTime) {
 
     SHAL_ADC_Channel channel = getGPIOPortInfo(m_GPIO_KEY).ADCChannel;
 

@@ -11,6 +11,32 @@
 #define SHAL_ADC1 SHAL_ADC(1)
 
 
+
+#define NUM_ADCS 1
+#define NUM_ADC_CHANNELS 16
+
+enum class SHAL_ADC_Channel : uint32_t {
+    CH0,
+    CH1,
+    CH2,
+    CH3,
+    CH4,
+    CH5,
+    CH6,
+    CH7,
+    CH8,
+    CH9,
+    CH10,
+    CH11,
+    CH12,
+    CH13,
+    CH14,
+    CH15,
+    CHTemp,
+    CHRef,
+    CHBat
+};
+
 enum class ADC_Key : uint8_t{
     S_ADC1 = 0,
     NUM_ADC = 1,
@@ -89,7 +115,7 @@ SHAL_ADC_Channel_Sampling_Time_Reg getADCChannelSamplingTimeRegister(ADC_Key key
     volatile ADC_TypeDef* ADCReg = ADC_TABLE[static_cast<uint8_t>(key)];
 
     volatile uint32_t* SMPReg = nullptr;
-    uint32_t pos = 0;
+    uint32_t pos;
 
     auto channelNum = static_cast<uint8_t>(channel);
 
@@ -102,6 +128,34 @@ SHAL_ADC_Channel_Sampling_Time_Reg getADCChannelSamplingTimeRegister(ADC_Key key
     }
 
     return {SMPReg, pos};
+}
+
+SHAL_ADC_Sequence_Amount_Reg getADCSequenceAmountRegister(ADC_Key key){
+    SHAL_ADC_Sequence_Amount_Reg res = {nullptr, ADC_SQR1_L_Pos};
+
+    res.reg = &(ADC_TABLE[static_cast<uint8_t>(key)]->SQR1);
+    return res;
+}
+
+SHAL_ADC_Sequence_Reg getADCSequenceRegisters(ADC_Key key){
+
+    volatile ADC_TypeDef* adc_reg = ADC_TABLE[static_cast<uint8_t>(key)];
+
+
+    SHAL_ADC_Sequence_Reg res = {{&adc_reg->SQR1,
+                                 &adc_reg->SQR2,
+                                 &adc_reg->SQR3,
+                                 &adc_reg->SQR4,
+                                 nullptr,
+                                 nullptr},
+                                 {1UL << 0,
+                                 1UL << 6,
+                                 1UL << 12,
+                                 1UL << 18,
+                                 1UL << 24}
+    };
+
+    return res;
 }
 
 constexpr ADC_TypeDef* getADCRegister(ADC_Key key){
