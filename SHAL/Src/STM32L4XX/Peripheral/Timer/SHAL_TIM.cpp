@@ -31,12 +31,12 @@ void Timer::stop() {
 
 void Timer::setPrescaler(uint16_t presc) {
     auto prescaler_reg = getTimerPrescalerRegister(m_key);
-    SHAL_set_bits(prescaler_reg.reg, 16, presc, prescaler_reg.offset);
+    SHAL_set_register_value(prescaler_reg.reg,presc);
 }
 
 void Timer::setARR(uint16_t arr) {
     auto autoreload_reg = getTimerAutoReloadRegister(m_key);
-    SHAL_set_bits(autoreload_reg.reg, 16, arr, autoreload_reg.offset);
+    SHAL_set_register_value(autoreload_reg.reg,arr);
 }
 
 void Timer::enableInterrupt() {

@@ -10,7 +10,7 @@ set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}gcc)
 set(CMAKE_OBJCOPY ${TOOLCHAIN_PREFIX}objcopy)
 set(CMAKE_SIZE    ${TOOLCHAIN_PREFIX}size)
 
-set(COMMON_FLAGS "-mcpu=cortex-m0 -mthumb -fdata-sections -ffunction-sections")
+set(COMMON_FLAGS "-mcpu=cortex-m4 -mthumb -fdata-sections -ffunction-sections")
 set(CMAKE_C_FLAGS_INIT   "${COMMON_FLAGS} --specs=nano.specs")
 set(CMAKE_CXX_FLAGS_INIT "${COMMON_FLAGS} -fno-rtti -fno-exceptions -fno-threadsafe-statics --specs=nano.specs")
 

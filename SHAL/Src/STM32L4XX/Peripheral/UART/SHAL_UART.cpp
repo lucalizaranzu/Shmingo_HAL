@@ -48,26 +48,30 @@ void SHAL_UART::begin(uint32_t baudRate) volatile {
 
     auto baud_rate_reg = getUARTBaudRateGenerationRegister(m_key);
 
-    unsigned long adjustedBaudRate = 8000000 / baudRate;
-    SHAL_set_bits(baud_rate_reg.reg,16,adjustedBaudRate,baud_rate_reg.offset); //MAKE SURE ANY FUNCTION THAT CHANGES CLOCK UPDATES THIS! //TODO DO NOT HARDCODE THIS SHIT
+    uint32_t adjustedBaudRate = SystemCoreClock / baudRate;
 
-    SHAL_apply_bitmask(control_reg.reg, control_reg.usart_enable_mask); //Clear enable bit (turn off usart)
+    SHAL_set_register_value(baud_rate_reg.reg,adjustedBaudRate);
+
+    SHAL_apply_bitmask(control_reg.reg, control_reg.usart_enable_mask); //Turn on usart
 }
 
 void SHAL_UART::sendString(const char *s) volatile {
-    while (*s) sendChar(*s++); //Send chars while we haven't reached end of s
+    while (*s) {//Send chars while we haven't reached end of s
+        sendChar(*s++);
+    }
 }
 
 void SHAL_UART::sendChar(char c) volatile {
 
     auto ISR_non_fifo = getUARTISRFifoDisabled(m_key);
 
-    if(!SHAL_WAIT_FOR_CONDITION_US((*ISR_non_fifo.reg & ISR_non_fifo.transmit_data_register_empty_mask) == 0, 500)){
+    if(!SHAL_WAIT_FOR_CONDITION_MS((*ISR_non_fifo.reg & ISR_non_fifo.transmit_data_register_empty_mask) != 0, 500)){
+        PIN(B3).toggle();
         return;
     }
 
     auto transmit_reg = getUARTTransmitDataRegister(m_key);
-    SHAL_set_bits_16(transmit_reg.reg,16,static_cast<uint16_t>(c),transmit_reg.offset);
+    SHAL_set_register_value_16(transmit_reg.reg, static_cast<uint16_t>(c));
 }
 
 

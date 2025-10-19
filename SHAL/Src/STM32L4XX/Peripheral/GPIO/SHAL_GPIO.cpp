@@ -83,9 +83,6 @@ void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) 
     SHAL_GPIO_EXTI_Register EXTILineEnable = getGPIOEXTICR(m_GPIO_KEY);
     *EXTILineEnable.EXT_ICR |= EXTILineEnable.mask; //Set bits to enable correct port on correct line TODO Find way to clear bits before
 
-    uint32_t rising_mask = 0x00;
-    uint32_t falling_mask = 0x00;
-
     if(mode == TriggerMode::RISING_EDGE || mode == TriggerMode::RISING_FALLING_EDGE) {
         auto rising_trigger_selection_reg = getEXTIRisingTriggerSelectionRegister(gpioPin);
         SHAL_set_bits(rising_trigger_selection_reg.reg, 1, 1, gpioPin);

@@ -11,7 +11,7 @@
 #define EXTI_PENDING_REG(line) ((line) < 32 ? EXTI->PR1 : EXTI->PR2)
 
 static inline SHAL_EXTI_Interrupt_Mask_Register getEXTIInterruptMaskRegister(uint32_t line){
-    auto imr =  line < 32 ? EXTI->IMR1 : EXTI->IMR2;
+    uint32_t imr =  line < 32 ? EXTI->IMR1 : EXTI->IMR2;
     return {&imr};
 }
 

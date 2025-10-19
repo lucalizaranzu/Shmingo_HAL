@@ -33,12 +33,10 @@ struct SHAL_UART_Control_Register_1 {
 
 struct SHAL_UART_Baud_Rate_Generation_Register {
     volatile uint32_t* reg;
-    uint32_t offset;
 };
 
 struct SHAL_UART_Transmit_Data_Register {
     volatile uint16_t* reg;
-    uint16_t offset;
 };
 
 struct SHAL_UART_ISR_FIFO_Disabled {

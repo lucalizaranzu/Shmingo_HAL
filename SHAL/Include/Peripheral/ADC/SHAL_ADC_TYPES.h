@@ -23,9 +23,13 @@ struct SHAL_ADC_RCC_Enable_Reg {
 struct SHAL_ADC_Control_Reg {
     volatile uint32_t* reg;
     uint32_t enable_mask;
+    uint32_t stop_mask;
     uint32_t disable_mask;
     uint32_t calibration_mask;
     uint32_t start_mask;
+    uint32_t deep_power_down_mask;
+    uint32_t voltage_regulator_mask;
+    uint32_t differential_mode_mask;
 };
 
 //Register controlling ADC configuration
@@ -54,8 +58,7 @@ struct SHAL_ADC_ISR_Reg {
 //Register controlling the clock source for the ADC
 struct SHAL_ADC_Clock_Reg {
     volatile uint32_t* reg;
-    uint32_t clear;
-    uint32_t mask;
+    uint32_t offset;
 };
 
 //Register controlling the sampling time of ADC samples

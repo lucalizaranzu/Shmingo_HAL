@@ -7,7 +7,7 @@ set(MCU_FAMILY "STM32L4xx" CACHE STRING "MCU family")
 set(MCU_MODEL "STM32L432xx" CACHE STRING "MCU model")
 
 set(CPU_PARAMETERS
-        -mcpu=cortex-m0
+        -mcpu=cortex-m4
         -mthumb)
 
 set(STARTUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/MX/L432KC/startup_stm32l432kcux.s)

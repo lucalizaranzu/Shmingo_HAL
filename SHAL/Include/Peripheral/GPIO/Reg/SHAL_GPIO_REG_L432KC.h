@@ -10,7 +10,7 @@
 
 #include "SHAL_GPIO_TYPES.h"
 
-#define AVAILABLE_PORTS 3
+#define AVAILABLE_PORTS 2
 #define PINS_PER_PORT 16
 #define NUM_EXTI_LINES 16
 
@@ -157,6 +157,7 @@ constexpr uint32_t getGPIOPortNumber(const GPIO_Key g){
         case GPIO_Key::B5:
         case GPIO_Key::B6:
         case GPIO_Key::B7:
+            return 1;
         case GPIO_Key::INVALID:
         case GPIO_Key::NUM_GPIO:
             assert(false);

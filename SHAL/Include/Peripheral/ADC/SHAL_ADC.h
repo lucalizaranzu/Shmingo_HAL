@@ -16,7 +16,7 @@ class SHAL_ADC {
 
 public:
 
-    SHAL_Result init();
+    SHAL_Result init(ADC_Key key);
 
     SHAL_Result calibrate();
 
@@ -53,6 +53,9 @@ private:
 
     //Disables peripheral
     SHAL_Result disable();
+
+    //Wake up ADC from initial deep sleep state
+    SHAL_Result wakeFromDeepSleep();
 
     SHAL_Result startConversion();
 

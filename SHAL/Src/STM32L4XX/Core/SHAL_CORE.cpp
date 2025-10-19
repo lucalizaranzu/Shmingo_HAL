@@ -3,9 +3,20 @@
 //
 
 #include "SHAL_CORE.h"
+#include "SHAL_GPIO.h"
+#include "SHAL_ADC.h"
 
 void SHAL_init(){
-    systick_init(); //Just this for now
+    systick_init();
+
+
+    for(auto i = static_cast<uint8_t>(ADC_Key::S_ADC1); i < static_cast<uint8_t>(ADC_Key::NUM_ADC); i++){ //Init all ADCs
+        auto adc_key = static_cast<ADC_Key>(i);
+
+        ADCManager::getByIndex(i).init(adc_key);
+    }
+    SET_ANALOGREAD_ADC(SHAL_ADC1); //Default ADC1 for analogread calls
+
 }
 
 

@@ -81,14 +81,14 @@ static inline SHAL_UART_Control_Register_1 getUARTControlRegister1(UART_Pair_Key
 };
 
 static inline SHAL_UART_Baud_Rate_Generation_Register getUARTBaudRateGenerationRegister(UART_Pair_Key key){
-    SHAL_UART_Baud_Rate_Generation_Register res = {nullptr, 1UL << 15}; //TODO un-hardcode if other devices have wider baud rate allowances
+    SHAL_UART_Baud_Rate_Generation_Register res = {nullptr}; //TODO un-hardcode if other devices have wider baud rate allowances
 
     res.reg = &getUARTPair(key).USARTReg->BRR;
     return res;
 };
 
 static inline SHAL_UART_Transmit_Data_Register getUARTTransmitDataRegister(UART_Pair_Key key){
-    SHAL_UART_Transmit_Data_Register res = {nullptr, 1UL << 15}; //TODO un-hardcode if other devices have wider baud rate allowances
+    SHAL_UART_Transmit_Data_Register res = {nullptr}; //TODO un-hardcode if other devices have wider baud rate allowances
 
     res.reg = &getUARTPair(key).USARTReg->TDR;
     return res;
