@@ -32,9 +32,11 @@ enum class SHAL_ADC_Channel : uint32_t {
     CH13,
     CH14,
     CH15,
+    CH16,
     CHTemp,
     CHRef,
-    CHBat
+    CHBat,
+    NO_ADC_MAPPING
 };
 
 enum class ADC_Key : uint8_t{
@@ -116,10 +118,10 @@ static inline SHAL_ADC_Channel_Sampling_Time_Reg getADCChannelSamplingTimeRegist
     auto channelNum = static_cast<uint8_t>(channel);
 
     if (channelNum <= 9) {
-        SMPReg = &ADCReg->SQR1;
+        SMPReg = &ADCReg->SMPR1;
         pos = (channelNum * 3);
     } else {
-        SMPReg = &ADCReg->SQR2;
+        SMPReg = &ADCReg->SMPR2;
         pos = ((channelNum - 10) * 3);
     }
 
@@ -144,11 +146,11 @@ static inline SHAL_ADC_Sequence_Reg getADCSequenceRegisters(ADC_Key key){
                                  &adc_reg->SQR4,
                                  nullptr,
                                  nullptr},
-                                 {1UL << 0,
-                                 1UL << 6,
-                                 1UL << 12,
-                                 1UL << 18,
-                                 1UL << 24}
+                                 {0,
+                                 6,
+                                 12,
+                                 18,
+                                 24}
     };
 
     return res;

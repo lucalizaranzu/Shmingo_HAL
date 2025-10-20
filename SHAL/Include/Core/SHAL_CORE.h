@@ -110,6 +110,8 @@ static inline void SHAL_set_register_value_16(volatile uint16_t* reg, uint16_t v
     *reg = value;
 }
 
+void SHAL_print_register(const volatile uint32_t* reg);
+
 //---------------------------------------------------------
 
 

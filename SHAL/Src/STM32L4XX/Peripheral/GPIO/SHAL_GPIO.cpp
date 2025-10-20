@@ -5,7 +5,7 @@
 #include "SHAL_GPIO.h"
 #include "SHAL_EXTI_CALLBACK.h"
 
-
+#include "SHAL_UART.h"
 
 SHAL_GPIO::SHAL_GPIO() : m_GPIO_KEY(GPIO_Key::INVALID){
     //Do not initialize anything
@@ -34,7 +34,19 @@ void SHAL_GPIO::toggle() volatile {
     gpioPeripheral.reg->ODR ^= (1 << gpioPeripheral.global_offset);
 }
 
+SHAL_Result SHAL_GPIO::setPinMode(PinMode mode) volatile {
+    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
 
+    gpioPeripheral.reg->MODER &= ~(0x03 << (2 * gpioPeripheral.global_offset));
+    gpioPeripheral.reg->MODER |= (static_cast<uint8_t>(mode) << (2 * gpioPeripheral.global_offset));
+
+    if(mode == PinMode::ANALOG_MODE && getGPIOPortInfo(m_GPIO_KEY).ADCChannel != SHAL_ADC_Channel::NO_ADC_MAPPING){
+        SHAL_UART2.sendString("Error: GPIO pin has no valid ADC mapping\r\n");
+        return SHAL_Result::ERROR;
+    }
+
+    return SHAL_Result::OKAY;
+}
 
 void SHAL_GPIO::setPinType(PinType type) volatile {
     SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
@@ -62,11 +74,7 @@ void SHAL_GPIO::setAlternateFunction(GPIO_Alternate_Function AF) volatile {
     gpioPeripheral.reg->AFR[afrIndex] |= (static_cast<int>(AF) << (gpioPeripheral.global_offset * 4));
 }
 
-void SHAL_GPIO::setPinMode(PinMode mode) volatile {
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    gpioPeripheral.reg->MODER &= ~(0x03 << (2 * gpioPeripheral.global_offset)); //Clear any previous mode
-    gpioPeripheral.reg->MODER |= (static_cast<uint8_t>(mode) << (2 * gpioPeripheral.global_offset)); //Set mode based on pinmode bit structure
-}
+
 
 void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) {
 

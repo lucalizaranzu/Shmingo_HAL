@@ -29,7 +29,6 @@ public:
     /// \return ADC result
     uint16_t analogRead(SHAL_ADC_SampleTime sampleTime = SHAL_ADC_SampleTime::C8);
 
-    void setPinMode(PinMode mode) volatile;
 
     void setAlternateFunction(GPIO_Alternate_Function AF) volatile;
 
@@ -42,7 +41,7 @@ public:
 
     void useAsExternalInterrupt(TriggerMode mode, EXTICallback callback);
 
-
+    SHAL_Result setPinMode(PinMode mode) volatile;
 
 private:
 
@@ -66,6 +65,7 @@ private:
 #define GET_GPIO(key) GPIOManager::get(key)
 
 #define SET_ANALOGREAD_ADC(x) GPIOManager::setGPIOADC(x)
+
 
 //Manages instances of SHAL_GPIO objects
 class GPIOManager{

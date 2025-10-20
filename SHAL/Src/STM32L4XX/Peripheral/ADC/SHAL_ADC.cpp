@@ -85,7 +85,7 @@ uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, SHAL_ADC_Sample
     SHAL_set_bits(sampleTimeReg.reg,3,static_cast<uint8_t>(time),sampleTimeReg.channel_offset); //Set sample time register TODO un-hardcode bit width?
 
     addADCChannelToSequence(channel,0); //Use index 0 to convert channel
-    setADCSequenceAmount(1); //Since we're using single convert, convert 1 channel
+    if(setADCSequenceAmount(1) == SHAL_Result::ERROR){return 0;} //Since we're using single convert, convert 1 channel
 
     if(enable() != SHAL_Result::OKAY){
         return 0;
@@ -95,7 +95,7 @@ uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, SHAL_ADC_Sample
 
     auto ISR_reg = getADCISRReg(m_ADCKey);
 
-    if(!SHAL_WAIT_FOR_CONDITION_US(((*ISR_reg.reg & ISR_reg.end_of_conversion_mask) != 0),500)){ //Wait for conversion
+    if(!SHAL_WAIT_FOR_CONDITION_US(((*ISR_reg.reg & ISR_reg.end_of_sequence_mask) != 0),500)){ //Wait for conversion
         return 0; //Failed
     }
 
@@ -268,6 +268,7 @@ SHAL_Result SHAL_ADC::setADCSequenceAmount(uint32_t amount) {
 }
 
 SHAL_Result SHAL_ADC::addADCChannelToSequence(SHAL_ADC_Channel channel, uint32_t index) {
+
     if(!isValid()){return SHAL_Result::ERROR;}
 
     auto sequenceRegisters = getADCSequenceRegisters(m_ADCKey);
@@ -279,6 +280,13 @@ SHAL_Result SHAL_ADC::addADCChannelToSequence(SHAL_ADC_Channel channel, uint32_t
 
     volatile uint32_t* sequenceReg = sequenceRegisters.regs[sequenceRegNumber];
     uint32_t bitSectionOffset = sequenceRegisters.offsets[bitSection];
+
+    if(sequenceRegNumber != 0){
+        *sequenceReg = 0; //Clear previous conversions
+    }
+    else{
+        *sequenceReg &= 0x0000000F;
+    }
 
     SHAL_set_bits(sequenceReg,5,channelNum,bitSectionOffset);
 

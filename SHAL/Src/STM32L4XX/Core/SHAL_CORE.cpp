@@ -2,9 +2,12 @@
 // Created by Luca on 9/15/2025.
 //
 
+#include <cstdio>
+
 #include "SHAL_CORE.h"
 #include "SHAL_GPIO.h"
 #include "SHAL_ADC.h"
+#include "SHAL_UART.h"
 
 void SHAL_init(){
     systick_init();
@@ -50,4 +53,10 @@ void SHAL_delay_ms(uint32_t ms){
     while(ms-- > 0){
         SHAL_delay_us(1000);
     }
+}
+
+void SHAL_print_register(const volatile uint32_t* reg){
+    char buff[32];
+    sprintf(buff, "0x%08lX\r\n", (unsigned long)(*reg));
+    SHAL_UART2.sendString(buff);
 }

@@ -10,7 +10,7 @@ void togglePin() {
 }
 
 void timer2callback(){
-    auto val = PIN(B7).analogRead();
+    auto val = PIN(A5).analogRead();
 
     char buf [6];
     sprintf (buf, "%d\r\n", val);
@@ -22,11 +22,12 @@ int main() {
 
     SHAL_init();
 
-
     PIN(B4).setPinMode(PinMode::OUTPUT_MODE);
     PIN(B4).setLow();
 
     PIN(B3).setPinMode(PinMode::OUTPUT_MODE);
+
+    PIN(A5).setPinMode(PinMode::ANALOG_MODE);
 
     SHAL_UART2.init(UART_Pair_Key::Tx2A2_Rx2A3);
 

@@ -169,47 +169,54 @@ constexpr uint32_t getGPIOPortNumber(const GPIO_Key g){
 constexpr SHAL_GPIO_Port_Info getGPIOPortInfo(GPIO_Key key){
     switch(key){
         case GPIO_Key::A0:
+            return {0, SHAL_ADC_Channel::CH5};
         case GPIO_Key::B0:
-            return {0, SHAL_ADC_Channel::CH0};
+            return {0, SHAL_ADC_Channel::CH15};
         case GPIO_Key::A1:
+            return {1, SHAL_ADC_Channel::CH6};
         case GPIO_Key::B1:
-            return {1, SHAL_ADC_Channel::CH1};
+            return {1, SHAL_ADC_Channel::CH16};
         case GPIO_Key::A2:
-            return {2, SHAL_ADC_Channel::CH2};
+            return {2, SHAL_ADC_Channel::CH7};
         case GPIO_Key::A3:
+            return {3, SHAL_ADC_Channel::CH8};
         case GPIO_Key::B3:
-            return {3, SHAL_ADC_Channel::CH3};
+            return {3, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A4:
+            return {4, SHAL_ADC_Channel::CH9};
         case GPIO_Key::B4:
-            return {4, SHAL_ADC_Channel::CH4};
+            return {4, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A5:
+            return {5, SHAL_ADC_Channel::CH10};
         case GPIO_Key::B5:
-            return {5, SHAL_ADC_Channel::CH5};
+            return {5, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A6:
+            return {6, SHAL_ADC_Channel::CH11};
         case GPIO_Key::B6:
-            return {6, SHAL_ADC_Channel::CH6};
+            return {6, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A7:
+            return {7, SHAL_ADC_Channel::CH12};
         case GPIO_Key::B7:
-            return {7, SHAL_ADC_Channel::CH7};
+            return {7, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A8:
-            return {8, SHAL_ADC_Channel::CH8};
+            return {8, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A9:
-            return {9, SHAL_ADC_Channel::CH9};
+            return {9, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A10:
-            return {10, SHAL_ADC_Channel::CH10};
+            return {10, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A11:
-            return {11, SHAL_ADC_Channel::CH11};
+            return {11, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A12:
-            return {12, SHAL_ADC_Channel::CH12};
+            return {12, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A13:
-            return {13, SHAL_ADC_Channel::CH13};
+            return {13, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A14:
-            return {14, SHAL_ADC_Channel::CH14};
+            return {14, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::A15:
-            return {15, SHAL_ADC_Channel::CH15};
+            return {15, SHAL_ADC_Channel::NO_ADC_MAPPING};
         case GPIO_Key::NUM_GPIO:
         case GPIO_Key::INVALID:
-            return {0, SHAL_ADC_Channel::CH0};
+            return {0, SHAL_ADC_Channel::NO_ADC_MAPPING};
     }
     __builtin_unreachable();
 }
