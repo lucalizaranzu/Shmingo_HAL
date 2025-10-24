@@ -12,5 +12,5 @@ DEFINE_TIMER_IRQ(Timer_Key::S_TIM15, TIM15_IRQHandler)
 DEFINE_TIMER_IRQ(Timer_Key::S_TIM16, TIM16_IRQHandler)
 
 void registerTimerCallback(Timer_Key key, TimerCallback callback){
-    timer_callbacks[static_cast<int>(key)] = callback;
+    timer_callbacks[static_cast<uint32_t>(key)] = callback;
 }
