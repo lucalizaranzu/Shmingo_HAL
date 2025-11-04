@@ -18,6 +18,7 @@ void SHAL_init(){
 
         ADCManager::getByIndex(i).init(adc_key);
     }
+
     SET_ANALOGREAD_ADC(SHAL_ADC1); //Default ADC1 for analogread calls
 
 }

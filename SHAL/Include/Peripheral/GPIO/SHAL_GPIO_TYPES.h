@@ -15,14 +15,39 @@ struct SHAL_GPIO_EXTI_Register{
     IRQn_Type IRQN; //IRQ number for enabling lines
 };
 
-struct SHAL_GPIO_Peripheral {
-    GPIO_TypeDef * reg;
-    unsigned long global_offset;
+struct SHAL_GPIO_RCC_Enable_Register{
+    volatile uint32_t* reg;
+    uint32_t offset;
 };
 
-struct SHAL_Peripheral_Register {
+struct SHAL_GPIO_Mode_Register {
     volatile uint32_t* reg;
-    unsigned long offset;
+    uint32_t offset;
+};
+
+struct SHAL_GPIO_Pullup_Pulldown_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
+};
+
+struct SHAL_GPIO_Alternate_Function_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
+};
+
+struct SHAL_GPIO_Output_Speed_Register{
+    volatile uint32_t* reg;
+    uint32_t offset;
+};
+
+struct SHAL_GPIO_Output_Type_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
+};
+
+struct SHAL_GPIO_Output_Data_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
 };
 
 struct SHAL_GPIO_Port_Info{

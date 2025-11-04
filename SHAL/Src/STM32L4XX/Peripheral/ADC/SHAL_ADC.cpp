@@ -6,7 +6,7 @@
 #include "SHAL_GPIO.h"
 #include "SHAL_UART.h"
 #include <cstdio>
-//Can hard code registers on F0 because all F0 devices have only one ADC, and use only one clock
+
 SHAL_Result SHAL_ADC::init(ADC_Key key) {
 
     m_ADCKey = key;
@@ -15,11 +15,6 @@ SHAL_Result SHAL_ADC::init(ADC_Key key) {
         SHAL_UART2.sendString("Not valid\r\n");
         return SHAL_Result::ERROR;
     }
-
-    SHAL_UART2.sendString("Init called\r\n");
-    PIN(B4).toggle();
-    SHAL_delay_ms(100);
-    PIN(B4).toggle();
 
     SHAL_ADC_RCC_Enable_Reg clock_reg = getADCRCCEnableRegister(m_ADCKey); //Clock enable
 
@@ -115,10 +110,6 @@ SHAL_Result SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, const int n
         SHAL_set_bits(sampleTimeReg.reg,3,static_cast<uint8_t>(time),sampleTimeReg.channel_offset); //Set sample time register TODO un-hardcode bit width?
 
         addADCChannelToSequence(channel,i); //Use index 0 to convert channel
-
-        if(enable() != SHAL_Result::OKAY){
-            return SHAL_Result::ERROR;
-        }
     }
 
     startConversion(); //Start ADC conversion
@@ -292,9 +283,6 @@ SHAL_Result SHAL_ADC::addADCChannelToSequence(SHAL_ADC_Channel channel, uint32_t
 
     return SHAL_Result::OKAY;
 }
-
-
-
 
 SHAL_ADC &ADCManager::get(ADC_Key key) {
     return m_ADCs[static_cast<uint8_t>(key)];

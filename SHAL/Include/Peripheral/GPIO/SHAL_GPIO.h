@@ -32,7 +32,7 @@ public:
 
     void setAlternateFunction(GPIO_Alternate_Function AF) volatile;
 
-    void setPinType(PinType type) volatile;
+    void setOutputType(PinType type) volatile;
 
     void setOutputSpeed(OutputSpeed speed) volatile;
 

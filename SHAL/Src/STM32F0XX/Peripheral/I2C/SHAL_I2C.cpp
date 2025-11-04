@@ -27,8 +27,8 @@ void SHAL_I2C::init(I2C_Pair pair) volatile {
     GET_GPIO(SDA_Key).setAlternateFunction(I2CPair.SDA_Mask);
 
     //These may be abstracted further to support multiple I2C configurations
-    GET_GPIO(SCL_Key).setPinType(PinType::OPEN_DRAIN);
-    GET_GPIO(SDA_Key).setPinType(PinType::OPEN_DRAIN);
+    GET_GPIO(SCL_Key).setOutputType(PinType::OPEN_DRAIN);
+    GET_GPIO(SDA_Key).setOutputType(PinType::OPEN_DRAIN);
 
     GET_GPIO(SCL_Key).setOutputSpeed(OutputSpeed::HIGH_SPEED);
     GET_GPIO(SDA_Key).setOutputSpeed(OutputSpeed::HIGH_SPEED);

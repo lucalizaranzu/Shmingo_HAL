@@ -10,6 +10,7 @@
 #define SHMINGO_HAL_SHAL_CORE_H
 
 #include <cstdint>
+#include <cstddef>
 
 //Overall init function for SHAL --------------------------
 
@@ -70,45 +71,57 @@ bool SHAL_wait_for_condition_ms(Condition cond, uint32_t timeout_ms) {
     return false; // timeout
 }
 
-//Sets bits starting from offset as the LSB
-static inline void SHAL_set_bits(volatile uint32_t* reg, uint32_t size, uint32_t bits, uint32_t offset){
-    if(reg == nullptr){
-        return;
-    }
-    uint32_t mask = (1 << (size)) - 1;
-    *reg &= ~(mask << offset);
-    *reg |= bits << offset;
-}
+#define SHAL_set_bits(reg, size, bits, offset)                    \
+    do {                                                          \
+        if ((reg) != NULL) {                                      \
+            uint32_t _mask = ((1U << (size)) - 1U);               \
+            *(reg) &= ~((uint32_t)(_mask) << (offset));           \
+            *(reg) |= ((uint32_t)(bits) << (offset));             \
+        }                                                         \
+    } while (0)
 
-//Sets bits starting from offset as the LSB (for uint16_t)
-static inline void SHAL_set_bits_16(volatile uint16_t* reg, uint32_t size, uint32_t bits, uint32_t offset){
-    uint16_t mask = (1 << (size)) - 1;
-    *reg &= ~(mask << offset);
-    *reg |= bits << offset;
-}
+#define SHAL_flip_bits(reg, size, offset)                         \
+    do {                                                          \
+        if ((reg) != NULL) {                                      \
+            uint32_t _mask = ((1U << (size)) - 1U);               \
+            *(reg) ^= (_mask << (offset));                         \
+        }                                                         \
+    } while (0)
 
-static inline void SHAL_clear_bitmask(volatile uint32_t* reg, uint32_t mask){
-    *reg &= ~(mask);
-}
+#define SHAL_set_bits_16(reg, size, bits, offset)                 \
+    do {                                                          \
+        if ((reg) != NULL) {                                      \
+            uint16_t _mask = (uint16_t)((1U << (size)) - 1U);     \
+            *(reg) &= (uint16_t)~((uint16_t)(_mask) << (offset)); \
+            *(reg) |= (uint16_t)((uint16_t)(bits) << (offset));   \
+        }                                                         \
+    } while (0)
 
-static inline void SHAL_apply_bitmask(volatile uint32_t* reg, uint32_t mask){
-    SHAL_clear_bitmask(reg,mask);
-    *reg |= mask;
-}
+#define SHAL_clear_bitmask(reg, mask)                             \
+    do {                                                          \
+        *(reg) &= ~(mask);                                        \
+    } while (0)
 
-static inline void SHAL_set_register_value(volatile uint32_t* reg, uint32_t value){
-    if(reg == nullptr){
-        return;
-    }
-    *reg = value;
-}
+#define SHAL_apply_bitmask(reg, mask)                             \
+    do {                                                          \
+        SHAL_clear_bitmask((reg), (mask));                        \
+        *(reg) |= (mask);                                         \
+    } while (0)
 
-static inline void SHAL_set_register_value_16(volatile uint16_t* reg, uint16_t value){
-    if(reg == nullptr){
-        return;
-    }
-    *reg = value;
-}
+#define SHAL_set_register_value(reg, value)                       \
+    do {                                                          \
+        if ((reg) != NULL) {                                      \
+            *(reg) = (uint32_t)(value);                           \
+        }                                                         \
+    } while (0)
+
+#define SHAL_set_register_value_16(reg, value)                    \
+    do {                                                          \
+        if ((reg) != NULL) {                                      \
+            *(reg) = (uint16_t)(value);                           \
+        }                                                         \
+    } while (0)
+
 
 void SHAL_print_register(const volatile uint32_t* reg);
 

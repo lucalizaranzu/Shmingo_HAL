@@ -2,6 +2,7 @@
 // Created by Luca on 8/30/2025.
 //
 
+#include <cstdio>
 #include "SHAL_GPIO.h"
 #include "SHAL_EXTI_CALLBACK.h"
 
@@ -20,65 +21,59 @@ SHAL_GPIO::SHAL_GPIO(GPIO_Key key) : m_GPIO_KEY(key) {
 }
 
 void SHAL_GPIO::setLow() {
-    auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    gpioPeripheral.reg->ODR &= ~(1 << gpioPeripheral.global_offset);
+    auto outputDataReg = getGPIOOutputDataRegister(m_GPIO_KEY);
+    SHAL_set_bits(outputDataReg.reg,1,0,outputDataReg.offset);
 }
 
 void SHAL_GPIO::setHigh() {
-    auto gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    gpioPeripheral.reg->ODR |= (1 << gpioPeripheral.global_offset);
+    auto outputDataReg = getGPIOOutputDataRegister(m_GPIO_KEY);
+    SHAL_set_bits(outputDataReg.reg,1,1,outputDataReg.offset);
 }
 
 void SHAL_GPIO::toggle() volatile {
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    gpioPeripheral.reg->ODR ^= (1 << gpioPeripheral.global_offset);
+    auto outputDataReg = getGPIOOutputDataRegister(m_GPIO_KEY);
+    SHAL_flip_bits(outputDataReg.reg,1,outputDataReg.offset);
+}
+
+void SHAL_GPIO::setOutputType(PinType type) volatile {
+    auto outputTypeReg = getGPIOOutputTypeRegister(m_GPIO_KEY);
+    SHAL_set_bits(outputTypeReg.reg,2,static_cast<uint8_t>(type),outputTypeReg.offset);
+}
+
+void SHAL_GPIO::setOutputSpeed(OutputSpeed speed) volatile {
+    auto outputSpeedReg = getGPIOOutputSpeedRegister(m_GPIO_KEY);
+    SHAL_set_bits(outputSpeedReg.reg,2,static_cast<uint8_t>(speed),outputSpeedReg.offset);
+}
+
+void SHAL_GPIO::setInternalResistor(InternalResistorType type) volatile {
+    auto pupdreg = getGPIOPUPDRegister(m_GPIO_KEY);
+    SHAL_set_bits(pupdreg.reg,2,static_cast<uint8_t>(type),pupdreg.offset);
+}
+
+void SHAL_GPIO::setAlternateFunction(GPIO_Alternate_Function AF) volatile {
+    auto alternateFunctionReg = getGPIOAlternateFunctionRegister(m_GPIO_KEY);
+    SHAL_set_bits(alternateFunctionReg.reg,4,static_cast<uint8_t>(AF),alternateFunctionReg.offset);
 }
 
 SHAL_Result SHAL_GPIO::setPinMode(PinMode mode) volatile {
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
+    auto pinModeReg = getGPIOModeRegister(m_GPIO_KEY);
 
-    gpioPeripheral.reg->MODER &= ~(0x03 << (2 * gpioPeripheral.global_offset));
-    gpioPeripheral.reg->MODER |= (static_cast<uint8_t>(mode) << (2 * gpioPeripheral.global_offset));
-
-    if(mode == PinMode::ANALOG_MODE && getGPIOPortInfo(m_GPIO_KEY).ADCChannel != SHAL_ADC_Channel::NO_ADC_MAPPING){
-        SHAL_UART2.sendString("Error: GPIO pin has no valid ADC mapping\r\n");
+    if(mode == PinMode::ANALOG_MODE && getGPIOPortInfo(m_GPIO_KEY).ADCChannel == SHAL_ADC_Channel::NO_ADC_MAPPING){
+        char buff[100];
+        sprintf(buff, "Error: GPIO pin %d has no valid ADC mapping\r\n", static_cast<uint8_t>(m_GPIO_KEY));
+        SHAL_UART2.sendString(buff);
         return SHAL_Result::ERROR;
     }
+    SHAL_print_register(pinModeReg.reg);
+
+    SHAL_set_bits(pinModeReg.reg,2,static_cast<uint8_t>(mode),pinModeReg.offset); //Set mode
 
     return SHAL_Result::OKAY;
 }
 
-void SHAL_GPIO::setPinType(PinType type) volatile {
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    gpioPeripheral.reg->OTYPER &= ~(1 << gpioPeripheral.global_offset);
-    gpioPeripheral.reg->OTYPER |= (static_cast<uint8_t>(type) << gpioPeripheral.global_offset);
-}
-
-void SHAL_GPIO::setOutputSpeed(OutputSpeed speed) volatile {
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    gpioPeripheral.reg->OSPEEDR |= (static_cast<uint8_t>(speed) << (2 * gpioPeripheral.global_offset));
-}
-
-void SHAL_GPIO::setInternalResistor(InternalResistorType type) volatile {
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    gpioPeripheral.reg->PUPDR &= ~(0x03 << (2 * gpioPeripheral.global_offset));
-    gpioPeripheral.reg->PUPDR |= (static_cast<uint8_t>(type) << (2 * gpioPeripheral.global_offset));
-}
-
-void SHAL_GPIO::setAlternateFunction(GPIO_Alternate_Function AF) volatile {
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-
-    int afrIndex = gpioPeripheral.global_offset < 8 ? 0 : 1; //Get index of AFR
-
-    gpioPeripheral.reg->AFR[afrIndex] &= ~(0xF << (gpioPeripheral.global_offset * 4));
-    gpioPeripheral.reg->AFR[afrIndex] |= (static_cast<int>(AF) << (gpioPeripheral.global_offset * 4));
-}
-
-
-
 void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) {
 
-    uint32_t gpioPin = getGPIORegister(m_GPIO_KEY).global_offset; //Use existing structs to get offset
+    uint32_t gpioPin = getGPIOPinNumber(m_GPIO_KEY);
 
     setPinMode(PinMode::INPUT_MODE); //Explicitly set mode to input
 
@@ -118,7 +113,7 @@ uint16_t SHAL_GPIO::analogRead(SHAL_ADC_SampleTime sampleTime) {
 SHAL_GPIO& GPIOManager::get(GPIO_Key key) {
 
     unsigned int gpioPort = getGPIOPortNumber(key);
-    unsigned long gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
+    uint8_t gpioPin = getGPIOPinNumber(key);
 
     if (m_gpios[gpioPort][gpioPin].m_GPIO_KEY == GPIO_Key::INVALID){
         m_gpios[gpioPort][gpioPin] = SHAL_GPIO(key);

@@ -66,7 +66,7 @@ void SHAL_UART::sendChar(char c) volatile {
     auto ISR_non_fifo = getUARTISRFifoDisabled(m_key);
 
     if(!SHAL_WAIT_FOR_CONDITION_MS((*ISR_non_fifo.reg & ISR_non_fifo.transmit_data_register_empty_mask) != 0, 500)){
-        PIN(B3).toggle();
+        PIN(B3).setHigh();
         return;
     }
 

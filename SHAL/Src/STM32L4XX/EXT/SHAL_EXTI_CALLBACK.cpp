@@ -43,5 +43,5 @@ DEFINE_MULTI_EXTI_IRQ(10,15);
 
 //Link function to EXTI line
 void registerEXTICallback(GPIO_Key key, EXTICallback callback){
-    EXTI_callbacks[getGPIORegister(key).global_offset] = callback;
+    EXTI_callbacks[getGPIOPinNumber(key)] = callback;
 }
