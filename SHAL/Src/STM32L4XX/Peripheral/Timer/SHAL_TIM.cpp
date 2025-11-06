@@ -19,6 +19,7 @@ void Timer::start() {
     auto event_generation_reg = getTimerEventGenerationRegister(m_key);
 
     SHAL_apply_bitmask(control_reg.reg, control_reg.counter_enable_mask); //Enable counter
+    SHAL_apply_bitmask(control_reg.reg, control_reg.auto_reload_preload_enable_mask); //Preload enable (buffer)
     SHAL_apply_bitmask(event_generation_reg.reg, event_generation_reg.update_generation_mask);
 
     enableInterrupt();
@@ -54,19 +55,42 @@ void Timer::init(uint32_t prescaler, uint32_t autoReload) {
     setARR(autoReload);
 }
 
-void Timer::setPWMMode(SHAL_Timer_Channel channel, SHAL_Timer_Channel_Main_Output_Mode mainOutputMode,
+void Timer::setPWMMode(SHAL_Timer_Channel channel, SHAL_TIM_Output_Compare_Mode outputCompareMode, SHAL_Timer_Channel_Main_Output_Mode mainOutputMode,
                        SHAL_Timer_Channel_Complimentary_Output_Mode complimentaryOutputMode) {
 
-    uint8_t fullModeMask = static_cast<uint8_t>(mainOutputMode) | (static_cast<uint8_t>(complimentaryOutputMode) << 2);
-    uint32_t offset = static_cast<uint8_t>(channel) * 4;
-
     auto ccer = getTimerCaptureCompareEnableRegister(m_key);
+    auto ccmr1 = getTimerCaptureCompareModeRegistersOutput(m_key);
+    auto bdtr = getTimerBreakDeadTimeRegister(m_key);
 
-    if(static_cast<uint8_t>(m_key) > 3){
-        fullModeMask &= (0b0011); //Clear bits for complimentary output since channels 4,5,6 don't support it
+    uint8_t fullChannelModeMask = static_cast<uint8_t>(mainOutputMode) | (static_cast<uint8_t>(complimentaryOutputMode) << 2);
+    uint8_t channelNum = static_cast<uint8_t>(channel);
+
+    if (channelNum <= 3) {
+
+        uint32_t regNum = channelNum / 2; //TODO change later for support for channels 5 and 6
+
+        if (channelNum % 2 == 1) {
+            SHAL_set_bits(ccmr1.regs[regNum], 4, static_cast<uint8_t>(outputCompareMode),
+                          ccmr1.output_compare_2_mode_offset);
+        } else {
+            SHAL_set_bits(ccmr1.regs[regNum], 4, static_cast<uint8_t>(outputCompareMode),
+                          ccmr1.output_compare_1_mode_offset);
+        }
     }
 
-    SHAL_set_bits(ccer.reg,4,fullModeMask,offset);
+    uint32_t offset = channelNum * 4;
+
+    if (static_cast<uint8_t>(m_key) > 3) {
+        fullChannelModeMask &= (0b0011); //Clear bits for complimentary output since channels 4,5,6 don't support it
+    }
+
+    SHAL_set_bits(ccer.reg, 4, fullChannelModeMask, offset);
+    SHAL_apply_bitmask(bdtr.reg, bdtr.main_output_enable_mask);
+}
+
+void Timer::setPWMDutyCycle(uint32_t dutyCycle) {
+    auto reg = getTimerCaptureCompareRegister(m_key);
+    SHAL_set_bits(reg.reg,16,dutyCycle,0);
 }
 
 

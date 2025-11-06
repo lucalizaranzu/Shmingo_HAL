@@ -59,15 +59,15 @@ struct SHAL_TIM_Capture_Compare_Mode_Registers_Input {
 struct SHAL_TIM_Capture_Compare_Mode_Registers_Output {
     volatile uint32_t* regs[2];
     uint32_t capture_compare_1_selection_offset;
-    uint32_t output_compare_1_fast_enable_offset;
-    uint32_t output_compare_1_preload_enable_offset;
+    uint32_t output_compare_1_fast_enable_mask;
+    uint32_t output_compare_1_preload_enable_mask;
     uint32_t output_compare_1_mode_offset;
-    uint32_t output_compare_1_clear_enable_offset;
+    uint32_t output_compare_1_clear_enable_mask;
     uint32_t capture_compare_2_selection_offset;
-    uint32_t output_compare_2_fast_enable_offset;
-    uint32_t output_compare_2_preload_enable_offset;
+    uint32_t output_compare_2_fast_enable_mask;
+    uint32_t output_compare_2_preload_enable_mask;
     uint32_t output_compare_2_mode_offset;
-    uint32_t output_compare_2_clear_enable_offset;
+    uint32_t output_compare_2_clear_enable_mask;
 };
 
 struct SHAL_TIM_Break_Dead_Time_Register {

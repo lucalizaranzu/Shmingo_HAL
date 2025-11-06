@@ -38,7 +38,11 @@ public:
     //Enable interrupts
     void enableInterrupt();
 
-    void setPWMMode(SHAL_Timer_Channel channel, SHAL_Timer_Channel_Main_Output_Mode mainOutputMode, SHAL_Timer_Channel_Complimentary_Output_Mode complimentaryOutputMode);
+    void setPWMMode(SHAL_Timer_Channel channel, SHAL_TIM_Output_Compare_Mode outputCompareMode, SHAL_Timer_Channel_Main_Output_Mode mainOutputMode, SHAL_Timer_Channel_Complimentary_Output_Mode complimentaryOutputMode);
+
+    /// Set the duty cycle for PWM
+    /// \param dutyCycle 10 * percentage (e.g. 500 = 50%)
+    void setPWMDutyCycle(uint32_t dutyCycle);
 
     //Set TIMER_KEY IRQ callback function
     void setCallbackFunc(TimerCallback callback){
@@ -51,6 +55,7 @@ private:
     Timer();
 
     Timer_Key m_key;
+
 
 };
 

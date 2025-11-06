@@ -158,15 +158,15 @@ getTimerCaptureCompareModeRegistersOutput(Timer_Key key) {
     SHAL_TIM_Capture_Compare_Mode_Registers_Output res = {
             {nullptr, nullptr},
             TIM_CCMR1_CC1S_Pos,   //Channel 1 Capture/Compare selection
-            TIM_CCMR1_OC1FE_Pos,  //Channel 1 Fast enable
-            TIM_CCMR1_OC1PE_Pos,  //Channel 1 Preload enable
+            TIM_CCMR1_OC1FE,  //Channel 1 Fast enable
+            TIM_CCMR1_OC1PE,  //Channel 1 Preload enable
             TIM_CCMR1_OC1M_Pos,   //Channel 1 Mode (OC1M)
-            TIM_CCMR1_OC1CE_Pos,  //Channel 1 Clear enable
+            TIM_CCMR1_OC1CE,  //Channel 1 Clear enable
             TIM_CCMR1_CC2S_Pos,   //Channel 2 Capture/Compare selection
-            TIM_CCMR1_OC2FE_Pos,  //Channel 2 Fast enable
-            TIM_CCMR1_OC2PE_Pos,  //Channel 2 Preload enable
+            TIM_CCMR1_OC2FE,  //Channel 2 Fast enable
+            TIM_CCMR1_OC2PE,  //Channel 2 Preload enable
             TIM_CCMR1_OC2M_Pos,   //Channel 2 Mode (OC2M)
-            TIM_CCMR1_OC2CE_Pos   //Channel 2 Clear enable
+            TIM_CCMR1_OC2CE   //Channel 2 Clear enable
     };
 
     volatile TIM_TypeDef* tim = TIM_TABLE[static_cast<uint8_t>(key)];
@@ -176,7 +176,7 @@ getTimerCaptureCompareModeRegistersOutput(Timer_Key key) {
     return res;
 }
 
-static inline SHAL_TIM_Break_Dead_Time_Register getBreakDeadTimeRegister(Timer_Key key){
+static inline SHAL_TIM_Break_Dead_Time_Register getTimerBreakDeadTimeRegister(Timer_Key key){
 
     SHAL_TIM_Break_Dead_Time_Register res = {nullptr, 1UL << 15};
 
