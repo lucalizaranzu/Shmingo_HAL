@@ -26,14 +26,16 @@ void timer2callback(){
 
 }
 
+void b0PWM(){
+    PIN(B0).toggle();
+}
+
 int main() {
 
     SHAL_init();
 
     SHAL_UART2.init(UART_Pair_Key::Tx2A2_Rx2A3);
     SHAL_UART2.begin(115200);
-
-    SHAL_UART2.sendString("Begin\r\n");
 
     PIN(A0).setPinMode(PinMode::ANALOG_MODE);
     PIN(A1).setPinMode(PinMode::ANALOG_MODE);
@@ -42,7 +44,7 @@ int main() {
     PIN(A6).setPinMode(PinMode::ANALOG_MODE);
     PIN(A7).setPinMode(PinMode::ANALOG_MODE);
 
-    SHAL_UART2.sendString("Hello\r\n");
+    PIN(B0).setPinMode(PinMode::OUTPUT_MODE);
 
     SHAL_TIM2.init(4000000,400);
 
@@ -50,7 +52,10 @@ int main() {
     SHAL_TIM2.enableInterrupt();
     SHAL_TIM2.start();
 
-    SHAL_UART2.sendString("Hello\r\n");
+    SHAL_TIM6.init(4000000,1);
+    SHAL_TIM6.setCallbackFunc(b0PWM);
+    SHAL_TIM6.enableInterrupt();
+    SHAL_TIM6.start();
 
     while (true) {
     }

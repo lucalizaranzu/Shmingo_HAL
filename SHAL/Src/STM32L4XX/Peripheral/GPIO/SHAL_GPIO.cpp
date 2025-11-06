@@ -109,6 +109,12 @@ uint16_t SHAL_GPIO::analogRead(SHAL_ADC_SampleTime sampleTime) {
     return GPIOManager::getGPIOADC().singleConvertSingle(channel,sampleTime);
 }
 
+void SHAL_GPIO::setAlternateFunction(GPIO_Alternate_Function_Mapping AF) volatile {
+    setPinMode(PinMode::ALTERNATE_FUNCTION_MODE);
+    auto alternateFunctionReg = getGPIOAlternateFunctionRegister(m_GPIO_KEY);
+    SHAL_set_bits(alternateFunctionReg.reg,4,static_cast<uint8_t>(AF),alternateFunctionReg.offset);
+}
+
 
 SHAL_GPIO& GPIOManager::get(GPIO_Key key) {
 

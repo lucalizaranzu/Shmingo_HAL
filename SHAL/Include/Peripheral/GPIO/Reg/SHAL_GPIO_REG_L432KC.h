@@ -44,6 +44,24 @@ enum class GPIO_Key : uint8_t {
     INVALID
 };
 
+enum class GPIO_Alternate_Function_Mapping {
+    A0_TIM2CH1 = 0x01,
+    A1_TIM2CH2 = 0x01,
+    A2_TIM2CH3 = 0x01,
+    A3_TIM2CH4 = 0x01,
+    A5_TIM2CH1 = 0x01,
+    A6_TIM1BKIN = 0x01,
+    A7_TIM1CH1N = 0x01,
+    A8_TIM1CH1 = 0x01,
+    A9_TIM1CH2 = 0x01,
+    A10_TIM1CH3 = 0x01,
+    A11_TIM1CH4 = 0x01,
+    A12_TIM1ETR = 0x01,
+    A15_TIM2CH1 = 0x01,
+    B0_TIM2CH2N = 0x01,
+    B1_TIM1CH3N = 0x01,
+};
+
 static volatile GPIO_TypeDef * GPIO_TABLE[2] = { //Lookup table for ADCs
         GPIOA,
         GPIOB
@@ -114,7 +132,7 @@ static inline SHAL_GPIO_Pullup_Pulldown_Register getGPIOPUPDRegister(const GPIO_
 
 static inline SHAL_GPIO_Alternate_Function_Register getGPIOAlternateFunctionRegister(const GPIO_Key key){
 
-    uint32_t pinNumber = static_cast<uint8_t>(key); //Number of pin (We need 0-7 to be AFR 1 and 8-15 to be AFR 2
+    uint32_t pinNumber = static_cast<uint8_t>(key); //Number of pin (We need 0-7 to be AFR 1 and 8-15 to be AFR 2)
     uint32_t afrIndex = pinNumber < 8 ? 0 : 1;
 
     volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->AFR[afrIndex];

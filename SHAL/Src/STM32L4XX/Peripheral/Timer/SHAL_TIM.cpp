@@ -54,6 +54,21 @@ void Timer::init(uint32_t prescaler, uint32_t autoReload) {
     setARR(autoReload);
 }
 
+void Timer::setPWMMode(SHAL_Timer_Channel channel, SHAL_Timer_Channel_Main_Output_Mode mainOutputMode,
+                       SHAL_Timer_Channel_Complimentary_Output_Mode complimentaryOutputMode) {
+
+    uint8_t fullModeMask = static_cast<uint8_t>(mainOutputMode) | (static_cast<uint8_t>(complimentaryOutputMode) << 2);
+    uint32_t offset = static_cast<uint8_t>(channel) * 4;
+
+    auto ccer = getTimerCaptureCompareEnableRegister(m_key);
+
+    if(static_cast<uint8_t>(m_key) > 3){
+        fullModeMask &= (0b0011); //Clear bits for complimentary output since channels 4,5,6 don't support it
+    }
+
+    SHAL_set_bits(ccer.reg,4,fullModeMask,offset);
+}
+
 
 Timer &TimerManager::get(Timer_Key timer_key) {
 

@@ -38,6 +38,8 @@ public:
     //Enable interrupts
     void enableInterrupt();
 
+    void setPWMMode(SHAL_Timer_Channel channel, SHAL_Timer_Channel_Main_Output_Mode mainOutputMode, SHAL_Timer_Channel_Complimentary_Output_Mode complimentaryOutputMode);
+
     //Set TIMER_KEY IRQ callback function
     void setCallbackFunc(TimerCallback callback){
         registerTimerCallback(m_key, callback);

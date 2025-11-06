@@ -31,13 +31,13 @@ public:
 
 
     void setAlternateFunction(GPIO_Alternate_Function AF) volatile;
+    void setAlternateFunction(GPIO_Alternate_Function_Mapping AF) volatile;
 
     void setOutputType(PinType type) volatile;
 
     void setOutputSpeed(OutputSpeed speed) volatile;
 
     void setInternalResistor(InternalResistorType type) volatile;
-
 
     void useAsExternalInterrupt(TriggerMode mode, EXTICallback callback);
 
