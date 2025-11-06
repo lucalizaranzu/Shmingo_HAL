@@ -10,6 +10,15 @@
 
 #define EXTI_PENDING_REG(line) ((line) < 32 ? EXTI->PR1 : EXTI->PR2)
 
+static inline SHAL_EXTI_Control_Register getEXTIControlRegister(uint32_t line){
+    uint8_t maskOffset = line % 4; //Each register has four 4-bit wide fields
+    uint8_t registerOffset = line / 4; //Composed of four registers with 4 fields each
+
+    SHAL_EXTI_Control_Register res = {&SYSCFG->EXTICR[registerOffset], maskOffset};
+
+    return res;
+}
+
 static inline SHAL_EXTI_Interrupt_Mask_Register getEXTIInterruptMaskRegister(uint32_t line){
     volatile uint32_t* reg =  line < 32 ? &EXTI->IMR1 : &EXTI->IMR2;
     return {reg};;

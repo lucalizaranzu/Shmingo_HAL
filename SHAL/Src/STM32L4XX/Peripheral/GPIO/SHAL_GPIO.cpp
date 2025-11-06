@@ -64,7 +64,6 @@ SHAL_Result SHAL_GPIO::setPinMode(PinMode mode) volatile {
         SHAL_UART2.sendString(buff);
         return SHAL_Result::ERROR;
     }
-    SHAL_print_register(pinModeReg.reg);
 
     SHAL_set_bits(pinModeReg.reg,2,static_cast<uint8_t>(mode),pinModeReg.offset); //Set mode
 
@@ -73,31 +72,20 @@ SHAL_Result SHAL_GPIO::setPinMode(PinMode mode) volatile {
 
 void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) {
 
-    uint32_t gpioPin = getGPIOPinNumber(m_GPIO_KEY);
 
-    setPinMode(PinMode::INPUT_MODE); //Explicitly set mode to input
+    /* ---- Connect PB6 to EXTI6 via SYSCFG ---- */
+    uint32_t port_b_val = 1; // 0=A, 1=B, 2=C, 3=D, etc.
+    SYSCFG->EXTICR[1] &= ~(0xFUL << 8);     // Clear EXTI6 bits (bits 8-11)
+    SYSCFG->EXTICR[1] |=  (port_b_val << 8); // Set EXTI6 to PB6
 
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN; //Enable EXT, TODO Add this to a global SHAL_GLOBAL_TYPES.h file
-    NVIC_EnableIRQ(getGPIOEXTICR(m_GPIO_KEY).IRQN); //Enable IRQN for pin
+    /* ---- Configure EXTI line 6 ---- */
+    EXTI->IMR1  |=  (1UL << 6);  // Unmask line 6
+    EXTI->RTSR1 |=  (1UL << 6);  // Rising trigger enable
+    EXTI->FTSR1 &= ~(1UL << 6);  // Falling trigger disable
 
-    auto ext_imr = getEXTIInterruptMaskRegister(gpioPin);
-    SHAL_set_bits(ext_imr.reg,1,1,gpioPin);
-
-    SHAL_GPIO_EXTI_Register EXTILineEnable = getGPIOEXTICR(m_GPIO_KEY);
-    *EXTILineEnable.EXT_ICR |= EXTILineEnable.mask; //Set bits to enable correct port on correct line TODO Find way to clear bits before
-
-    if(mode == TriggerMode::RISING_EDGE || mode == TriggerMode::RISING_FALLING_EDGE) {
-        auto rising_trigger_selection_reg = getEXTIRisingTriggerSelectionRegister(gpioPin);
-        SHAL_set_bits(rising_trigger_selection_reg.reg, 1, 1, gpioPin);
-    }
-
-    if(mode == TriggerMode::FALLING_EDGE || mode == TriggerMode::RISING_FALLING_EDGE) {
-        auto falling_trigger_selection_reg = getEXTIFallingTriggerSelectionRegister(gpioPin);
-        SHAL_set_bits(falling_trigger_selection_reg.reg,1,1,gpioPin);
-    }
-
-    //Set callback
-    registerEXTICallback(m_GPIO_KEY,callback);
+    /* ---- Enable NVIC interrupt for EXTI lines [9:5] ---- */
+    NVIC_SetPriority(EXTI9_5_IRQn, 2);
+    NVIC_EnableIRQ(EXTI9_5_IRQn);
 
     __enable_irq(); //Enable IRQ just in case
 }
@@ -113,6 +101,15 @@ void SHAL_GPIO::setAlternateFunction(GPIO_Alternate_Function_Mapping AF) volatil
     setPinMode(PinMode::ALTERNATE_FUNCTION_MODE);
     auto alternateFunctionReg = getGPIOAlternateFunctionRegister(m_GPIO_KEY);
     SHAL_set_bits(alternateFunctionReg.reg,4,static_cast<uint8_t>(AF),alternateFunctionReg.offset);
+}
+
+uint16_t SHAL_GPIO::digitalRead() {
+    auto inputDataReg = getGPIOInputDataRegister(m_GPIO_KEY);
+
+    if((*inputDataReg.reg & (1 << 6)) != 0){
+        return 1;
+    }
+    return 0;
 }
 
 

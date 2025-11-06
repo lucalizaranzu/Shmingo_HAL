@@ -71,6 +71,10 @@ constexpr uint8_t getGPIOPinNumber(GPIO_Key key){
     return static_cast<uint8_t>(key) % 16;
 }
 
+constexpr uint8_t getGPIOPortNUmber(GPIO_Key key){
+    return static_cast<uint8_t>(key) / 16;
+}
+
 constexpr SHAL_GPIO_EXTI_Register getGPIOEXTICR(const GPIO_Key g){
     switch(g) {
         case GPIO_Key::A0: return {&SYSCFG->EXTICR[0],SYSCFG_EXTICR1_EXTI0_PA,EXTI0_IRQn};
@@ -154,6 +158,12 @@ static inline SHAL_GPIO_Output_Type_Register getGPIOOutputTypeRegister(const GPI
 
 static inline SHAL_GPIO_Output_Data_Register getGPIOOutputDataRegister(const GPIO_Key key){
     volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->ODR;
+    uint32_t offset = static_cast<uint8_t>(key) % 16;
+    return {reg,offset};
+}
+
+static inline SHAL_GPIO_Input_Data_Register getGPIOInputDataRegister(const GPIO_Key key){
+    volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->IDR;
     uint32_t offset = static_cast<uint8_t>(key) % 16;
     return {reg,offset};
 }

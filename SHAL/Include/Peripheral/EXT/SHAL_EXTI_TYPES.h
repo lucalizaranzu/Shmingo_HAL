@@ -19,4 +19,9 @@ struct SHAL_EXTI_Falling_Trigger_Selection_Register {
     volatile uint32_t* reg;
 };
 
+struct SHAL_EXTI_Control_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
+};
+
 #endif //SHMINGO_HAL_SHAL_EXTI_TYPES_H

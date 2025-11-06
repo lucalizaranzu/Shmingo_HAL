@@ -50,6 +50,11 @@ struct SHAL_GPIO_Output_Data_Register {
     uint32_t offset;
 };
 
+struct SHAL_GPIO_Input_Data_Register {
+    volatile uint32_t* reg;
+    uint32_t offset;
+};
+
 struct SHAL_GPIO_Port_Info{
     uint8_t number;
     SHAL_ADC_Channel ADCChannel;

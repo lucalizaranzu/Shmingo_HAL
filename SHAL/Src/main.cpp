@@ -10,26 +10,46 @@ GPIO_Key gpios[6] = {
         GPIO_Key::A7,
 };
 
+uint16_t vals[6] = {0,0,0,0,0,0};
+uint8_t currentSensor = 0;
+
 bool isAlarmBeeping = false;
-bool isCalibrateButtonHigh = false;
+
+bool prevIsCalibrateButtonHigh = false;
 
 uint16_t sensorThresholds[6] = {4096,4096,4096,4096,4096,4096};
 
-void timer2callback(){
 
-    uint16_t val[6];
+int cyclesPerPrint = 4;
+int currentCycle = 0;
 
-    for(int i = 0; i < 6; i++){
-        val[i] = GPIOManager::get(gpios[i]).analogRead(SHAL_ADC_SampleTime::C8);
-        SHAL_delay_ms(30);
+void getSensorData(){
+
+    vals[currentSensor] = GPIOManager::get(gpios[currentSensor]).analogRead(SHAL_ADC_SampleTime::C8);
+
+    if(currentSensor == 5 && currentCycle == cyclesPerPrint - 1){
+        char buff[64];
+        sprintf(buff, "%d, %d, %d, %d, %d, %d\r\n", vals[0],vals[1],vals[2],vals[3],vals[4],vals[5]);
+        SHAL_UART2.sendString(buff);
     }
 
-    char buff[64];
-    sprintf(buff, "%d, %d, %d, %d, %d, %d\r\n", val[0],val[1],val[2],val[3],val[4],val[5]);
-
-    SHAL_UART2.sendString(buff);
-
+    currentSensor = (currentSensor + 1) % 6;
+    currentCycle = (currentCycle + 1) % cyclesPerPrint;
 }
+
+void calibrateThresholds(){
+
+    for(int i = 0; i < 6; i++){
+        uint16_t sensorVal = GPIOManager::get(gpios[i]).analogRead(SHAL_ADC_SampleTime::C8);
+        sensorThresholds[i] = sensorVal;
+        SHAL_delay_ms(80);
+    }
+    char buff[80];
+    sprintf(buff, "Thresholds: %d, %d, %d, %d, %d, %d\r\n", sensorThresholds[0],sensorThresholds[1],sensorThresholds[2],sensorThresholds[3],sensorThresholds[4],sensorThresholds[5]);
+    SHAL_UART2.sendString(buff);
+}
+
+
 
 void PWMToggle(){
 
@@ -42,13 +62,14 @@ void PWMToggle(){
     isAlarmBeeping = !isAlarmBeeping;
 }
 
-void buttonCallback(){
+void buttonHoldCallback(){
+    PIN(B3).toggle();
 
-}
+    SHAL_TIM7.stop(); //Stop this timer
 
-void calibrateSensors(){
-    PIN(B3).setHigh();
-    SHAL_TIM7.stop();
+    SHAL_TIM2.stop(); //Stop reading from ADC
+    calibrateThresholds();
+    SHAL_TIM2.start(); //Restart value checks
 }
 
 int main() {
@@ -67,12 +88,9 @@ int main() {
 
     PIN(B0).setAlternateFunction(GPIO_Alternate_Function_Mapping::B0_TIM1CH2N);
 
-    PIN(B6).setPinMode(PinMode::INPUT_MODE);
-    PIN(B6).useAsExternalInterrupt(TriggerMode::RISING_FALLING_EDGE,buttonCallback);
-
     SHAL_TIM2.init(4000000,400);
 
-    SHAL_TIM2.setCallbackFunc(timer2callback);
+    SHAL_TIM2.setCallbackFunc(getSensorData);
     SHAL_TIM2.enableInterrupt();
     SHAL_TIM2.start();
 
@@ -86,13 +104,32 @@ int main() {
     SHAL_TIM6.enableInterrupt();
     SHAL_TIM6.start();
 
-    SHAL_TIM7.init(4000000,3000);
-    SHAL_TIM7.setCallbackFunc(calibrateSensors);
+    SHAL_TIM7.init(4000000,6000);
+    SHAL_TIM7.setCallbackFunc(buttonHoldCallback);
     SHAL_TIM7.enableInterrupt();
+    //SHAL_TIM7.start();
 
+    PIN(B6).setPinMode(PinMode::INPUT_MODE);
     PIN(B3).setPinMode(PinMode::OUTPUT_MODE); //Test
+    PIN(B3).setLow();
 
     while (true) {
-        SHAL_UART2.sendString("HELLO\r\n");
+        //Retarded polling based button methods cause EXTI decided to not work on L432KC for some stupid reason at the last second
+        if(!(PIN(B6).digitalRead() == 1)){
+            //SHAL_UART2.sendString("High\r\n");
+            if(!prevIsCalibrateButtonHigh){
+                SHAL_TIM7.start();
+            }
+            prevIsCalibrateButtonHigh = true;
+        }
+        else{
+            //SHAL_UART2.sendString("Low\r\n");
+            if(prevIsCalibrateButtonHigh){
+                //Button released
+                SHAL_TIM7.stop();
+            }
+            prevIsCalibrateButtonHigh = false;
+        }
+
     }
 }

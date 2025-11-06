@@ -29,6 +29,7 @@ public:
     /// \return ADC result
     uint16_t analogRead(SHAL_ADC_SampleTime sampleTime = SHAL_ADC_SampleTime::C8);
 
+    uint16_t digitalRead();
 
     void setAlternateFunction(GPIO_Alternate_Function AF) volatile;
     void setAlternateFunction(GPIO_Alternate_Function_Mapping AF) volatile;

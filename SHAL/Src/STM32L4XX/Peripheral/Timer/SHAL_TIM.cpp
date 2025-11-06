@@ -17,10 +17,13 @@ void Timer::start() {
 
     auto control_reg = getTimerControlRegister1(m_key);
     auto event_generation_reg = getTimerEventGenerationRegister(m_key);
+    auto status_reg = getTimerStatusRegister(m_key);
 
     SHAL_apply_bitmask(control_reg.reg, control_reg.counter_enable_mask); //Enable counter
     SHAL_apply_bitmask(control_reg.reg, control_reg.auto_reload_preload_enable_mask); //Preload enable (buffer)
     SHAL_apply_bitmask(event_generation_reg.reg, event_generation_reg.update_generation_mask);
+
+    SHAL_clear_bitmask(status_reg.reg,status_reg.update_interrupt_flag_mask);
 
     enableInterrupt();
 }
