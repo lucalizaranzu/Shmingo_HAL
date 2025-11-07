@@ -19,12 +19,13 @@ uint16_t vals[NUM_CHANNELS] = {0,0,0,0,0,0,0,0};
 uint8_t currentSensor = 0;
 
 bool isAlarmBeeping = false;
-bool prevIsCalibrateButtonHigh = false;
 
-uint16_t sensorThresholds[NUM_CHANNELS] = {};
+uint16_t sensorThresholds[NUM_CHANNELS];
 
 int buzzer_beepCount = 0;
 bool isBeepingForCalibration = false;
+
+bool prevIsCalibrateButtonHigh = false;
 
 int cyclesPerPrint = 2;
 int currentCycle = 0;
@@ -44,10 +45,12 @@ void getSensorData(){
 
     currentSensor = (currentSensor + 1) % NUM_CHANNELS;
     currentCycle = (currentCycle + 1) % cyclesPerPrint;
+
 }
 
 void startBeeping(){
-    SHAL_TIM1.start();
+    SHAL_TIM6.init(4000000,400); //PWM switcher - standard error beeping rate
+
     SHAL_TIM6.start();
 }
 
@@ -58,6 +61,50 @@ void stopBeeping(){
     isBeepingForCalibration = false;
 }
 
+void checkSensorThresholds(){
+
+    //bool sensorsRequirementsTemp = areSensorRequirementsMetCurrent; TODO uncomment all of this
+
+    /*
+    for(int i = 0; i < NUM_CHANNELS; i++){
+        if(vals[i] < sensorThresholds[i]){
+            areSensorRequirementsMetCurrent = false; //All sensors must be valid
+
+            if(sensorsRequirementsTemp){ //Requirements were met before and aren't now, so start beeping timer
+                SHAL_TIM15.start();
+                PIN(B5).setHigh();
+            }
+
+            break;
+        }
+    }
+
+     if(areSensorRequirementsMetCurrent){
+        SHAL_TIM15.stop();
+        stopBeeping();
+     }
+     */
+
+    //Copied from loop TODO remove this once real functionality is implemented
+    if(!areSensorRequirementsMetCurrent){
+
+        if(areSensorRequirementsMetPrevious) {
+            PIN(B5).setHigh();
+            SHAL_TIM15.start();
+        }
+    }
+    //--------------------------------------------------------------------------------
+
+    else{
+        PIN(B5).setLow();
+
+        if(!areSensorRequirementsMetPrevious) { //Transition from not met -> met
+            SHAL_TIM15.stop();
+            stopBeeping();
+        }
+    }
+}
+
 void calibrateThresholds(){
 
     for(int i = 0; i < 6; i++){
@@ -66,8 +113,12 @@ void calibrateThresholds(){
     }
 }
 
-
 void PWMToggle(){
+
+    //Flash light
+    PIN(B5).toggle();
+
+    SHAL_TIM15.stop(); //Stop timer for allowed time off sensors
 
     if(isBeepingForCalibration && buzzer_beepCount > 2){
         isBeepingForCalibration = false;
@@ -88,7 +139,8 @@ void PWMToggle(){
 }
 
 void buttonHoldCallback(){
-    PIN(B3).toggle();
+
+    PIN(B5).toggle();
 
     SHAL_TIM7.stop(); //Stop this timer
 
@@ -110,18 +162,21 @@ int main() {
 
     SHAL_init();
 
-    //SHAL_UART2.init(UART_Pair_Key::Tx2A2_Rx2A3);
-    //SHAL_UART2.begin(115200);
+    SHAL_UART2.init(UART_Pair_Key::Tx2A2_Rx2A3);
+    SHAL_UART2.begin(115200);
 
     PIN(A0).setPinMode(PinMode::ANALOG_MODE);
     PIN(A1).setPinMode(PinMode::ANALOG_MODE);
-    PIN(A2).setPinMode(PinMode::ANALOG_MODE);
-    PIN(A3).setPinMode(PinMode::ANALOG_MODE);
+    //PIN(A2).setPinMode(PinMode::ANALOG_MODE);
+    //PIN(A3).setPinMode(PinMode::ANALOG_MODE);
     PIN(A4).setPinMode(PinMode::ANALOG_MODE);
     PIN(A5).setPinMode(PinMode::ANALOG_MODE);
     PIN(A6).setPinMode(PinMode::ANALOG_MODE);
     PIN(A7).setPinMode(PinMode::ANALOG_MODE);
 
+    PIN(B5).setPinMode(PinMode::OUTPUT_MODE);
+
+    PIN(B6).setPinMode(PinMode::INPUT_MODE);
 
     SHAL_TIM2.init(4000000,400);
 
@@ -131,12 +186,11 @@ int main() {
 
     PIN(B0).setAlternateFunction(GPIO_Alternate_Function_Mapping::B0_TIM1CH2N);
 
-    SHAL_TIM1.init(0,2400);
-    SHAL_TIM1.setPWMMode(SHAL_Timer_Channel::CH2,SHAL_TIM_Output_Compare_Mode::PWMMode1,SHAL_Timer_Channel_Main_Output_Mode::Disabled,SHAL_Timer_Channel_Complimentary_Output_Mode::Polarity_Reversed);
+    SHAL_TIM1.init(0,2400); //PWM signal
+    SHAL_TIM1.setPWMMode(SHAL_Timer_Channel::CH2,SHAL_TIM_Output_Compare_Mode::PWMMode1,SHAL_Timer_Channel_Main_Output_Mode::Polarity_Normal,SHAL_Timer_Channel_Complimentary_Output_Mode::Polarity_Reversed);
     SHAL_TIM1.setPWMDutyCycle(900);
-    //PIN(B0).setPinMode(PinMode::OUTPUT_MODE);
 
-    SHAL_TIM6.init(4000000,400);
+    SHAL_TIM6.init(4000000,400); //PWM switcher
     SHAL_TIM6.setCallbackFunc(PWMToggle);
     SHAL_TIM6.enableInterrupt();
 
@@ -144,31 +198,25 @@ int main() {
     SHAL_TIM7.setCallbackFunc(buttonHoldCallback);
     SHAL_TIM7.enableInterrupt();
 
-    PIN(B6).setPinMode(PinMode::INPUT_MODE);
-    PIN(B3).setPinMode(PinMode::OUTPUT_MODE); //Test
-    PIN(B3).setLow();
+    SHAL_TIM15.init(4000000,5000); //1 second
+    SHAL_TIM15.setCallbackFunc(startBeeping);
+    SHAL_TIM15.enableInterrupt();
 
-    while (true) {
-        //Retarded polling based button methods cause EXTI decided to not work on L432KC for some stupid reason at the last second
-        if(!(PIN(B6).digitalRead() == 1)){
-            areSensorRequirementsMetCurrent = true;
 
-            if(!areSensorRequirementsMetPrevious){
-                startBeeping();
-            }
+    while (true) { //TODO set to use button for simulating off sensor, uncomment for real functionality
+
+        if(PIN(B6).digitalRead() != 1){
+            areSensorRequirementsMetCurrent = false;
+
             /*
             if(!prevIsCalibrateButtonHigh){
                 SHAL_TIM7.start();
             }
             prevIsCalibrateButtonHigh = true;
-             */
-
+            */
         }
         else{
-            areSensorRequirementsMetCurrent = false;
-            if(areSensorRequirementsMetPrevious){
-                stopBeeping();
-            }
+            areSensorRequirementsMetCurrent = true;
 
             /*
             if(prevIsCalibrateButtonHigh){
@@ -176,9 +224,12 @@ int main() {
                 SHAL_TIM7.stop();
             }
             prevIsCalibrateButtonHigh = false;
-             */
+            */
         }
 
+        checkSensorThresholds();
+
         areSensorRequirementsMetPrevious = areSensorRequirementsMetCurrent;
+
     }
 }

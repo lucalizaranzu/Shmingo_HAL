@@ -178,7 +178,7 @@ getTimerCaptureCompareModeRegistersOutput(Timer_Key key) {
 
 static inline SHAL_TIM_Break_Dead_Time_Register getTimerBreakDeadTimeRegister(Timer_Key key){
 
-    SHAL_TIM_Break_Dead_Time_Register res = {nullptr, 1UL << 15};
+    SHAL_TIM_Break_Dead_Time_Register res = {nullptr, TIM_BDTR_MOE};
 
     volatile TIM_TypeDef* tim = TIM_TABLE[static_cast<uint8_t>(key)];
 

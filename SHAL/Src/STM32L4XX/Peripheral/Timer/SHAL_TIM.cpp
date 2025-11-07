@@ -56,6 +56,9 @@ void Timer::init(uint32_t prescaler, uint32_t autoReload) {
 
     setPrescaler(prescaler);
     setARR(autoReload);
+
+    *getTimerStatusRegister(m_key).reg = 0;
+    *getTimerDMAInterruptEnableRegister(m_key).reg = 0;
 }
 
 void Timer::setPWMMode(SHAL_Timer_Channel channel, SHAL_TIM_Output_Compare_Mode outputCompareMode, SHAL_Timer_Channel_Main_Output_Mode mainOutputMode,
@@ -89,6 +92,7 @@ void Timer::setPWMMode(SHAL_Timer_Channel channel, SHAL_TIM_Output_Compare_Mode 
 
     SHAL_set_bits(ccer.reg, 4, fullChannelModeMask, offset);
     SHAL_apply_bitmask(bdtr.reg, bdtr.main_output_enable_mask);
+
 }
 
 void Timer::setPWMDutyCycle(uint32_t dutyCycle) {
