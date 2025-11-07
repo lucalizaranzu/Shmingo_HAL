@@ -16,7 +16,7 @@
 #define NUM_ADC_CHANNELS 16
 
 enum class SHAL_ADC_Channel : uint32_t {
-    CH0,
+    CH0 = 0,
     CH1,
     CH2,
     CH3,
