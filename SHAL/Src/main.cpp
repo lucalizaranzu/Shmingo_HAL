@@ -50,7 +50,6 @@ void getSensorData(){
 
     currentSensor = (currentSensor + 1) % NUM_CHANNELS;
     currentCycle = (currentCycle + 1) % cyclesPerPrint;
-
 }
 
 void startBeeping(){
