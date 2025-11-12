@@ -50,7 +50,7 @@ void Timer::enableInterrupt() {
     NVIC_EnableIRQ(getTimerIRQn(m_key)); //Enable the IRQn in the NVIC
 }
 
-void Timer::init(uint32_t prescaler, uint32_t autoReload) {
+void Timer::init(uint16_t prescaler, uint16_t autoReload) {
     SHAL_TIM_RCC_Register rcc = getTimerRCC(m_key);
     SHAL_apply_bitmask(rcc.reg,rcc.enable_mask);
 

@@ -39,6 +39,7 @@ struct SHAL_ADC_Config_Reg {
 
     uint32_t resolution_offset;
     uint32_t alignment_offset;
+    uint32_t continuous_mode_mask;
 };
 
 //Register for all ADC data
@@ -53,6 +54,7 @@ struct SHAL_ADC_ISR_Reg {
     uint32_t end_of_conversion_mask;
     uint32_t end_of_sequence_mask;
     uint32_t ready_mask;
+    uint32_t overrun_mask;
 };
 
 //Register controlling the clock source for the ADC

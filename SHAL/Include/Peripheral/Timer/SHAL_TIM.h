@@ -21,7 +21,7 @@ public:
     /// Initializes a timer
     /// \param prescaler The amount of times the base clock has to cycle before the timer adds one to the count
     /// \param autoReload The number of timer counts before the count is reset and IRQ is called
-    void init(uint32_t prescaler, uint32_t autoReload);
+    void init(uint16_t prescaler, uint16_t autoReload);
 
     //Starts the counter
     void start();

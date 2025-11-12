@@ -72,29 +72,44 @@ SHAL_Result SHAL_ADC::calibrate() {
 }
 
 uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, SHAL_ADC_SampleTime time) {
+    auto data_reg = getADCDataReg(m_ADCKey);
+    auto ISR_reg = getADCISRReg(m_ADCKey);
+    auto config_reg = getADCConfigReg(m_ADCKey);
 
-    auto data_reg = getADCDataReg(m_ADCKey); //Where our output will be stored
+    SHAL_clear_bitmask(config_reg.reg, config_reg.continuous_mode_mask);
 
-    auto sampleTimeReg = getADCChannelSamplingTimeRegister(m_ADCKey,channel);
+    auto sampleTimeReg = getADCChannelSamplingTimeRegister(m_ADCKey, channel);
+    SHAL_set_bits(sampleTimeReg.reg, 3, static_cast<uint8_t>(time), sampleTimeReg.channel_offset);
 
-    SHAL_set_bits(sampleTimeReg.reg,3,static_cast<uint8_t>(time),sampleTimeReg.channel_offset); //Set sample time register TODO un-hardcode bit width?
+    addADCChannelToSequence(channel, 0);
+    if(setADCSequenceAmount(1) == SHAL_Result::ERROR) { return 0; }
 
-    addADCChannelToSequence(channel,0); //Use index 0 to convert channel
-    if(setADCSequenceAmount(1) == SHAL_Result::ERROR){return 0;} //Since we're using single convert, convert 1 channel
-
-    if(enable() != SHAL_Result::OKAY){
+    if(enable() != SHAL_Result::OKAY) {
         return 0;
     }
 
-    startConversion(); //Start ADC conversion
-
-    auto ISR_reg = getADCISRReg(m_ADCKey);
-
-    if(!SHAL_WAIT_FOR_CONDITION_US(((*ISR_reg.reg & ISR_reg.end_of_sequence_mask) != 0),500)){ //Wait for conversion
-        return 0; //Failed
+    // CRITICAL: Clear ALL relevant flags before starting
+    SHAL_apply_bitmask(ISR_reg.reg, ISR_reg.end_of_sequence_mask);
+    SHAL_apply_bitmask(ISR_reg.reg, ISR_reg.end_of_conversion_mask);
+    if(ISR_reg.overrun_mask) {
+        SHAL_apply_bitmask(ISR_reg.reg, ISR_reg.overrun_mask);
     }
 
-    return *data_reg.reg;
+    volatile uint16_t dummy = *data_reg.reg;
+    (void)dummy;
+
+    startConversion();
+
+    if(!SHAL_WAIT_FOR_CONDITION_US(((*ISR_reg.reg & ISR_reg.end_of_conversion_mask) != 0), 2000)) {
+        return 0;
+    }
+
+    uint16_t result = *data_reg.reg;
+
+    SHAL_apply_bitmask(ISR_reg.reg, ISR_reg.end_of_conversion_mask);
+    SHAL_apply_bitmask(ISR_reg.reg, ISR_reg.end_of_sequence_mask);
+
+    return result;
 }
 
 SHAL_Result SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, const int numChannels, uint16_t* result, SHAL_ADC_SampleTime time) {
@@ -259,27 +274,23 @@ SHAL_Result SHAL_ADC::setADCSequenceAmount(uint32_t amount) {
 }
 
 SHAL_Result SHAL_ADC::addADCChannelToSequence(SHAL_ADC_Channel channel, uint32_t index) {
-
-    if(!isValid()){return SHAL_Result::ERROR;}
+    if(!isValid()) { return SHAL_Result::ERROR; }
 
     auto sequenceRegisters = getADCSequenceRegisters(m_ADCKey);
-
     auto channelNum = static_cast<uint8_t>(channel);
 
-    uint32_t bitSection = (index + 1) % 5; //Need a new variable since SQR1 has its data bits shifted up by one section to make room for the L section
+    uint32_t bitSection = (index + 1) % 5;
     uint32_t sequenceRegNumber = (index + 1) / 5;
 
     volatile uint32_t* sequenceReg = sequenceRegisters.regs[sequenceRegNumber];
     uint32_t bitSectionOffset = sequenceRegisters.offsets[bitSection];
 
-    if(sequenceRegNumber != 0){
-        *sequenceReg = 0; //Clear previous conversions
-    }
-    else{
-        *sequenceReg &= 0x0000000F;
-    }
+    // Clear only the specific 5 bits we're setting, not the entire register
+    uint32_t clearMask = ~(0x1F << bitSectionOffset);
+    *sequenceReg &= clearMask;
 
-    SHAL_set_bits(sequenceReg,5,channelNum,bitSectionOffset);
+    // Set the new channel number
+    *sequenceReg |= (channelNum << bitSectionOffset);
 
     return SHAL_Result::OKAY;
 }

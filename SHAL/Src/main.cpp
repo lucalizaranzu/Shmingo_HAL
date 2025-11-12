@@ -2,25 +2,28 @@
 #include "SHAL.h"
 
 
-#define NUM_CHANNELS 8
+#define NUM_CHANNELS 6
 
+// Physical order on right-side header: A0, A1, A3, A4, A5, A6, A7
 SHAL_ADC_Channel channels[NUM_CHANNELS] = {
         SHAL_ADC_Channel::CH5,
         SHAL_ADC_Channel::CH6,
         SHAL_ADC_Channel::CH8,
         SHAL_ADC_Channel::CH9,
         SHAL_ADC_Channel::CH10,
-        SHAL_ADC_Channel::CH11,
         SHAL_ADC_Channel::CH12,
-        SHAL_ADC_Channel::CH7
 };
 
-uint16_t vals[NUM_CHANNELS] = {0,0,0,0,0,0,0,0};
+bool isDeviceOn = false;
+bool shouldToggleDeviceState = true;
+bool shouldCheckSensorThresholds = true;
+
+uint16_t vals[NUM_CHANNELS] = {0,0,0,0,0,0};
 uint8_t currentSensor = 0;
 
 bool isAlarmBeeping = false;
 
-uint16_t sensorThresholds[NUM_CHANNELS];
+uint16_t sensorThresholds[NUM_CHANNELS] = {0,0,0,0,0,0};
 
 int buzzer_beepCount = 0;
 bool isBeepingForCalibration = false;
@@ -39,7 +42,9 @@ void getSensorData(){
 
     if(currentSensor == (NUM_CHANNELS - 1) && currentCycle == cyclesPerPrint - 1){
         char buff[125];
-        sprintf(buff, "5:%d,6:%d,8:%d,9:%d,10:%d,11:%d,12:%d,7:%d\r\n", vals[0],vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7]);
+        // Print in the same order as the channels[] array (physical order)
+        sprintf(buff, "A0:%u,A1:%u,A3:%u,A4:%u,A5:%u,A6:%u\r\n",
+                vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
         SHAL_UART2.sendString(buff);
     }
 
@@ -49,7 +54,9 @@ void getSensorData(){
 }
 
 void startBeeping(){
-    SHAL_TIM6.init(4000000,400); //PWM switcher - standard error beeping rate
+
+    SHAL_TIM6.setPrescaler(4000);
+    SHAL_TIM6.setARR(200);
 
     SHAL_TIM6.start();
 }
@@ -63,60 +70,63 @@ void stopBeeping(){
 
 void checkSensorThresholds(){
 
-    //bool sensorsRequirementsTemp = areSensorRequirementsMetCurrent; TODO uncomment all of this
+    bool localFlag = true;
 
-    /*
     for(int i = 0; i < NUM_CHANNELS; i++){
         if(vals[i] < sensorThresholds[i]){
-            areSensorRequirementsMetCurrent = false; //All sensors must be valid
-
-            if(sensorsRequirementsTemp){ //Requirements were met before and aren't now, so start beeping timer
-                SHAL_TIM15.start();
-                PIN(B5).setHigh();
-            }
-
+            areSensorRequirementsMetCurrent = false; //Conditions not met
+            localFlag = false;
             break;
         }
     }
-
-     if(areSensorRequirementsMetCurrent){
-        SHAL_TIM15.stop();
-        stopBeeping();
-     }
-     */
-
-    //Copied from loop TODO remove this once real functionality is implemented
-    if(!areSensorRequirementsMetCurrent){
-
-        if(areSensorRequirementsMetPrevious) {
-            PIN(B5).setHigh();
-            SHAL_TIM15.start();
-        }
+    if(localFlag){
+        areSensorRequirementsMetCurrent = true;
     }
-    //--------------------------------------------------------------------------------
 
-    else{
-        PIN(B5).setLow();
-
-        if(!areSensorRequirementsMetPrevious) { //Transition from not met -> met
+    if(areSensorRequirementsMetCurrent){
+        if(!areSensorRequirementsMetPrevious){
+            SHAL_TIM1.stop();
+            SHAL_TIM6.stop();
             SHAL_TIM15.stop();
+            PIN(A9).setLow();
             stopBeeping();
         }
     }
+    else{
+        if(areSensorRequirementsMetPrevious){
+            SHAL_TIM15.start();
+            PIN(A9).setHigh();
+        }
+    }
+    areSensorRequirementsMetPrevious = areSensorRequirementsMetCurrent;
 }
 
 void calibrateThresholds(){
 
-    for(int i = 0; i < 6; i++){
-        uint16_t sensorVal = SHAL_ADC1.singleConvertSingle(channels[currentSensor]);
-        sensorThresholds[i] = (sensorVal / 5) * 4;
+    // Read every channel once and set threshold to 80% of reading
+    for(int i = 0; i < NUM_CHANNELS; i++){
+        uint16_t sensorVal = vals[i];
+
+        if(sensorVal < 50){
+            sensorVal = 0;
+        }
+        else{
+            sensorVal = sensorVal - 50;
+        }
+        sensorThresholds[i] = sensorVal;
     }
+
+    char buff[125];
+    // Print in the same order as the channels[] array (physical order)
+    sprintf(buff, "Thresholds calibrated to: A0:%u,A1:%u,A3:%u,A4:%u,A5:%u,A6:%u\r\n",
+            sensorThresholds[0], sensorThresholds[1], sensorThresholds[2], sensorThresholds[3], sensorThresholds[4], sensorThresholds[5]);
+    SHAL_UART2.sendString(buff);
 }
 
 void PWMToggle(){
 
     //Flash light
-    PIN(B5).toggle();
+    PIN(A9).toggle();
 
     SHAL_TIM15.stop(); //Stop timer for allowed time off sensors
 
@@ -125,7 +135,9 @@ void PWMToggle(){
         buzzer_beepCount = 0;
         SHAL_TIM6.stop(); //Reset timer 6
         SHAL_TIM1.stop(); //Stop buzzer
-        SHAL_TIM6.init(4000000,400);
+
+        SHAL_TIM6.setPrescaler(4000);
+        SHAL_TIM6.setARR(400);
     }
 
     if(!isAlarmBeeping){
@@ -140,7 +152,7 @@ void PWMToggle(){
 
 void buttonHoldCallback(){
 
-    PIN(B5).toggle();
+    shouldCheckSensorThresholds = false; //Dont check sensor thresholds yet, ensure that calibration beep happens
 
     SHAL_TIM7.stop(); //Stop this timer
 
@@ -149,87 +161,104 @@ void buttonHoldCallback(){
     buzzer_beepCount = 0;
     isBeepingForCalibration = true;
 
-    SHAL_TIM6.init(4000000,80);
+    SHAL_TIM6.init(4000,50);
     SHAL_TIM6.start();
 
     calibrateThresholds();
     SHAL_TIM1.start();
 
     SHAL_TIM2.start(); //Restart value checks
+
+    shouldToggleDeviceState = false;
+    shouldCheckSensorThresholds = true;
 }
 
 int main() {
 
     SHAL_init();
 
-    SHAL_UART2.init(UART_Pair_Key::Tx2A2_Rx2A3);
-    SHAL_UART2.begin(115200);
+    //SHAL_UART2.init(UART_Pair_Key::Tx2A2_Rx2A3);
+    //SHAL_UART2.begin(115200);
 
     PIN(A0).setPinMode(PinMode::ANALOG_MODE);
     PIN(A1).setPinMode(PinMode::ANALOG_MODE);
-    //PIN(A2).setPinMode(PinMode::ANALOG_MODE);
-    //PIN(A3).setPinMode(PinMode::ANALOG_MODE);
+    PIN(A3).setPinMode(PinMode::ANALOG_MODE);
     PIN(A4).setPinMode(PinMode::ANALOG_MODE);
     PIN(A5).setPinMode(PinMode::ANALOG_MODE);
     PIN(A6).setPinMode(PinMode::ANALOG_MODE);
     PIN(A7).setPinMode(PinMode::ANALOG_MODE);
 
-    PIN(B5).setPinMode(PinMode::OUTPUT_MODE);
-
     PIN(B6).setPinMode(PinMode::INPUT_MODE);
+    PIN(A9).setPinMode(PinMode::OUTPUT_MODE);
+    PIN(B0).setAlternateFunction(GPIO_Alternate_Function_Mapping::B0_TIM1CH2N);
 
-    SHAL_TIM2.init(4000000,400);
+    PIN(A8).setPinMode(PinMode::OUTPUT_MODE);
+    PIN(A8).setInternalResistor(InternalResistorType::NO_PULL);
+
+    SHAL_TIM2.init(4000,200);
 
     SHAL_TIM2.setCallbackFunc(getSensorData);
     SHAL_TIM2.enableInterrupt();
     SHAL_TIM2.start();
 
-    PIN(B0).setAlternateFunction(GPIO_Alternate_Function_Mapping::B0_TIM1CH2N);
-
     SHAL_TIM1.init(0,2400); //PWM signal
     SHAL_TIM1.setPWMMode(SHAL_Timer_Channel::CH2,SHAL_TIM_Output_Compare_Mode::PWMMode1,SHAL_Timer_Channel_Main_Output_Mode::Polarity_Normal,SHAL_Timer_Channel_Complimentary_Output_Mode::Polarity_Reversed);
     SHAL_TIM1.setPWMDutyCycle(900);
 
-    SHAL_TIM6.init(4000000,400); //PWM switcher
+    SHAL_TIM6.init(4000,500); //PWM switcher
     SHAL_TIM6.setCallbackFunc(PWMToggle);
     SHAL_TIM6.enableInterrupt();
 
-    SHAL_TIM7.init(4000000,4500);
+    SHAL_TIM7.init(4000,3000); //Calibrate timer
     SHAL_TIM7.setCallbackFunc(buttonHoldCallback);
     SHAL_TIM7.enableInterrupt();
 
-    SHAL_TIM15.init(4000000,5000); //1 second
+    SHAL_TIM15.init(4000,5000); //5 seconds
     SHAL_TIM15.setCallbackFunc(startBeeping);
     SHAL_TIM15.enableInterrupt();
 
 
+    SHAL_UART2.sendString("Hello3\r\n");
+
     while (true) { //TODO set to use button for simulating off sensor, uncomment for real functionality
 
         if(PIN(B6).digitalRead() != 1){
-            areSensorRequirementsMetCurrent = false;
 
-            /*
-            if(!prevIsCalibrateButtonHigh){
+            if(prevIsCalibrateButtonHigh){
                 SHAL_TIM7.start();
             }
-            prevIsCalibrateButtonHigh = true;
-            */
+            prevIsCalibrateButtonHigh = false;
+
         }
         else{
-            areSensorRequirementsMetCurrent = true;
+            if(!prevIsCalibrateButtonHigh){
+                if(shouldToggleDeviceState){
+                    if(!isDeviceOn){ //Turn device on
+                        PIN(A8).setHigh();
+                        isDeviceOn = true;
+                    }
+                    else{ //Turn device off
+                        PIN(A8).setLow();
+                        PIN(A9).setLow();
+                        isDeviceOn = false;
 
-            /*
-            if(prevIsCalibrateButtonHigh){
-                //Button released
+                        areSensorRequirementsMetCurrent = true;
+                        areSensorRequirementsMetPrevious = true;
+
+                        stopBeeping();
+                    }
+
+                }
+
+                shouldToggleDeviceState = true;
+
                 SHAL_TIM7.stop();
             }
-            prevIsCalibrateButtonHigh = false;
-            */
+            prevIsCalibrateButtonHigh = true;
         }
 
-        checkSensorThresholds();
-
-        areSensorRequirementsMetPrevious = areSensorRequirementsMetCurrent;
-
+        if(isDeviceOn && shouldCheckSensorThresholds){
+            checkSensorThresholds();
+        }
     }
 }

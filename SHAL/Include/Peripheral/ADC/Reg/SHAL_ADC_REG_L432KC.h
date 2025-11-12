@@ -83,14 +83,14 @@ static inline SHAL_ADC_Control_Reg getADCControlReg(ADC_Key key) {
 
 static inline SHAL_ADC_Config_Reg getADCConfigReg(ADC_Key key) {
 
-    SHAL_ADC_Config_Reg res = {nullptr, ADC_CFGR_CONT, ADC_CFGR_RES_Pos, ADC_CFGR_ALIGN_Pos};
+    SHAL_ADC_Config_Reg res = {nullptr, ADC_CFGR_CONT, ADC_CFGR_RES_Pos, ADC_CFGR_ALIGN_Pos, ADC_CFGR_CONT_Msk};
 
     res.reg = &(ADC_TABLE[static_cast<uint8_t>(key)]->CFGR);
     return res;
 }
 
 static inline SHAL_ADC_ISR_Reg getADCISRReg(ADC_Key key){
-    SHAL_ADC_ISR_Reg res = {nullptr, ADC_ISR_EOC, ADC_ISR_EOS, ADC_ISR_ADRDY};
+    SHAL_ADC_ISR_Reg res = {nullptr, ADC_ISR_EOC, ADC_ISR_EOS, ADC_ISR_ADRDY, ADC_ISR_OVR};
 
     res.reg = &(ADC_TABLE[static_cast<uint8_t>(key)]->ISR);
     return res;

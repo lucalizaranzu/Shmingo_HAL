@@ -17,15 +17,15 @@
 
 //Build enum map of available SHAL_GPIO pins
 enum class GPIO_Key : uint8_t {
-    A0,
-    A1,
-    A2,
-    A3,
-    A4,
-    A5,
-    A6,
-    A7,
-    A8,
+    A0 = 0,
+    A1 = 1,
+    A2 = 2,
+    A3 = 3,
+    A4 = 4,
+    A5 = 5,
+    A6 = 6,
+    A7 = 7,
+    A8 = 8,
     A9,
     A10,
     A11,
@@ -124,7 +124,7 @@ constexpr uint32_t getGPIOPortNumber(const GPIO_Key g){
 
 static inline SHAL_GPIO_Mode_Register getGPIOModeRegister(const GPIO_Key key){
     volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->MODER;
-    uint32_t offset = 2 * static_cast<uint8_t>(key) % 16;
+    uint32_t offset = 2 * (static_cast<uint8_t>(key) % 16);
     return {reg,offset};
 }
 
@@ -158,7 +158,7 @@ static inline SHAL_GPIO_Output_Type_Register getGPIOOutputTypeRegister(const GPI
 
 static inline SHAL_GPIO_Output_Data_Register getGPIOOutputDataRegister(const GPIO_Key key){
     volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->ODR;
-    uint32_t offset = static_cast<uint8_t>(key) % 16;
+    uint32_t offset = (static_cast<uint8_t>(key) % 16);
     return {reg,offset};
 }
 
