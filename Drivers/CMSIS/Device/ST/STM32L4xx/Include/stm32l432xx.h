@@ -45,8 +45,8 @@
   * @brief Configuration of the Cortex-M4 Processor and Core Peripherals
    */
 #define __CM4_REV                 0x0001U  /*!< Cortex-M4 revision r0p1                       */
-#define __MPU_PRESENT             1U       /*!< STM32L4XX provides an MPU                     */
-#define __NVIC_PRIO_BITS          4U       /*!< STM32L4XX uses 4 Bits for the Priority Levels */
+#define __MPU_PRESENT             1U       /*!< STM32L4xx provides an MPU                     */
+#define __NVIC_PRIO_BITS          4U       /*!< STM32L4xx uses 4 Bits for the Priority Levels */
 #define __Vendor_SysTickConfig    0U       /*!< Set to 1 if different SysTick Config is used  */
 #define __FPU_PRESENT             1U       /*!< FPU present                                   */
 
@@ -59,7 +59,7 @@
   */
 
 /**
- * @brief STM32L4XX Interrupt Number Definition, according to the selected device
+ * @brief STM32L4xx Interrupt Number Definition, according to the selected device
  *        in @ref Library_configuration_section
  */
 typedef enum

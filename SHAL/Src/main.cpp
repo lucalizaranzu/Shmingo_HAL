@@ -104,7 +104,7 @@ void calibrateThresholds(){
 
     // Read every channel once and set threshold to 80% of reading
     for(int i = 0; i < NUM_CHANNELS; i++){
-        uint16_t sensorVal = vals[i];
+        uint16_t sensorVal = (vals[i] * 3) / 5;
 
         if(sensorVal < 50){
             sensorVal = 0;
@@ -244,6 +244,7 @@ int main() {
                         areSensorRequirementsMetCurrent = true;
                         areSensorRequirementsMetPrevious = true;
 
+                        SHAL_TIM15.stop();
                         stopBeeping();
                     }
 
