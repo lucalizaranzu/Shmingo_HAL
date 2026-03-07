@@ -6,8 +6,8 @@
 #define SHAL_GPIO_TYPES_H
 
 #include "SHAL_CORE.h"
-#include "SHAL_ADC.h"
-#include "SHAL_ADC_TYPES.h"
+//#include "SHAL_ADC.h"
+//#include "SHAL_ADC_TYPES.h"
 
 struct SHAL_GPIO_EXTI_Register{
     volatile uint32_t* EXT_ICR; //4 32 bit registers which say which GPIO a line is connected to
@@ -17,7 +17,7 @@ struct SHAL_GPIO_EXTI_Register{
 
 struct SHAL_GPIO_RCC_Enable_Register{
     volatile uint32_t* reg;
-    uint32_t offset;
+    uint32_t mask;
 };
 
 struct SHAL_GPIO_Mode_Register {
@@ -55,11 +55,12 @@ struct SHAL_GPIO_Input_Data_Register {
     uint32_t offset;
 };
 
+/* TODO reimplement and uncomment ADC references (Here and on GPIO.h)
 struct SHAL_GPIO_Port_Info{
     uint8_t number;
     SHAL_ADC_Channel ADCChannel;
 };
-
+*/
 enum class PinMode : uint8_t{
     INPUT_MODE                  = 0x00,
     OUTPUT_MODE                 = 0x01,

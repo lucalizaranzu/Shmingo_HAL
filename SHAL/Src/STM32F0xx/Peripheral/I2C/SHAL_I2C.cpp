@@ -95,8 +95,6 @@ void SHAL_I2C::masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t wri
     //Read phase
     if (readLen > 0) {
 
-        SHAL_UART2.sendString("Read initiated\r\n");
-
         I2CPeripheral->CR2 &= ~(I2C_CR2_NBYTES | I2C_CR2_SADD | I2C_CR2_RD_WRN);
         I2CPeripheral->CR2 |= (addr << 1) |
                               I2C_CR2_RD_WRN |

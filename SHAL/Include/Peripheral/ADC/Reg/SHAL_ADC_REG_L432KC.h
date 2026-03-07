@@ -57,7 +57,7 @@ static volatile ADC_TypeDef* ADC_TABLE[1] = { //Lookup table for ADCs
 };
 
 static inline SHAL_ADC_Common_Control_Reg getADCCommonControl() {
-    return {&ADC1_COMMON->CCR ,ADC_CCR_VREFEN,ADC_CCR_TSEN,ADC_CCR_VBATEN};
+    return {&ADC1_COMMON->CCR,ADC_CCR_VREFEN,ADC_CCR_TSEN,ADC_CCR_VBATEN};
 }
 
 static inline SHAL_ADC_RCC_Enable_Reg getADCRCCEnableRegister(ADC_Key key){

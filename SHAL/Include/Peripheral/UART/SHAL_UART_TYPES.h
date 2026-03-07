@@ -8,8 +8,6 @@
 #include "SHAL_CORE.h"
 #include "SHAL_GPIO_REG.h"
 
-
-
 //Represents a pair of pins usable for USART Tx + Rx in combination, and their alternate function mapping
 struct SHAL_UART_Pair{
     USART_TypeDef* USARTReg;

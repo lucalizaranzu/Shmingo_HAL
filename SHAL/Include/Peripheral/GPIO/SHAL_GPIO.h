@@ -9,8 +9,8 @@
 
 #include <cassert>
 
-#include "SHAL_EXTI_CALLBACK.h"
-#include "SHAL_ADC.h"
+//#include "SHAL_EXTI_CALLBACK.h"
+//#include "SHAL_ADC.h"
 
 
 //Abstraction of SHAL_GPIO registers
@@ -27,12 +27,12 @@ public:
     /// Uses the ADC to read an analog voltage value
     /// \param sampleTime The amount of clock cycles to use for the ADC
     /// \return ADC result
-    uint16_t analogRead(SHAL_ADC_SampleTime sampleTime = SHAL_ADC_SampleTime::C8);
+    //uint16_t analogRead(SHAL_ADC_SampleTime sampleTime = SHAL_ADC_SampleTime::C8); TODO Reimplement
 
     uint16_t digitalRead();
 
     void setAlternateFunction(GPIO_Alternate_Function AF) volatile;
-    void setAlternateFunction(GPIO_Alternate_Function_Mapping AF) volatile;
+    //void setAlternateFunction(GPIO_Alternate_Function_Mapping AF) volatile; //TODO reimplement?
 
     void setOutputType(PinType type) volatile;
 
@@ -40,7 +40,7 @@ public:
 
     void setInternalResistor(InternalResistorType type) volatile;
 
-    void useAsExternalInterrupt(TriggerMode mode, EXTICallback callback);
+    //void useAsExternalInterrupt(TriggerMode mode, EXTICallback callback); TODO reimplement
 
     SHAL_Result setPinMode(PinMode mode) volatile;
 
@@ -65,7 +65,7 @@ private:
 
 #define GET_GPIO(key) GPIOManager::get(key)
 
-#define SET_ANALOGREAD_ADC(x) GPIOManager::setGPIOADC(x)
+//#define SET_ANALOGREAD_ADC(x) GPIOManager::setGPIOADC(x) TODO reimplement
 
 
 //Manages instances of SHAL_GPIO objects
@@ -75,9 +75,9 @@ public:
 
     static SHAL_GPIO& get(GPIO_Key);
 
-    static SHAL_ADC getGPIOADC(){ return m_GPIO_ADC;}
+    //static SHAL_ADC getGPIOADC(){ return m_GPIO_ADC;} TODO Reimplement
 
-    static void setGPIOADC(SHAL_ADC adc){m_GPIO_ADC = adc;}
+    //static void setGPIOADC(SHAL_ADC adc){m_GPIO_ADC = adc;} TODO Reimplement
 
     GPIOManager() = delete;
 
@@ -85,7 +85,7 @@ private:
 
     inline static SHAL_GPIO m_gpios[AVAILABLE_PORTS][PINS_PER_PORT] = {{}};
 
-    inline static SHAL_ADC m_GPIO_ADC = SHAL_ADC(1);
+    //inline static SHAL_ADC m_GPIO_ADC = SHAL_ADC(1); TODO Reimplement
 
 };
 

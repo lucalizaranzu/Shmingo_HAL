@@ -79,7 +79,6 @@ void SHAL_I2C::masterWriteRead(uint8_t addr,const uint8_t* writeData, size_t wri
 
         for (size_t i = 0; i < writeLen; i++) {
             if(!SHAL_WAIT_FOR_CONDITION_MS((I2CPeripheral->ISR & I2C_ISR_TXIS) != 0, 100)){
-                SHAL_UART2.sendString("I2C timed out waiting for TX\r\n");
                 return;
             }
             I2CPeripheral->TXDR = writeData[i];

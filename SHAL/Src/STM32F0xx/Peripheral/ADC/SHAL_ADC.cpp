@@ -5,7 +5,7 @@
 #include "SHAL_ADC.h"
 
 //Can hard code registers on F0 because all F0 devices have only one ADC, and use only one clock
-SHAL_Result SHAL_ADC::init() {
+SHAL_Result SHAL_ADC::init(ADC_Key key) {
 
     if(m_ADCKey == ADC_Key::INVALID || m_ADCKey == ADC_Key::NUM_ADC){
         return SHAL_Result::ERROR;
@@ -81,7 +81,7 @@ uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, SHAL_ADC_Sample
     return result;
 }
 
-void SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, const int numChannels, uint16_t* result, SHAL_ADC_SampleTime time) {
+SHAL_Result SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, int numChannels, uint16_t* result, SHAL_ADC_SampleTime time) {
     ADC_TypeDef* ADC_reg = getADCRegister(m_ADCKey);
 
     ADC->CCR |= ADC_CCR_VREFEN | ADC_CCR_TSEN; //Enable VREFINT and Temp sensor in global ADC struct

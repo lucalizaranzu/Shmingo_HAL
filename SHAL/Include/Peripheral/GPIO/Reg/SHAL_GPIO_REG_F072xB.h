@@ -29,65 +29,28 @@ enum class GPIO_Key : uint8_t {
     INVALID
 };
 
+static volatile GPIO_TypeDef * GPIO_TABLE[3] = { //Lookup table for ADCs
+        GPIOA,
+        GPIOB,
+        GPIOC,
+};
 
-
-constexpr SHAL_GPIO_Peripheral getGPIORegister(const GPIO_Key g){
-    switch(g) {
-        case GPIO_Key::A0: return {GPIOA,0};
-        case GPIO_Key::A1: return {GPIOA,1};
-        case GPIO_Key::A2: return {GPIOA,2};
-        case GPIO_Key::A3: return {GPIOA,3};
-        case GPIO_Key::A4: return {GPIOA,4};
-        case GPIO_Key::A5: return {GPIOA,5};
-        case GPIO_Key::A6: return {GPIOA,6};
-        case GPIO_Key::A7: return {GPIOA,7};
-        case GPIO_Key::A8: return {GPIOA,8};
-        case GPIO_Key::A9: return {GPIOA,9};
-        case GPIO_Key::A10: return {GPIOA,10};
-        case GPIO_Key::A11: return {GPIOA,11};
-        case GPIO_Key::A12: return {GPIOA,12};
-        case GPIO_Key::A13: return {GPIOA,13};
-        case GPIO_Key::A14: return {GPIOA,14};
-        case GPIO_Key::A15: return {GPIOA,15};
-        case GPIO_Key::B0: return {GPIOB,0};
-        case GPIO_Key::B1: return {GPIOB,1};
-        case GPIO_Key::B2: return {GPIOB,2};
-        case GPIO_Key::B3: return {GPIOB,3};
-        case GPIO_Key::B4: return {GPIOB,4};
-        case GPIO_Key::B5: return {GPIOB,5};
-        case GPIO_Key::B6: return {GPIOB,6};
-        case GPIO_Key::B7: return {GPIOB,7};
-        case GPIO_Key::B8: return {GPIOB,8};
-        case GPIO_Key::B9: return {GPIOB,9};
-        case GPIO_Key::B10: return {GPIOB,10};
-        case GPIO_Key::B11: return {GPIOB,11};
-        case GPIO_Key::B12: return {GPIOB,12};
-        case GPIO_Key::B13: return {GPIOB,13};
-        case GPIO_Key::B14: return {GPIOB,14};
-        case GPIO_Key::B15: return {GPIOB,15};
-        case GPIO_Key::C0: return {GPIOC,0};
-        case GPIO_Key::C1: return {GPIOC,1};
-        case GPIO_Key::C2: return {GPIOC,2};
-        case GPIO_Key::C3: return {GPIOC,3};
-        case GPIO_Key::C4: return {GPIOC,4};
-        case GPIO_Key::C5: return {GPIOC,5};
-        case GPIO_Key::C6: return {GPIOC,6};
-        case GPIO_Key::C7: return {GPIOC,7};
-        case GPIO_Key::C8: return {GPIOC,8};
-        case GPIO_Key::C9: return {GPIOC,9};
-        case GPIO_Key::C10: return {GPIOC,10};
-        case GPIO_Key::C11: return {GPIOC,11};
-        case GPIO_Key::C12: return {GPIOC,12};
-        case GPIO_Key::C13: return {GPIOC,13};
-        case GPIO_Key::C14: return {GPIOC,14};
-        case GPIO_Key::C15: return {GPIOC,15};
-        case GPIO_Key::INVALID:
-        case GPIO_Key::NUM_GPIO:
-            assert(false);
-            return SHAL_GPIO_Peripheral(nullptr,0); //Unreachable
-    }
-    __builtin_unreachable();
+constexpr uint8_t getGPIOPinNumber(GPIO_Key key){
+    return static_cast<uint8_t>(key) % 16;
 }
+
+static inline uint32_t getGPIOPortNumber(const GPIO_Key g){
+    return (static_cast<uint8_t>(g) / 16);
+}
+
+static inline SHAL_GPIO_RCC_Enable_Register getGPIORCCEnable(const GPIO_Key g){
+    volatile uint32_t* reg = &RCC->AHBENR; //register
+    uint32_t mask;
+    mask = RCC_AHBENR_GPIOAEN << getGPIOPortNumber(g); //Should shift to get each port number
+
+    return {reg,mask};
+}
+
 
 constexpr SHAL_GPIO_EXTI_Register getGPIOEXTICR(const GPIO_Key g){
     switch(g) {
@@ -148,128 +111,55 @@ constexpr SHAL_GPIO_EXTI_Register getGPIOEXTICR(const GPIO_Key g){
     __builtin_unreachable();
 }
 
-constexpr SHAL_Peripheral_Register getGPIORCCEnable(const GPIO_Key g){
-    switch(g) {
-        case GPIO_Key::A0:
-        case GPIO_Key::A1:
-        case GPIO_Key::A2:
-        case GPIO_Key::A3:
-        case GPIO_Key::A4:
-        case GPIO_Key::A5:
-        case GPIO_Key::A6:
-        case GPIO_Key::A7:
-        case GPIO_Key::A8:
-        case GPIO_Key::A9:
-        case GPIO_Key::A10:
-        case GPIO_Key::A11:
-        case GPIO_Key::A12:
-        case GPIO_Key::A13:
-        case GPIO_Key::A14:
-        case GPIO_Key::A15:
-            return {&RCC->AHBENR, RCC_AHBENR_GPIOAEN_Pos};
-        case GPIO_Key::B0:
-        case GPIO_Key::B1:
-        case GPIO_Key::B2:
-        case GPIO_Key::B3:
-        case GPIO_Key::B4:
-        case GPIO_Key::B5:
-        case GPIO_Key::B6:
-        case GPIO_Key::B7:
-        case GPIO_Key::B8:
-        case GPIO_Key::B9:
-        case GPIO_Key::B10:
-        case GPIO_Key::B11:
-        case GPIO_Key::B12:
-        case GPIO_Key::B13:
-        case GPIO_Key::B14:
-        case GPIO_Key::B15:
-            return {&RCC->AHBENR, RCC_AHBENR_GPIOBEN_Pos};
-        case GPIO_Key::C0:
-        case GPIO_Key::C1:
-        case GPIO_Key::C2:
-        case GPIO_Key::C3:
-        case GPIO_Key::C4:
-        case GPIO_Key::C5:
-        case GPIO_Key::C6:
-        case GPIO_Key::C7:
-        case GPIO_Key::C8:
-        case GPIO_Key::C9:
-        case GPIO_Key::C10:
-        case GPIO_Key::C11:
-        case GPIO_Key::C12:
-        case GPIO_Key::C13:
-        case GPIO_Key::C14:
-        case GPIO_Key::C15:
-            return {&RCC->AHBENR, RCC_AHBENR_GPIOCEN_Pos};
-        case GPIO_Key::INVALID:
-        case GPIO_Key::NUM_GPIO:
-            assert(false);
-            return SHAL_Peripheral_Register(nullptr,0); //Unreachable
-    }
-    __builtin_unreachable();
+
+
+static inline SHAL_GPIO_Mode_Register getGPIOModeRegister(const GPIO_Key key){
+    volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->MODER;
+    uint32_t offset = 2 * (static_cast<uint8_t>(key) % 16);
+    return {reg,offset};
 }
 
-constexpr uint32_t getGPIOPortNumber(const GPIO_Key g){
-    switch(g) {
-        case GPIO_Key::A0:
-        case GPIO_Key::A1:
-        case GPIO_Key::A2:
-        case GPIO_Key::A3:
-        case GPIO_Key::A4:
-        case GPIO_Key::A5:
-        case GPIO_Key::A6:
-        case GPIO_Key::A7:
-        case GPIO_Key::A8:
-        case GPIO_Key::A9:
-        case GPIO_Key::A10:
-        case GPIO_Key::A11:
-        case GPIO_Key::A12:
-        case GPIO_Key::A13:
-        case GPIO_Key::A14:
-        case GPIO_Key::A15:
-            return 0;
-        case GPIO_Key::B0:
-        case GPIO_Key::B1:
-        case GPIO_Key::B2:
-        case GPIO_Key::B3:
-        case GPIO_Key::B4:
-        case GPIO_Key::B5:
-        case GPIO_Key::B6:
-        case GPIO_Key::B7:
-        case GPIO_Key::B8:
-        case GPIO_Key::B9:
-        case GPIO_Key::B10:
-        case GPIO_Key::B11:
-        case GPIO_Key::B12:
-        case GPIO_Key::B13:
-        case GPIO_Key::B14:
-        case GPIO_Key::B15:
-            return 1;
-        case GPIO_Key::C0:
-        case GPIO_Key::C1:
-        case GPIO_Key::C2:
-        case GPIO_Key::C3:
-        case GPIO_Key::C4:
-        case GPIO_Key::C5:
-        case GPIO_Key::C6:
-        case GPIO_Key::C7:
-        case GPIO_Key::C8:
-        case GPIO_Key::C9:
-        case GPIO_Key::C10:
-        case GPIO_Key::C11:
-        case GPIO_Key::C12:
-        case GPIO_Key::C13:
-        case GPIO_Key::C14:
-        case GPIO_Key::C15:
-            return 2;
-        case GPIO_Key::INVALID:
-        case GPIO_Key::NUM_GPIO:
-            assert(false);
-            return 0;
-    }
-    __builtin_unreachable();
+static inline SHAL_GPIO_Pullup_Pulldown_Register getGPIOPUPDRegister(const GPIO_Key key){
+    volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->PUPDR;
+    uint32_t offset = 2 * static_cast<uint8_t>(key) % 16;
+    return {reg,offset};
 }
 
+static inline SHAL_GPIO_Alternate_Function_Register getGPIOAlternateFunctionRegister(const GPIO_Key key){
+
+    uint32_t pinNumber = static_cast<uint8_t>(key) % 16; //Number of pin (We need 0-7 to be AFR 1 and 8-15 to be AFR 2)
+    uint32_t afrIndex = pinNumber < 8 ? 0 : 1;
+
+    volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->AFR[afrIndex];
+    uint32_t offset = (pinNumber % 8) * 4; //Increment in groups of four
+    return {reg,offset};
+}
+
+static inline SHAL_GPIO_Output_Speed_Register getGPIOOutputSpeedRegister(const GPIO_Key key){
+    volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->OSPEEDR;
+    uint32_t offset = 2 * static_cast<uint8_t>(key) % 16;
+    return {reg,offset};
+}
+
+static inline SHAL_GPIO_Output_Type_Register getGPIOOutputTypeRegister(const GPIO_Key key){
+    volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->OTYPER;
+    uint32_t offset = static_cast<uint8_t>(key) % 16;
+    return {reg,offset};
+}
+
+static inline SHAL_GPIO_Output_Data_Register getGPIOOutputDataRegister(const GPIO_Key key){
+    volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->ODR;
+    uint32_t offset = (static_cast<uint8_t>(key) % 16);
+    return {reg,offset};
+}
+
+static inline SHAL_GPIO_Input_Data_Register getGPIOInputDataRegister(const GPIO_Key key){
+    volatile uint32_t* reg = &GPIO_TABLE[static_cast<uint8_t>(key) / 16]->IDR;
+    uint32_t offset = static_cast<uint8_t>(key) % 16;
+    return {reg,offset};
+}
+
+/* TODO reimplement
 constexpr SHAL_GPIO_Port_Info getGPIOPortInfo(GPIO_Key key){
     switch(key){
         case GPIO_Key::A0:
@@ -343,6 +233,6 @@ constexpr SHAL_GPIO_Port_Info getGPIOPortInfo(GPIO_Key key){
     __builtin_unreachable();
 }
 
-
+*/
 
 #endif //SHMINGO_HAL_SHAL_GPIO_REG_F072XB_H

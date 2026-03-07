@@ -3,7 +3,7 @@
 //
 
 #include "SHAL_GPIO.h"
-#include "SHAL_EXTI_CALLBACK.h"
+//#include "SHAL_EXTI_CALLBACK.h"
 
 
 
@@ -13,10 +13,9 @@ SHAL_GPIO::SHAL_GPIO() : m_GPIO_KEY(GPIO_Key::INVALID){
 
 SHAL_GPIO::SHAL_GPIO(GPIO_Key key) : m_GPIO_KEY(key) {
 
-    volatile unsigned long* gpioEnable = getGPIORCCEnable(key).reg;
-    unsigned long gpioOffset = getGPIORCCEnable(key).offset;
+    auto GPIORCCEnable = getGPIORCCEnable(key);
 
-    *gpioEnable |= (1 << gpioOffset); //Set enable flag
+    SHAL_set_register_value(GPIORCCEnable.reg,GPIORCCEnable.mask);
 }
 
 void SHAL_GPIO::setLow() {
@@ -54,12 +53,23 @@ void SHAL_GPIO::setAlternateFunction(GPIO_Alternate_Function AF) volatile {
     SHAL_set_bits(alternateFunctionReg.reg,4,static_cast<uint8_t>(AF),alternateFunctionReg.offset);
 }
 
-void SHAL_GPIO::setPinMode(PinMode mode) volatile {
-    SHAL_GPIO_Peripheral gpioPeripheral = getGPIORegister(m_GPIO_KEY);
-    gpioPeripheral.reg->MODER &= ~(0x03 << (2 * gpioPeripheral.global_offset)); //Clear any previous mode
-    gpioPeripheral.reg->MODER |= (static_cast<uint8_t>(mode) << (2 * gpioPeripheral.global_offset)); //Set mode based on pinmode bit structure
+SHAL_Result SHAL_GPIO::setPinMode(PinMode mode) volatile {
+    auto pinModeReg = getGPIOModeRegister(m_GPIO_KEY);
+
+    /*
+    if(mode == PinMode::ANALOG_MODE && getGPIOPortInfo(m_GPIO_KEY).ADCChannel == SHAL_ADC_Channel::NO_ADC_MAPPING){
+        char buff[100];
+        sprintf(buff, "Error: GPIO pin %d has no valid ADC mapping\r\n", static_cast<uint8_t>(m_GPIO_KEY));
+        SHAL_UART2.sendString(buff);
+        return SHAL_Result::ERROR;
+    }
+    */
+    SHAL_set_bits(pinModeReg.reg,2,static_cast<uint8_t>(mode),pinModeReg.offset); //Set mode
+
+    return SHAL_Result::OKAY;
 }
 
+/* TODO Fix implementation for STM32F072
 void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) {
 
     uint32_t gpioPin = getGPIORegister(m_GPIO_KEY).global_offset; //Use existing structs to get offset
@@ -98,19 +108,21 @@ void SHAL_GPIO::useAsExternalInterrupt(TriggerMode mode, EXTICallback callback) 
 
     __enable_irq(); //Enable IRQ just in case
 }
+*/
 
+/* TODO reimplement
 uint16_t SHAL_GPIO::analogRead(SHAL_ADC_SampleTime sampleTime) {
 
     SHAL_ADC_Channel channel = getGPIOPortInfo(m_GPIO_KEY).ADCChannel;
 
     return GPIOManager::getGPIOADC().singleConvertSingle(channel,sampleTime);
 }
-
+*/
 
 SHAL_GPIO& GPIOManager::get(GPIO_Key key) {
 
     unsigned int gpioPort = getGPIOPortNumber(key);
-    unsigned long gpioPin = getGPIORegister(key).global_offset; //Use existing structs to get offset
+    uint8_t gpioPin = getGPIOPinNumber(key);
 
     if (m_gpios[gpioPort][gpioPin].m_GPIO_KEY == GPIO_Key::INVALID){
         m_gpios[gpioPort][gpioPin] = SHAL_GPIO(key);

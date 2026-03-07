@@ -113,7 +113,8 @@ constexpr SHAL_GPIO_EXTI_Register getGPIOEXTICR(const GPIO_Key g){
 static inline SHAL_GPIO_RCC_Enable_Register getGPIORCCEnable(const GPIO_Key g){
     volatile uint32_t* reg = &RCC->AHB2ENR; //register
     uint32_t offset;
-    offset = (static_cast<uint8_t>(g) / 16) == 0 ? RCC_AHB2ENR_GPIOAEN_Pos : RCC_AHB2ENR_GPIOBEN_Pos;
+
+    offset = RCC_AHB2ENR_GPIOAEN << getGPIOPortNUmber(g); //Should shift to get each port number
 
     return {reg,offset};
 }

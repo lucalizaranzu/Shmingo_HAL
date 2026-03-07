@@ -112,7 +112,7 @@ uint16_t SHAL_ADC::singleConvertSingle(SHAL_ADC_Channel channel, SHAL_ADC_Sample
     return result;
 }
 
-SHAL_Result SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, const int numChannels, uint16_t* result, SHAL_ADC_SampleTime time) {
+SHAL_Result SHAL_ADC::multiConvertSingle(SHAL_ADC_Channel* channels, int numChannels, uint16_t* result, SHAL_ADC_SampleTime time) {
     auto data_reg = getADCDataReg(m_ADCKey); //Where our output will be stored
 
     setADCSequenceAmount(numChannels); //Convert the correct amount of channels
