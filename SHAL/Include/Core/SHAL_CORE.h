@@ -42,7 +42,12 @@ enum class SHAL_Result{
 
 
 //Currently configures systick to count down in microseconds
+inline uint32_t ticks = 0;
 void systick_init();
+
+extern "C" void SysTick_Handler();
+
+static uint32_t millis();
 
 //Max of 16ms, use SHAL_delay_ms for longer delay
 void SHAL_delay_us(uint32_t us);
@@ -70,6 +75,8 @@ bool SHAL_wait_for_condition_ms(Condition cond, uint32_t timeout_ms) {
     }
     return false; // timeout
 }
+
+
 
 #define SHAL_set_bits(reg, size, bits, offset)                    \
     do {                                                          \

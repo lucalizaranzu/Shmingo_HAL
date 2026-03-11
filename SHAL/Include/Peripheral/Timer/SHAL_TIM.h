@@ -23,6 +23,17 @@ public:
     /// \param autoReload The number of timer counts before the count is reset and IRQ is called
     void init(uint16_t prescaler, uint16_t autoReload);
 
+    /// Simple function to set a timer in basic PWM mode
+    /// @param channel Channel to output on
+    /// @param prescaler Divider from sysclock
+    /// @param autoReload Counter value to reset at
+    /// @param captureCompareThreshold PWM trigger value (duty cycle = this / autoReload)
+    void configurePWM(SHAL_Timer_Channel channel, uint16_t prescaler, uint16_t autoReload, uint16_t captureCompareThreshold);
+
+
+
+    void configureOneshot(SHAL_Timer_Channel channel, uint16_t prescaler, uint16_t autoReload, uint16_t captureCompareThreshold);
+
     //Starts the counter
     void start();
 
@@ -30,10 +41,10 @@ public:
     void stop();
 
     //Set prescaler value
-    void setPrescaler(uint16_t presc);
+    void setPrescaler(uint16_t presc) const;
 
     //Set auto reload register
-    void setARR(uint16_t arr);
+    void setARR(uint16_t arr) const;
 
     //Enable interrupts
     void enableInterrupt();
@@ -43,12 +54,8 @@ public:
     void enableChannel(SHAL_Timer_Channel channel, SHAL_Timer_Channel_Main_Output_Mode mainOutputMode, SHAL_Timer_Channel_Complimentary_Output_Mode complimentaryOutputMode);
     void setOutputCompareMode(SHAL_Timer_Channel channel, SHAL_TIM_Output_Compare_Mode outputCompareMode);
 
-    /// Set the duty cycle for PWM
-    /// \param dutyCycle 10 * percentage (e.g. 500 = 50%)
-    void setPWMDutyCycle(uint32_t dutyCycle);
-
     //Set TIMER_KEY IRQ callback function
-    void setCallbackFunc(TimerCallback callback){
+    void setCallbackFunc(TimerCallback callback) const {
         registerTimerCallback(m_key, callback);
     }
 

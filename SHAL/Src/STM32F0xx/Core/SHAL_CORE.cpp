@@ -16,6 +16,13 @@ void systick_init(){
     SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
 }
 
+extern "C" void SysTick_Handler() {
+    ticks++;
+}
+
+static uint32_t millis();
+
+
 
 void SHAL_delay_us(uint32_t us){
     uint32_t ticks = us * (SystemCoreClock / 1000000U);

@@ -82,6 +82,7 @@ ${CPU_PARAMETERS}
 -Wextra
 -Wpedantic
 -Wno-unused-parameter
+-Wno-unused-function
 $<$<COMPILE_LANGUAGE:CXX>:
 -Wno-volatile
 -Wsuggest-override>

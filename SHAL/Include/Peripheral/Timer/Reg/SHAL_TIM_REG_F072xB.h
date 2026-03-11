@@ -83,7 +83,7 @@ static SHAL_TIM_RCC_Register getTimerRCC(Timer_Key t) {
 }
 
 
-static inline SHAL_TIM_Status_Register getTimerStatusRegister(Timer_Key key){
+static SHAL_TIM_Status_Register getTimerStatusRegister(Timer_Key key){
 
     SHAL_TIM_Status_Register res = {nullptr, TIM_SR_UIF};
 
@@ -93,7 +93,7 @@ static inline SHAL_TIM_Status_Register getTimerStatusRegister(Timer_Key key){
     return res;
 }
 
-static inline SHAL_TIM_Control_Register_1 getTimerControlRegister1(Timer_Key key){
+static SHAL_TIM_Control_Register_1 getTimerControlRegister1(Timer_Key key){
 
     SHAL_TIM_Control_Register_1 res = {nullptr, TIM_CR1_CEN_Msk,
                                        TIM_CR1_UDIS,
@@ -107,7 +107,7 @@ static inline SHAL_TIM_Control_Register_1 getTimerControlRegister1(Timer_Key key
     return res;
 }
 
-static inline SHAL_TIM_DMA_Interrupt_Enable_Register getTimerDMAInterruptEnableRegister(Timer_Key key){
+static SHAL_TIM_DMA_Interrupt_Enable_Register getTimerDMAInterruptEnableRegister(Timer_Key key){
 
     SHAL_TIM_DMA_Interrupt_Enable_Register res = {nullptr, TIM_DIER_UIE};
 
@@ -117,7 +117,7 @@ static inline SHAL_TIM_DMA_Interrupt_Enable_Register getTimerDMAInterruptEnableR
     return res;
 }
 
-static inline SHAL_TIM_Event_Generation_Register getTimerEventGenerationRegister(Timer_Key key){
+static SHAL_TIM_Event_Generation_Register getTimerEventGenerationRegister(Timer_Key key){
 
     SHAL_TIM_Event_Generation_Register res = {nullptr, TIM_EGR_UG};
 
@@ -127,7 +127,7 @@ static inline SHAL_TIM_Event_Generation_Register getTimerEventGenerationRegister
     return res;
 }
 
-static inline SHAL_TIM_Break_Dead_Time_Register getTimerBreakDeadTimeRegister(Timer_Key key) {
+static SHAL_TIM_Break_Dead_Time_Register getTimerBreakDeadTimeRegister(Timer_Key key) {
 
     SHAL_TIM_Break_Dead_Time_Register res = {nullptr,
                                              TIM_BDTR_DTG_Pos,
@@ -145,7 +145,7 @@ static inline SHAL_TIM_Break_Dead_Time_Register getTimerBreakDeadTimeRegister(Ti
     return res;
 }
 
-static inline SHAL_TIM_Prescaler_Register getTimerPrescalerRegister(Timer_Key key){
+static SHAL_TIM_Prescaler_Register getTimerPrescalerRegister(Timer_Key key){
 
     SHAL_TIM_Prescaler_Register res = {nullptr, 1UL << 15};
 
@@ -155,7 +155,7 @@ static inline SHAL_TIM_Prescaler_Register getTimerPrescalerRegister(Timer_Key ke
     return res;
 }
 
-static inline SHAL_TIM_Auto_Reload_Register getTimerAutoReloadRegister(Timer_Key key){
+static SHAL_TIM_Auto_Reload_Register getTimerAutoReloadRegister(Timer_Key key){
 
     SHAL_TIM_Auto_Reload_Register res = {nullptr, 1UL << 15};
 
@@ -165,8 +165,8 @@ static inline SHAL_TIM_Auto_Reload_Register getTimerAutoReloadRegister(Timer_Key
     return res;
 }
 
-static inline SHAL_TIM_Capture_Compare_Register getTimerCaptureCompareRegister(Timer_Key key, SHAL_Timer_Channel channel){
-    auto channel_num = static_cast<uint8_t>(channel);
+static SHAL_TIM_Capture_Compare_Register getTimerCaptureCompareRegister(Timer_Key key, SHAL_Timer_Channel channel){
+    const auto channel_num = static_cast<uint8_t>(channel);
 
     volatile TIM_TypeDef* tim = TIM_INFO_TABLE[static_cast<uint8_t>(key)].timer;
 
@@ -178,17 +178,18 @@ static inline SHAL_TIM_Capture_Compare_Register getTimerCaptureCompareRegister(T
         case SHAL_Timer_Channel::CH3: return {&tim->CCR3,0};
         case SHAL_Timer_Channel::CH4: return {&tim->CCR4,0};
     }
+    __builtin_unreachable();
+
 }
 
-static inline SHAL_TIM_Capture_Compare_Enable_Register getTimerCaptureCompareEnableRegister(Timer_Key key, SHAL_Timer_Channel channel){
+static SHAL_TIM_Capture_Compare_Enable_Register getTimerCaptureCompareEnableRegister(Timer_Key key, SHAL_Timer_Channel channel){
+    constexpr uint8_t channel_stride = 3;
+    const auto channel_num = static_cast<uint8_t>(channel);
 
-    uint8_t channel_stride = 3;
-    auto channel_num = static_cast<uint8_t>(channel);
-
-    auto output_enable = TIM_CCER_CC1E << (channel_stride * (channel_num - 1));
-    auto output_polarity = TIM_CCER_CC1P << (channel_stride * channel_num);
-    auto output_complimentary_enable = TIM_CCER_CC1NE << (channel_stride * channel_num);
-    auto output_complimentary_polarity = TIM_CCER_CC1NP << (channel_stride * channel_num);
+    const auto output_enable = TIM_CCER_CC1E << (channel_stride * (channel_num - 1));
+    const auto output_polarity = TIM_CCER_CC1P << (channel_stride * channel_num);
+    const auto output_complimentary_enable = TIM_CCER_CC1NE << (channel_stride * channel_num);
+    const auto output_complimentary_polarity = TIM_CCER_CC1NP << (channel_stride * channel_num);
 
     SHAL_TIM_Capture_Compare_Enable_Register res = {nullptr,
                                                     output_enable,
@@ -203,7 +204,7 @@ static inline SHAL_TIM_Capture_Compare_Enable_Register getTimerCaptureCompareEna
     return res;
 }
 
-static inline SHAL_TIM_Output_Capture_Compare_Mode_Register getTimerOutputCaptureCompareModeRegister(Timer_Key key, SHAL_Timer_Channel channel) {
+static SHAL_TIM_Output_Capture_Compare_Mode_Register getTimerOutputCaptureCompareModeRegister(Timer_Key key, SHAL_Timer_Channel channel) {
     SHAL_TIM_Output_Capture_Compare_Mode_Register res = {
             nullptr,
             TIM_CCMR1_CC1S_Pos,   //Channel 1 Capture/Compare selection
@@ -219,11 +220,11 @@ static inline SHAL_TIM_Output_Capture_Compare_Mode_Register getTimerOutputCaptur
     };
 
     volatile TIM_TypeDef* tim = TIM_INFO_TABLE[static_cast<uint8_t>(key)].timer;
-    uint8_t num_tim_channels = TIM_INFO_TABLE[static_cast<uint8_t>(key)].numChannels;
+    const uint8_t num_tim_channels = TIM_INFO_TABLE[static_cast<uint8_t>(key)].numChannels;
 
     volatile uint32_t* reg = nullptr;
 
-    uint8_t channelNum = static_cast<uint32_t>(channel);
+    const auto channelNum = static_cast<uint32_t>(channel);
 
     assert(num_tim_channels >= channelNum); //Assert that we don't access undefined memory trying to initialize a non-existent channel
 

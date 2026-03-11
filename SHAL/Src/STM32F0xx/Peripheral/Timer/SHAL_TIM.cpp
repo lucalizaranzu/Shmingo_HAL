@@ -40,13 +40,16 @@ void Timer::stop() {
     SHAL_clear_bitmask(rcc_reg.reg,rcc_reg.enable_mask);
 }
 
-void Timer::setPrescaler(uint16_t presc) {
-    getTimerRegister(m_key)->PSC = presc;
+void Timer::setPrescaler(const uint16_t presc) const {
+    auto prescalerReg = getTimerPrescalerRegister(m_key);
+
+    SHAL_set_bits(prescalerReg.reg,16,presc,0);
 }
 
-void Timer::setARR(uint16_t arr) {
-    getTimerRegister(m_key)->ARR = arr;
-}
+void Timer::setARR(const uint16_t arr) const {
+    auto autoReloadReg = getTimerAutoReloadRegister(m_key);
+
+    SHAL_set_bits(autoReloadReg.reg,16,arr,0);}
 
 void Timer::enableInterrupt() {
     getTimerRegister(m_key)->DIER |= TIM_DIER_UIE;
@@ -60,6 +63,28 @@ void Timer::init(uint16_t prescaler, uint16_t autoReload) {
 
     setPrescaler(prescaler);
     setARR(autoReload);
+}
+
+void Timer::configurePWM(SHAL_Timer_Channel channel, uint16_t prescaler, uint16_t autoReload, uint16_t captureCompareThreshold) {
+
+    setPrescaler(prescaler);
+    setARR(autoReload);
+
+    setOutputCompareMode(channel, SHAL_TIM_Output_Compare_Mode::PWMMode1);
+    enableChannel(channel,SHAL_Timer_Channel_Main_Output_Mode::Polarity_Normal,SHAL_Timer_Channel_Complimentary_Output_Mode::Disabled);
+
+    setCaptureCompareValue(channel, captureCompareThreshold);
+}
+
+void Timer::configureOneshot(SHAL_Timer_Channel channel, uint16_t prescaler, uint16_t autoReload, uint16_t captureCompareThreshold) {
+
+    setPrescaler(prescaler);
+    setARR(autoReload);
+
+    setOutputCompareMode(channel, SHAL_TIM_Output_Compare_Mode::Toggle);
+    enableChannel(channel,SHAL_Timer_Channel_Main_Output_Mode::Polarity_Normal,SHAL_Timer_Channel_Complimentary_Output_Mode::Disabled);
+
+    setCaptureCompareValue(channel, captureCompareThreshold);
 }
 
 void Timer::setOutputCompareMode(SHAL_Timer_Channel channel, SHAL_TIM_Output_Compare_Mode outputCompareMode) {
